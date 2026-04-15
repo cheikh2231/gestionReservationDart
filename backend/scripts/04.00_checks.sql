@@ -25,19 +25,20 @@ CREATE OR REPLACE FUNCTION forbid_role_update
 BEGIN
         IF OLD.role != NEW.ROLE THEN
            RAISE EXCEPTION 'Il est interdit de modifier le role de l''utilisateur';
-        END IF,
+END IF,
         RETURN NEW;
 END;
        $$
 
 
--- Tables --
+-- TABLES --
+
 -- Le numéro de table doit être strictement positif et unique au sein d'un même restaurant.
 ALTER TABLE tables ADD CONSTRAINT check_table_if_exist
-UNIQUE(restaurant , table_number)
+    UNIQUE(restaurant , table_number)
 -- La capacité doit être strictement positive.
 ALTER TABLE tables ADD CONSTRAINT check_capacity
-CHECK(capacity > 0)
+    CHECK(capacity > 0)
 -- On ne peut pas modifier le restaurant d'une table.
 CREATE TRIGGER forbid_update_restaurant_table
     BEFORE UPDATE
@@ -50,10 +51,19 @@ CREATE OR REPLACE FUNCTION
        LANGUAGE PLPGSQL
        AS
        $$
-       BEGIN
+BEGIN
             IF OLD.restaurant != NEW.restaurant
                RAISE EXCEPTION 'Il est interdit de modifier le restaurant d''une table';
-            END IF;
-            RETURN NEW
-       END;
+END IF;
+RETURN NEW
+END;
        $$
+-- SERVICES --
+
+-- Le jour de la semaine doit être compris entre 1 (lundi) et 7 (dimanche).
+ALTER TABLE services ADD CONSTRAINT service_day_range
+    CHECK(capacity > 0 AND capacity < 8)
+-- L'heure de fin doit être postérieure à l'heure de début d'au moins une heure. Note : l'heure de fin d'un service représente l'heure au-delà de laquelle le restaurant n'accepte plus de clients.
+ALTER TABLE services ADD CONSTRAINT service_duration_constraints
+       CHECK(age(end_time,start_time) >= 1)
+-- On ne peut pas modifier le restaurant d'un service.
