@@ -7,7 +7,7 @@
 
 -- Le nom complet doit avoir une longueur d'au moins 3 caractères.
 ALTER TABLE USERS ADD CONSTRAINT check_user_name_length
-    CHECK ( full_name.length >= 3 )
+    CHECK ( length(trim(full_name)) >= 3 )
 
 -- On ne peut pas modifier le rôle d'un utilisateur.
 CREATE TRIGGER forbid_role_update
@@ -36,9 +36,11 @@ END;
 -- Le numéro de table doit être strictement positif et unique au sein d'un même restaurant.
 ALTER TABLE tables ADD CONSTRAINT check_table_if_exist
     UNIQUE(restaurant , table_number)
+
 -- La capacité doit être strictement positive.
 ALTER TABLE tables ADD CONSTRAINT check_capacity
     CHECK(capacity > 0)
+
 -- On ne peut pas modifier le restaurant d'une table.
 CREATE TRIGGER forbid_update_restaurant_table
     BEFORE UPDATE
@@ -52,9 +54,9 @@ CREATE OR REPLACE FUNCTION
        AS
        $$
 BEGIN
-            IF OLD.restaurant != NEW.restaurant
-               RAISE EXCEPTION 'Il est interdit de modifier le restaurant d''une table';
-END IF;
+        IF OLD.restaurant != NEW.restaurant
+           RAISE EXCEPTION 'Il est interdit de modifier le restaurant d''une table';
+        END IF;
 RETURN NEW
 END;
        $$
@@ -62,7 +64,8 @@ END;
 
 -- Le jour de la semaine doit être compris entre 1 (lundi) et 7 (dimanche).
 ALTER TABLE services ADD CONSTRAINT service_day_range
-    CHECK(capacity > 0 AND capacity < 8)
+    CHECK(capacity BETWEEN 1 AND 7)
+
 -- L'heure de fin doit être postérieure à l'heure de début d'au moins une heure. Note : l'heure de fin d'un service représente l'heure au-delà de laquelle le restaurant n'accepte plus de clients.
 ALTER TABLE services ADD CONSTRAINT service_duration_constraints
        CHECK(age(end_time,start_time) >= 1)
