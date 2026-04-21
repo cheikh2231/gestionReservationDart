@@ -139,10 +139,14 @@ alter table restaurants
 
 
 -- Le nombre de convives d'une réservation doit être strictement positif.
-
+alter table reservations
+    add constraint number_of_guests_positif
+        check ( number_of_guests > 0 );
 
 -- Le texte des demandes spéciales d'une réservation (special_requests), s'il est défini, doit avoir une longueur minimale de 10 caractères
-
+alter table reservations
+    add constraint special_requests
+        check ( special_requests is null or length(trim(special_requests)) >= 10 );
 
 -- On ne peut pas modifier le restaurant ou le client d'une réservation.
 
