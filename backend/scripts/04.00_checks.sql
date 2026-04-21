@@ -1,3 +1,4 @@
+set search_path to public;
 -- USERS --
 
 -- Le mot de passe doit avoir au minimum une longueur de 8 caractères, doit contenir au moins un chiffre, une lettre majuscule, une lettre minuscule et un caractère spécial parmi les suivants : ,;.:!?/$%&@#.
@@ -17,7 +18,7 @@ CREATE TRIGGER forbid_role_update
     EXECUTE FUNCTION forbid_role_update
 
 
-CREATE OR REPLACE FUNCTION forbid_role_update
+CREATE OR REPLACE FUNCTION forbid_role_update()
        RETURNS TRIGGER
        LANGUAGE PLPGSQL
        AS
@@ -28,7 +29,7 @@ BEGIN
 END IF,
         RETURN NEW;
 END;
-       $$
+$$;
 
 
 -- TABLES --
@@ -46,20 +47,20 @@ CREATE TRIGGER forbid_update_restaurant_table
     BEFORE UPDATE
     ON tables
     FOR EACH ROW
-    EXECUTE FUNCTION forbid_update_restaurant_table
+    EXECUTE FUNCTION forbid_update_restaurant_table()
 
-CREATE OR REPLACE FUNCTION
+CREATE OR REPLACE FUNCTION forbid_update_restaurant_table()
        RETURNS TRIGGER
        LANGUAGE PLPGSQL
        AS
        $$
 BEGIN
-        IF OLD.restaurant != NEW.restaurant
+        IF OLD.restaurant != NEW.restaurant THEN
            RAISE EXCEPTION 'Il est interdit de modifier le restaurant d''une table';
         END IF;
 RETURN NEW
 END;
-       $$
+$$;
 -- SERVICES --
 
 -- Le jour de la semaine doit être compris entre 1 (lundi) et 7 (dimanche).
@@ -70,7 +71,24 @@ ALTER TABLE services ADD CONSTRAINT service_day_range
 ALTER TABLE services ADD CONSTRAINT service_duration_constraints
        CHECK(age(end_time,start_time) >= 1)
 -- On ne peut pas modifier le restaurant d'un service.
+CREATE TRIGGER forbid_update_restaurant_services
+    BEFORE UPDATE
+    ON services
+    FOR EACH ROW
+    EXECUTE FUNCTION forbid_update_restaurant_services()
 
+CREATE OR REPLACE FUNCTION forbid_update_restaurant_services()
+       RETURNS TRIGGER
+       LANGUAGE PLPGSQL
+       AS
+       $$
+BEGIN
+        IF OLD.restaurant != NEW.restaurant Then
+           RAISE EXCEPTION 'Il est interdit de modifier le restaurant d''un service';
+END IF;
+RETURN NEW
+END;
+$$;
 
 -- RESTAURANTS --
 
@@ -113,3 +131,36 @@ alter table restaurants
 alter table restaurants
     add constraint duration_check
         check ( slot_duration in (10,15,20,30,60) );
+
+-- Reservation --
+
+--Le statut d'une réservation doit être soit pending (en attente de confirmation),
+-- confirmed (confirmée), cancelled (annulée) ou completed (terminée suite à la venue effective du client).
+
+
+-- Le nombre de convives d'une réservation doit être strictement positif.
+
+
+-- Le texte des demandes spéciales d'une réservation (special_requests), s'il est défini, doit avoir une longueur minimale de 10 caractères
+
+
+-- On ne peut pas modifier le restaurant ou le client d'une réservation.
+
+CREATE TRIGGER forbid_update_restaurant_or_client_services
+    BEFORE UPDATE
+    ON reservations
+    FOR EACH ROW
+    EXECUTE FUNCTION forbid_update_restaurant_or_client_services()
+
+CREATE OR REPLACE FUNCTION forbid_update_restaurant_or_client_services()
+       RETURNS TRIGGER
+       LANGUAGE PLPGSQL
+       AS
+       $$
+BEGIN
+        IF OLD.restaurant != NEW.restaurant or OLD.client != NEW.client THEN
+           RAISE EXCEPTION 'Il est interdit de modifier le restaurant ou le client d''un service';
+END IF;
+RETURN NEW
+END;
+$$;
