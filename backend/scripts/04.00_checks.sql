@@ -146,7 +146,7 @@ CHECK (length(trim(city)) >= 3);
 
 SELECT id, name, phone
 FROM restaurants
-WHERE     phone ~ '^\+32[ ]?([1-9]\d{0,2})[ ]?(\d{2}[ ]?\d{2}[ ]?\d{2}|\d{3}[ ]?\d{2}[ ]?\d{2})$'
+WHERE     phone ~ '^\+32[ ]?([1-9]\d{0,2})[ ]?(\d{2}[ ]?\d{2}[ ]?\d{2}|\d{3}[ ]?\d{2}[ ]?\d{2})$';
 
 
 ALTER TABLE restaurants
