@@ -10,27 +10,25 @@ set search_path to public;
 ALTER TABLE USERS ADD CONSTRAINT check_user_name_length
     CHECK ( length(trim(full_name)) >= 3 );
 
--- On ne peut pas modifier le rôle d'un utilisateur.
-CREATE TRIGGER forbid_role_update
-    BEFORE UPDATE
-    ON users
-    FOR EACH ROW
-    EXECUTE FUNCTION forbid_role_update();
-
 
 CREATE OR REPLACE FUNCTION forbid_role_update()
        RETURNS TRIGGER
        LANGUAGE PLPGSQL
        AS
        $$
-BEGIN
-        IF OLD.role != NEW.ROLE THEN
-           RAISE EXCEPTION 'Il est interdit de modifier le role de l''utilisateur';
-END IF,
+        BEGIN
+            IF OLD.role != NEW.ROLE THEN
+               RAISE EXCEPTION 'Il est interdit de modifier le role de l''utilisateur';
+            END IF;
         RETURN NEW;
 END;
 $$;
-
+-- On ne peut pas modifier le rôle d'un utilisateur.
+CREATE TRIGGER forbid_role_update
+    BEFORE UPDATE
+    ON users
+    FOR EACH ROW
+EXECUTE FUNCTION forbid_role_update();
 
 -- TABLES --
 
@@ -51,8 +49,8 @@ CREATE OR REPLACE FUNCTION forbid_update_restaurant_table()
 BEGIN
         IF OLD.restaurant != NEW.restaurant THEN
            RAISE EXCEPTION 'Il est interdit de modifier le restaurant d''une table';
-END IF;
-RETURN NEW;
+        END IF;
+        RETURN NEW;
 END;
 $$;
 
@@ -66,11 +64,11 @@ CREATE TRIGGER forbid_update_restaurant_table
 
 -- Le jour de la semaine doit être compris entre 1 (lundi) et 7 (dimanche).
 ALTER TABLE services ADD CONSTRAINT service_day_range
-    CHECK(capacity BETWEEN 1 AND 7);
+    CHECK(day_of_week BETWEEN 1 AND 7);
 
 -- L'heure de fin doit être postérieure à l'heure de début d'au moins une heure. Note : l'heure de fin d'un service représente l'heure au-delà de laquelle le restaurant n'accepte plus de clients.
 ALTER TABLE services ADD CONSTRAINT service_duration_constraints
-       CHECK(age(end_time,start_time) >= 1);
+       CHECK(end_time + interval  '1 hour' >= start_time);
 
 -- On ne peut pas modifier le restaurant d'un service.
 CREATE OR REPLACE FUNCTION forbid_update_restaurant_services()
@@ -78,11 +76,11 @@ CREATE OR REPLACE FUNCTION forbid_update_restaurant_services()
        LANGUAGE PLPGSQL
        AS
        $$
-BEGIN
-        IF OLD.restaurant != NEW.restaurant Then
-           RAISE EXCEPTION 'Il est interdit de modifier le restaurant d''un service';
-END IF;
-RETURN NEW;
+        BEGIN
+                IF OLD.restaurant != NEW.restaurant Then
+                   RAISE EXCEPTION 'Il est interdit de modifier le restaurant d''un service';
+        END IF;
+        RETURN NEW;
 END;
 $$;
 
@@ -102,7 +100,7 @@ alter table restaurants
 -- L'adresse doit avoir au minimum une longueur de 5 caractères.
 alter table restaurants
     add constraint restaurants_adress_length
-        check (length(trim(adress)) >= 5);
+        check (length(trim(address)) >= 5);
 
 --La ville doit avoir au minimum une longueur de 3 caractères.
 alter table restaurants
@@ -121,18 +119,18 @@ alter table restaurants
 
 --La note doit être comprise entre 0.0 et 5.0 si elle est définie
 alter table restaurants
-    add constraint rating_check
-        check ( rating is null OR (length(rating) between 0.0 and 5.0) );
+add constraint rating_check
+check (rating is null OR (rating between 0.0 and 5.0) );
 
 --La fourchette de prix doit être comprise entre 1 et 4 si elle est définie
 alter table restaurants
-    add constraint price_check
-        check ( price_range is null OR (length(price_range) between 1 and 4) );
+add constraint price_check
+check ( price_range is null OR (price_range between 1 and 4) );
 
 --La durée de créneau de réservation doit être soit 10, 15, 20, 30 ou 60 minutes.
 alter table restaurants
-    add constraint duration_check
-        check ( slot_duration in (10,15,20,30,60) );
+add constraint duration_check
+check ( slot_duration in (10,15,20,30,60) );
 
 -- Reservation --
 
@@ -149,8 +147,8 @@ alter table reservations
 
 -- Le texte des demandes spéciales d'une réservation (special_requests), s'il est défini, doit avoir une longueur minimale de 10 caractères
 alter table reservations
-    add constraint check_special_requests
-        check ( special_requests is null or length(trim(special_requests)) >= 10 );
+add constraint check_special_requests
+check ( special_requests is null or length(trim(special_requests)) >= 10 );
 
 -- On ne peut pas modifier le restaurant ou le client d'une réservation.
 
