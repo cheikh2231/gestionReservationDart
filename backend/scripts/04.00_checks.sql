@@ -8,12 +8,13 @@ set search_path to public;
 
 -- Le nom complet doit avoir une longueur d'au moins 3 caractères.
 ALTER TABLE USERS
-DROP CONSTRAINT check_user_name_length ;
+DROP CONSTRAINT IF EXISTS check_user_name_length ;
 
 ALTER TABLE USERS ADD CONSTRAINT check_user_name_length
 CHECK ( length(trim(full_name)) >= 3 );
 
 -- On ne peut pas modifier le rôle d'un utilisateur.
+DROP TRIGGER IF EXISTS forbid_role_update ON USERS;
 DROP FUNCTION IF EXISTS forbid_role_update();
 CREATE OR REPLACE FUNCTION forbid_role_update()
     RETURNS TRIGGER
@@ -28,7 +29,7 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS forbid_role_update ON USERS;
+
 
 CREATE TRIGGER forbid_role_update
     BEFORE UPDATE
@@ -40,19 +41,20 @@ EXECUTE FUNCTION forbid_role_update();
 
 -- Le numéro de table doit être strictement positif et unique au sein d'un même restaurant.
 ALTER TABLE tables
-DROP CONSTRAINT check_table_if_exist;
+DROP CONSTRAINT IF EXISTS check_table_if_exist;
 
 ALTER TABLE tables ADD CONSTRAINT check_table_if_exist
 UNIQUE(restaurant , table_number);
 
 -- La capacité doit être strictement positive.
 ALTER TABLE tables
-DROP CONSTRAINT check_capacity;
+DROP CONSTRAINT IF EXISTS check_capacity;
 
 ALTER TABLE tables ADD CONSTRAINT check_capacity
 CHECK(capacity > 0);
 
 -- On ne peut pas modifier le restaurant d'une table.
+DROP TRIGGER IF EXISTS forbid_update_restaurant_table ON tables;
 DROP FUNCTION IF EXISTS forbid_update_restaurant_table;
 
 CREATE OR REPLACE FUNCTION forbid_update_restaurant_table()
@@ -67,7 +69,6 @@ BEGIN
         RETURN NEW;
 END;
 $$;
-DROP TRIGGER IF EXISTS forbid_update_restaurant_table ON tables;
 
 CREATE TRIGGER forbid_update_restaurant_table
 BEFORE UPDATE
@@ -89,9 +90,10 @@ ALTER TABLE services
 DROP CONSTRAINT IF EXISTS service_duration_constraints;
 
 ALTER TABLE services ADD CONSTRAINT service_duration_constraints
-       CHECK(end_time + interval  '1 hour' >= start_time);
+CHECK(end_time >= start_time + interval '1 hour' );
 
 -- On ne peut pas modifier le restaurant d'un service.
+DROP TRIGGER IF EXISTS forbid_update_restaurant_services ON services;
 DROP FUNCTION IF EXISTS forbid_update_restaurant_services();
 
 CREATE OR REPLACE FUNCTION forbid_update_restaurant_services()
@@ -107,7 +109,6 @@ CREATE OR REPLACE FUNCTION forbid_update_restaurant_services()
 END;
 $$;
 
-DROP TRIGGER IF EXISTS forbid_update_restaurant_services ON services;
 
 CREATE TRIGGER forbid_update_restaurant_services
 BEFORE UPDATE
@@ -142,12 +143,20 @@ ADD CONSTRAINT restaurants_city_length
 CHECK (length(trim(city)) >= 3);
 
 --Le numéro de téléphone doit avoir un format de numéro belge valide, et peut être encodé avec ou sans espaces de séparation entre les groupes de chiffres.
+
+SELECT id, name, phone
+FROM restaurants
+WHERE     phone ~ '^\+32[ ]?([1-9]\d{0,2})[ ]?(\d{2}[ ]?\d{2}[ ]?\d{2}|\d{3}[ ]?\d{2}[ ]?\d{2})$'
+
+
 ALTER TABLE restaurants
 DROP CONSTRAINT IF EXISTS restaurants_phone_constraint;
 
 ALTER TABLE restaurants
-ADD CONSTRAINT restaurant_phone_constraint
-CHECK (regexp_match(phone,'^(?:\+32|0)[1-9](?:[ ]?[0-9]){7,8}$'));
+ADD CONSTRAINT restaurants_phone_constraint
+CHECK (
+    phone ~ '^\+32[ ]?([1-9]\d{0,2})[ ]?(\d{2}[ ]?\d{2}[ ]?\d{2}|\d{3}[ ]?\d{2}[ ]?\d{2})$'
+    );
 
 -- La description, si elle est fournie, doit avoir au minimum une longueur de 10 caractères.
 ALTER TABLE restaurants
