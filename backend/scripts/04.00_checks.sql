@@ -227,7 +227,7 @@ CREATE OR REPLACE FUNCTION forbid_update_restaurant_or_client_services()
        $$
 BEGIN
         IF OLD.restaurant != NEW.restaurant or OLD.client != NEW.client THEN
-           RAISE EXCEPTION 'Il est interdit de modifier le restaurant ou le client d''un service';
+           RAISE EXCEPTION 'Il est interdit de modifier le restaurant ou le client d''une reservations';
 END IF;
 RETURN NEW;
 END;
