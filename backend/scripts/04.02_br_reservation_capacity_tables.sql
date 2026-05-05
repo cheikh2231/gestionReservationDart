@@ -13,10 +13,10 @@ begin
               where r.status in ('confirmed'::status_type, 'completed'::status_type)
               group by r.id, r.number_of_guests
               having r.number_of_guests > coalesce(sum(t.capacity), 0)) then
-        raise exception 'Le nombre de convives dépasse la capacité totale.';
-    end if;
+        raise exception 'BR-02: Le nombre de convives dépasse la capacité totale.';
+end if;
 
-    return null;
+return null;
 end;
 $$ language plpgsql security definer;
 
@@ -24,15 +24,15 @@ DROP TRIGGER IF EXISTS trigger_validate_reservation_capacity on reservations;
 
 create trigger trigger_validate_reservation_capacity
     after insert or update of number_of_guests, status
-    on reservations
-    for each row
-execute function check_reservation_capacity();
+                    on reservations
+                        for each row
+                        execute function check_reservation_capacity();
 
 DROP TRIGGER IF EXISTS trigger_validate_reservation_tables_capacity on reservation_tables;
 
 create constraint trigger trigger_validate_reservation_tables_capacity
     after delete
-    on reservation_tables
+on reservation_tables
     deferrable initially deferred
     for each row
 execute function check_reservation_capacity();
@@ -41,6 +41,6 @@ DROP TRIGGER IF EXISTS trigger_validate_tables_capacity on tables;
 
 create trigger trigger_validate_tables_capacity
     after update of capacity or delete
-    on tables
+on tables
     for each row
 execute function check_reservation_capacity();
