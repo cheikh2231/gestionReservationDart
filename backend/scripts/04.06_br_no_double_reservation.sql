@@ -37,8 +37,8 @@ begin
       and date(r.datetime) = date(r_new.datetime)
       and get_service(r.restaurant, r.datetime::time)
         = get_service(r_new.restaurant, (r_new.datetime::time))
-      and r.status in ('confirmed','pending')
-      and r_new.status in ('confirmed','pending');
+      and r.status in ('confirmed','completed')
+      and r_new.status in ('confirmed','completed');
 
     if nb_res > 0 then
         raise exception 'Une table ne peut pas faire l''objet de deux réservations terminées ou confirmées pour une même date et un même service.';
@@ -59,9 +59,11 @@ execute function no_double_reservation();
 
 
 INSERT INTO reservations (client, restaurant, datetime, number_of_guests, status)
-VALUES (3, 1, '2024-11-15 19:00:00', 2, 'confirmed')
+VALUES (3, 1, '2024-12-4 12:20:00', 2, 'completed')
 RETURNING id;
 
 
 INSERT INTO reservation_tables (reservation, "table")
 VALUES (23, 1);
+
+

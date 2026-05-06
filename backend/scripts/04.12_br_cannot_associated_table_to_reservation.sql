@@ -1,0 +1,32 @@
+set search_path to public;
+
+/****
+
+(BR-12) Une réservation en attente ou annulée ne peut être associée à aucune une table.
+pas finiiiiiiiiiiiiiiiiii est-ce qu'une annulation doit automatiquement libérer les tables ?
+****/
+
+drop function if exists cannot_associated_table_to_reservation();
+
+create or replace function cannot_associated_table_to_reservation() returns trigger
+as
+$$
+begin
+    if exists(select * from reservation_tables rt join public.reservations r on r.id = new.reservation where r.status in ('cancelled','pending ')) then
+        RAISE EXCEPTION 'Une réservation en attente ou annulée ne peut être associée à aucune une table.';
+    end if;
+return new;
+end;
+
+$$language plpgsql;
+
+
+create or replace trigger cannot_associated_table_to_reservation
+before insert or update on reservation_tables
+for each row
+execute function cannot_associated_table_to_reservation();
+
+create or replace trigger cannot_associated_table_to_reservation
+    before update on reservations
+    for each row
+execute function cannot_associated_table_to_reservation();
