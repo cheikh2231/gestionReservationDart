@@ -21,7 +21,7 @@ $$
 DECLARE
     current_simulated_time TIMESTAMP;
 BEGIN
-    SELECT simulated_time INTO current_simulated_time FROM system_time;
+    SELECT simulated_time INTO current_simulated_time FROM system_time LIMIT 1;
     IF (TG_OP = 'INSERT') THEN
         NEW.status := 'pending';
         RETURN NEW;
