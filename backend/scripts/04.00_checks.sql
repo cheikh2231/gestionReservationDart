@@ -232,7 +232,7 @@ END IF;
 RETURN NEW;
 END;
 $$;
-// restaurant manager et restaurant table
+-- // restaurant manager et restaurant table
 DROP TRIGGER IF EXISTS forbid_update_restaurant_or_client_services on reservations;
 
 CREATE TRIGGER forbid_update_restaurant_or_client_services
