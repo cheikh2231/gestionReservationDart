@@ -58,9 +58,7 @@ execute function no_double_reservation();
 
 
 
--- INSERT INTO reservations (client, restaurant, datetime, number_of_guests, status)
--- VALUES (3, 1, '2024-12-4 12:20:00', 2, 'completed')
--- RETURNING id;
+
 --
 --
 -- INSERT INTO reservation_tables (reservation, "table")
