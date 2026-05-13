@@ -37,7 +37,7 @@ BEGIN
             RAISE EXCEPTION 'Le status ne peut pas être mis a jours.';
         END IF;
         IF (OLD.status = 'confirmed') THEN
-            IF (NEW.status = 'pending' AND current_simulated_time > NEW.date_time) THEN
+            IF (NEW.status = 'pending' AND current_simulated_time > NEW.datetime) THEN
                 RAISE EXCEPTION 'Le status ne peut pas être mis a jours.';
             END IF;
         END IF;
