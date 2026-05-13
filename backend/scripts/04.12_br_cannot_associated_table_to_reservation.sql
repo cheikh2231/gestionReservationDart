@@ -10,6 +10,7 @@ drop function if exists cannot_associated_table_to_reservation();
 create or replace function cannot_associated_table_to_reservation() returns trigger
 as
 $$
+    declare have_table bool;
 begin
 
     if TG_TABLE_NAME = 'reservation_tables' then
@@ -18,16 +19,16 @@ begin
         end if;
 
     elsif TG_TABLE_NAME = 'reservations' then
-        if new.status in ('cancelled', 'pending') then
-            DELETE FROM reservation_tables WHERE reservation = new.id;
+        have_table = exists(select * from reservation_tables where reservation = new.id);
+        if (new.status in ('cancelled', 'pending') and have_table) then
+            RAISE EXCEPTION 'Une réservation en attente ou annulée ne peut être associée à aucune une table.';
         end if;
     end if;
     return new;
 end;
 $$ language plpgsql;
 
-
-create or replace trigger cannot_associated_table_to_reservation
+create or replace trigger cannot_associated_table_to_reservation_tables
     before insert or update on reservation_tables
     for each row
 execute function cannot_associated_table_to_reservation();
