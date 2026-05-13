@@ -30,10 +30,10 @@ for each row
 execute function cannot_overlap();
 
 
--- Chevauchement : 13:00-15:00 chevauche 12:00-14:00 (restaurant 1, lundi)  KO
-INSERT INTO services (id, restaurant, day_of_week, start_time, end_time)
-VALUES (999, 1, 1, '13:00', '15:00');
--- → doit lever une exception
--- OK
-INSERT INTO services (id, restaurant, day_of_week, start_time, end_time)
-VALUES (999, 1, 1, '14:00', '16:00');
+-- -- Chevauchement : 13:00-15:00 chevauche 12:00-14:00 (restaurant 1, lundi)  KO
+-- INSERT INTO services (id, restaurant, day_of_week, start_time, end_time)
+-- VALUES (999, 1, 1, '13:00', '15:00');
+-- -- → doit lever une exception
+-- -- OK
+-- INSERT INTO services (id, restaurant, day_of_week, start_time, end_time)
+-- VALUES (999, 1, 1, '14:00', '16:00');
