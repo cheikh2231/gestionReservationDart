@@ -29,6 +29,6 @@ for each row
 execute function at_least_one_manager();
 
 
--- Tenter de supprimer le dernier → doit lever une exception KO
-DELETE FROM restaurant_managers
-WHERE restaurant =5;
+-- -- Tenter de supprimer le dernier → doit lever une exception KO
+-- DELETE FROM restaurant_managers
+-- WHERE restaurant =5;

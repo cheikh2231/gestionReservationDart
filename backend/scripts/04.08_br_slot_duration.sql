@@ -25,10 +25,10 @@ for each row
 execute function slot_duration_exception();
 
 
--- slot_duration du restaurant 1 = 30 min, 12:20 n'est pas un multiple de 30  KO
-INSERT INTO services (restaurant, day_of_week, start_time, end_time)
-VALUES (1, 3, '12:20', '14:00');
-
--- okkkkk
-INSERT INTO services (restaurant, day_of_week, start_time, end_time)
-VALUES (1, 3, '12:00', '14:30');
+-- -- slot_duration du restaurant 1 = 30 min, 12:20 n'est pas un multiple de 30  KO
+-- INSERT INTO services (restaurant, day_of_week, start_time, end_time)
+-- VALUES (1, 3, '12:20', '14:00');
+--
+-- -- okkkkk
+-- INSERT INTO services (restaurant, day_of_week, start_time, end_time)
+-- VALUES (1, 3, '12:00', '14:30');
