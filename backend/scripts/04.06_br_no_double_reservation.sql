@@ -57,6 +57,35 @@ for each row
 execute function no_double_reservation();
 
 
+drop function if exists no_double_reservation_on_reservation() cascade;
+create or replace function no_double_reservation_on_reservation()
+    returns trigger as $$
+begin
+    if (NEW.status in ('confirmed', 'completed') and (OLD.status is distinct from NEW.status or OLD.datetime is distinct from NEW.datetime)) then
+        if exists (
+            select 1
+            from reservation_tables rt1
+                     join reservation_tables rt2 on rt2.table = rt1.table
+                     join reservations r2 on r2.id = rt2.reservation
+            where rt1.reservation = NEW.id
+              and r2.id != NEW.id
+              and date(NEW.datetime) = date(r2.datetime)
+              and get_service(NEW.restaurant, NEW.datetime::time) = get_service(r2.restaurant, r2.datetime::time)
+              and r2.status in ('confirmed', 'completed')
+        ) then
+            raise exception 'Une table ne peut pas faire l''objet de deux réservations terminées ou confirmées pour une même date et un même service.';
+        end if;
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists no_double_reservation_on_res on reservations;
+CREATE or REPLACE trigger no_double_reservation_on_res
+    after update of status, datetime on reservations
+    for each row
+execute function no_double_reservation_on_reservation();
+
 
 
 --
