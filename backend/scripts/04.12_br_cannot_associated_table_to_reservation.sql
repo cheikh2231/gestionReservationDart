@@ -36,8 +36,9 @@ create constraint trigger cannot_associated_table_to_reservation_tables
 execute function cannot_associated_table_to_reservation();
 
 DROP TRIGGER IF EXISTS cannot_associated_table_to_reservation ON reservations;
-create or replace trigger cannot_associated_table_to_reservation
+create constraint trigger cannot_associated_table_to_reservation
     after update on reservations
+    deferrable initially deferred
     for each row
 execute function cannot_associated_table_to_reservation();
 
