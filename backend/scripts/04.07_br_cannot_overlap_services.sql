@@ -13,7 +13,7 @@ as
 $$
 
     begin
-        if exists(select * from services where  restaurant = new.restaurant and day_of_week = new.day_of_week and id != new.id
+        if exists(select * from services where  restaurant = new.restaurant and day_of_week = new.day_of_week and id is distinct from new.id
                                            and(start_time < new.end_time and new.start_time<end_time ))
 
             then
