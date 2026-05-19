@@ -16,13 +16,8 @@ begin
             FROM services s
             WHERE s.restaurant = NEW.restaurant
 
-              AND s.day_of_week =
-                  CASE
-                      WHEN EXTRACT(ISODOW FROM NEW.datetime) = 0 THEN 7
-                      ELSE EXTRACT(ISODOW FROM NEW.datetime)
-                      END
-
-              AND NEW.datetime::time >= s.start_time AND NEW.datetime::time < s.end_time
+              AND s.day_of_week = EXTRACT(ISODOW FROM NEW.datetime)
+              AND NEW.datetime::time >= s.start_time AND NEW.datetime::time <= s.end_time
         ) THEN
             RAISE EXCEPTION 'BR-04: La réservation doit être comprise dans un service valide';
         END IF;
