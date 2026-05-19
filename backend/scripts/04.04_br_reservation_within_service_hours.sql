@@ -18,11 +18,11 @@ begin
 
               AND s.day_of_week =
                   CASE
-                      WHEN EXTRACT(DOW FROM NEW.datetime) = 0 THEN 7
-                      ELSE EXTRACT(DOW FROM NEW.datetime)
+                      WHEN EXTRACT(ISODOW FROM NEW.datetime) = 0 THEN 7
+                      ELSE EXTRACT(ISODOW FROM NEW.datetime)
                       END
 
-              AND NEW.datetime::time >= s.start_time AND NEW.datetime::time < s.end_time
+              AND NEW.datetime::time BETWEEN s.start_time AND s.end_time
         ) THEN
             RAISE EXCEPTION 'BR-04: La réservation doit être comprise dans un service valide';
         END IF;
