@@ -22,7 +22,7 @@ begin
                       ELSE EXTRACT(DOW FROM NEW.datetime)
                       END
 
-              AND NEW.datetime::time BETWEEN s.start_time AND s.end_time
+              AND NEW.datetime::time >= s.start_time AND NEW.datetime::time < s.end_time
         ) THEN
             RAISE EXCEPTION 'BR-04: La réservation doit être comprise dans un service valide';
         END IF;
