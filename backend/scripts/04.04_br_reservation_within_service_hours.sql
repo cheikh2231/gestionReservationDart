@@ -13,12 +13,12 @@ begin
 
 
     IF new.status in('confirmed','pending','completed')
-       NOT IN(
-           select 1 from services s where day_of_week = extract(dow from new.datetime::date)
-           AND (new.datetime::time >= s.start_time and new.datetime::time <= s.end_time)
-            )
+        AND NOT EXISTS(
+            select * from services s where day_of_week = extract(dow from new.datetime::date)
+                                       AND (new.datetime::time >= s.start_time and new.datetime::time <= s.end_time)
+        )
     THEN
-            RAISE EXCEPTION 'BR-04: La réservation doit être comprise dans un service valide';
+        RAISE EXCEPTION 'BR-04: La réservation doit être comprise dans un service valide';
     END IF;
 
     RETURN NEW;
