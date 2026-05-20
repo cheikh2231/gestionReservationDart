@@ -12,7 +12,7 @@ $$
     declare id_service INTEGER;
 begin
     select s.id into id_service from services s where s.restaurant = id_resto and heure >= s.start_time
-                                                  and heure < s.end_time;
+                                                  and heure <= s.end_time;
     if id_service is null then
         RAISE 'don''t have a service with this id resto % and for this time %',id_resto,heure;
     end if;
