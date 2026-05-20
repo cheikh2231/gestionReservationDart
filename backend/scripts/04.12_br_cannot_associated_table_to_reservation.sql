@@ -20,6 +20,10 @@ begin
     return new;
 end;
 $$ language plpgsql;
+-- Source - https://stackoverflow.com/a/5531809
+-- Posted by smith3v, modified by community. See post 'Timeline' for change history
+-- Retrieved 2026-05-20, License - CC BY-SA 2.5
+
 
 DROP TRIGGER IF EXISTS cannot_associated_table_to_reservation_tables ON reservation_tables;
 
@@ -28,5 +32,4 @@ create constraint trigger cannot_associated_table_to_reservation_tables
     deferrable initially deferred
     for each row
 execute function cannot_associated_table_to_reservation();
-
 

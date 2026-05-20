@@ -284,7 +284,23 @@ begin
     perform setval('reservations_id_seq', (select max(id) from reservations));
 
     insert into reservation_tables (reservation, "table")
-    values  (1, 1);
+    values  (1, 1),
+            (3, 6),
+            (4, 2),
+            (6, 7),
+            (7, 2),
+            (7, 3),
+            (9, 6),
+            (11, 5),
+            (12, 7),
+            (13, 1),
+            (14, 5),
+            (15, 9),
+            (16, 12),
+            (17, 17),
+            (19, 24),
+            (20, 1);
+
     -- Réactiver tous les triggers sur toutes les tables
     alter table reservations enable trigger all;
     alter table reservation_tables enable trigger all;
