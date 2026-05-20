@@ -14,7 +14,7 @@ begin
 
     IF new.status in('confirmed','pending','completed')
         AND NOT EXISTS(
-            select * from services s where day_of_week = extract(dow from new.datetime::date)
+            select * from services s where day_of_week = extract(isodow from new.datetime::date)
                                        AND (new.datetime::time >= s.start_time and new.datetime::time <= s.end_time)
         )
     THEN
