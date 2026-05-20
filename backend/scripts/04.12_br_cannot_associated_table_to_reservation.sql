@@ -12,8 +12,9 @@ as
 $$
 declare have_table bool;
 begin
+    select * INTO have_table from reservations r where r.id = new.reservation and r.status in ('cancelled','pending');
     if TG_TABLE_NAME = 'reservation_tables' then
-        if exists(select * from reservations r where r.id = new.reservation and r.status in ('cancelled','pending')) then
+        if (have_table) then
             RAISE EXCEPTION 'Une réservation en attente ou annulée ne peut être associée à aucune une table.';
         end if;
     end if;
