@@ -1,5 +1,8 @@
 set search_path to public;
 
+-- (BR-04) L'heure d'une réservation confirmée, terminée ou en attente doit être comprise entre
+-- l'heure de début et l'heure de fin d'un service pour le même jour de la semaine.
+
 DROP FUNCTION IF EXISTS check_reservation_service_hours() ;
 
 create or replace function check_reservation_service_hours()
@@ -9,19 +12,13 @@ $$
 begin
 
 
-    IF NEW.status IN ('pending', 'confirmed', 'completed') THEN
-
-        IF NOT EXISTS (
-            SELECT 1
-            FROM services s
-            WHERE s.restaurant = NEW.restaurant
-
-              AND s.day_of_week = EXTRACT(ISODOW FROM NEW.datetime)
-              AND NEW.datetime::time >= s.start_time AND NEW.datetime::time <= s.end_time
-        ) THEN
+    IF new.status in('confirmed','pending','completed')
+       NOT IN(
+           select 1 from services s where day_of_week = extract(dow from new.datetime::date)
+           AND (new.datetime::time >= s.start_time and new.datetime::time <= s.end_time)
+            )
+    THEN
             RAISE EXCEPTION 'BR-04: La réservation doit être comprise dans un service valide';
-        END IF;
-
     END IF;
 
     RETURN NEW;
