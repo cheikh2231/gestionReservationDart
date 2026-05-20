@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:prbd_2526_a04/mockup_carousel_screen.dart';
+import 'package:prbd_2526_a04/params.dart';
 
 void main() async {
+  await Params.init();
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR', null);
   runApp(
