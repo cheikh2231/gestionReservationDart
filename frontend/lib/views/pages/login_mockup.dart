@@ -166,7 +166,7 @@ class LoginMockupScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () => _doLogin(context, securityNotifier, 'ben'),
+                          onPressed: () {},
                           icon: const Icon(Icons.person),
                           label: const Text('Client (Marc)'),
                           style: OutlinedButton.styleFrom(

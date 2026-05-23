@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:prbd_2526_a04/assign_tables_mockup.dart';
-import 'package:prbd_2526_a04/edit_service_mockup.dart';
-import 'package:prbd_2526_a04/edit_table_mockup.dart';
-import 'package:prbd_2526_a04/home_client_mockup.dart';
-import 'package:prbd_2526_a04/login_mockup.dart';
-import 'package:prbd_2526_a04/my_restaurants_mockup.dart';
-import 'package:prbd_2526_a04/reservation_details_manager_mockup.dart';
-import 'package:prbd_2526_a04/reservation_details_mockup.dart';
-import 'package:prbd_2526_a04/reservation_form_mockup.dart';
-import 'package:prbd_2526_a04/restaurant_details_mockup.dart';
-import 'package:prbd_2526_a04/restaurant_management_reservations_mockup.dart';
-import 'package:prbd_2526_a04/restaurant_management_services_mockup.dart';
-import 'package:prbd_2526_a04/restaurant_management_tables_mockup.dart';
-import 'package:prbd_2526_a04/search_restaurants_mockup.dart';
-import 'package:prbd_2526_a04/signup_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/assign_tables_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/edit_service_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/edit_table_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/home_client_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/login_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/my_restaurants_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/reservation_details_manager_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/reservation_details_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/reservation_form_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/restaurant_details_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/restaurant_management_reservations_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/restaurant_management_services_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/restaurant_management_tables_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/search_restaurants_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/signup_mockup.dart';
 
 /// Écran carousel qui affiche tous les mockups du projet.
 class MockupCarouselScreen extends StatefulWidget {

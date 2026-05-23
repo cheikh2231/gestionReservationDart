@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:prbd_2526_a04/api_client.dart';
+import 'package:prbd_2526_a04/core/services/api_client.dart';
 
 class Security {
 

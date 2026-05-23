@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:prbd_2526_a04/params.dart';
-import 'package:prbd_2526_a04/security.dart';
+import 'package:prbd_2526_a04/core/services/security.dart';
+import 'package:prbd_2526_a04/core/tools/params.dart';
 
 final securityProvider = AsyncNotifierProvider<SecurityNotifier, String?>(
       () => SecurityNotifier(),

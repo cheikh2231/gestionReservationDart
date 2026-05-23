@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:prbd_2526_a04/params.dart';
+import 'package:prbd_2526_a04/core/tools/params.dart';
 
 const throttleDuration = Duration(seconds: 0);
 
