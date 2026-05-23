@@ -1,4 +1,4 @@
-import 'package:prbd_2526_a04/security.dart';
+import 'package:prbd_2526_a04/core/services/security.dart';
 
 class User {
   // --- Validation email ---

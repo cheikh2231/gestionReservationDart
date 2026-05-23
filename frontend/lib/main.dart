@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/mockup_carousel_screen.dart';
-import 'package:prbd_2526_a04/params.dart';
+import 'package:prbd_2526_a04/core/tools/params.dart';
+import 'package:prbd_2526_a04/core/widgets/mockup_carousel_screen.dart';
 
 void main() async {
   await Params.init();
