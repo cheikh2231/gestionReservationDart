@@ -8,6 +8,8 @@ import 'package:prbd_2526_a04/models/user.dart';
 import 'package:prbd_2526_a04/core/tools/validating_text_editing_controller.dart';
 import 'package:prbd_2526_a04/core/widgets/dialog_box.dart';
 
+import '../../core/services/security.dart';
+
 class LoginMockupScreen extends ConsumerStatefulWidget {
   const LoginMockupScreen({super.key});
 
@@ -232,7 +234,37 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () async {
+                        // 1. Affichage de la pop-up de confirmation via DialogBox du Tuto
+                        final action = await DialogBox(
+                          title: 'Réinitialiser la base de données',
+                          message: 'Êtes-vous sûr de vouloir réinitialiser la base de données ? Cette action supprimera toutes les données et les restaurera aux valeurs par défaut.',
+                          actions: const ['Annuler', 'Réinitialiser'],
+                        ).show(context);
+
+                        // 2. Si l'utilisateur a cliqué sur "Réinitialiser"
+                        if (action == 'Réinitialiser') {
+                          final success = await Security.resetDatabase();
+
+                          if (!context.mounted) return;
+
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Base de données réinitialisée avec succès'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text('Erreur lors de la réinitialisation.'),
+                                backgroundColor: Theme.of(context).colorScheme.error,
+                              ),
+                            );
+                          }
+                        }
+                      },
                       icon: const Icon(Icons.refresh),
                       label: const Text('Réinitialiser la base de données'),
                       style: OutlinedButton.styleFrom(
