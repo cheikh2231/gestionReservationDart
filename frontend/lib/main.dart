@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prbd_2526_a04/core/tools/params.dart';
-import 'package:prbd_2526_a04/core/widgets/mockup_carousel_screen.dart';
+import 'package:prbd_2526_a04/views/pages/login_mockup.dart';
+import 'package:prbd_2526_a04/providers/my_provider_observer.dart';
 
 void main() async {
   await Params.init();
@@ -11,6 +12,7 @@ void main() async {
   runApp(
     ProviderScope(
       observers: [MyProviderObserver()],
+      retry: (int _, Object _) => null,
       child: const MyApp(),
     ),
   );
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MockupCarouselScreen(),
+      home: const LoginMockupScreen(),
     );
   }
 }
