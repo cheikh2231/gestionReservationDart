@@ -22,7 +22,7 @@ class MyApp extends ConsumerWidget {
       routes: {
         '/login': (context) => LoginMockupScreen(),
         '/home': (context) => HomeClientMockupScreen(),
-        '/register': (context) => SignupMockupScreen(),
+        '/signup': (context) => SignupMockupScreen(),
 
       },
     );
