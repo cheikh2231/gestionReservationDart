@@ -28,7 +28,7 @@ class ReservationDetailsMockupScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () { Navigator.pushNamed(context, '/my_reservations'); },
         ),
         title: const Text('Détails de la réservation'),
         automaticallyImplyLeading: false,
