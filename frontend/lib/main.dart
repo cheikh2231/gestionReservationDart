@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prbd_2526_a04/core/tools/params.dart';
 import 'package:prbd_2526_a04/views/pages/login_mockup.dart';
 import 'package:prbd_2526_a04/providers/my_provider_observer.dart';
+import 'package:prbd_2526_a04/views/pages/signup_mockup.dart';
 
 void main() async {
   await Params.init();
@@ -30,7 +31,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const LoginMockupScreen(),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const LoginMockupScreen(),
+        '/signup': (context) => const SignupMockupScreen(),
+      },
     );
   }
 }

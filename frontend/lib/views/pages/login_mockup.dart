@@ -42,9 +42,6 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
 
-    final authState = ref.watch(securityProvider);
-    final isLoading = authState is AsyncLoading;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Connexion'),
@@ -113,8 +110,9 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
+                        autofocus: true,
                         controller: _emailController,
-                        enabled: !isLoading,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Email',
                           border: const OutlineInputBorder(),
@@ -126,7 +124,7 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
                       const SizedBox(height: 10),
                       TextFormField(
                         controller: _passwordController,
-                        enabled: !isLoading,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           labelText: 'Mot de passe',
                           border: const OutlineInputBorder(),
@@ -146,18 +144,16 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
-                        onPressed: isLoading ? null : () => _submitForm(context),
+                        onPressed: () => _submitForm(context),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: isLoading
-                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                            : const Text('Se connecter'),
+                        child: const Text('Se connecter'),
                       ),
                       const SizedBox(height: 6),
                       TextButton(
-                        onPressed: isLoading ? null : () {
-                          // la page Signup
+                        onPressed:() {
+                          Navigator.pushNamed(context, '/signup');
                         },
                         child: const Text(
                           'Pas encore de compte ? S\'inscrire',
@@ -235,14 +231,12 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () async {
-                        // 1. Affichage de la pop-up de confirmation via DialogBox du Tuto
                         final action = await DialogBox(
                           title: 'Réinitialiser la base de données',
                           message: 'Êtes-vous sûr de vouloir réinitialiser la base de données ? Cette action supprimera toutes les données et les restaurera aux valeurs par défaut.',
                           actions: const ['Annuler', 'Réinitialiser'],
                         ).show(context);
 
-                        // 2. Si l'utilisateur a cliqué sur "Réinitialiser"
                         if (action == 'Réinitialiser') {
                           final success = await Security.resetDatabase();
 
