@@ -75,47 +75,52 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        // [Restaurant] 6. on agit selon l'etat de la liste et si il est okay on boucle sur le resultat
         child: restaurantsState.when(
-          data: (restaurants) {
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: restaurants.length,
-              itemBuilder: (context, index) {
-                final restaurant = restaurants[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: ListTile(
-                    leading: const Icon(Icons.restaurant, size: 40, color: Colors.blue),
-                    title: Text(restaurant.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('${restaurant.city} • ${restaurant.address}'),
-                    trailing: restaurant.rating != null
-                        ? Text('⭐ ${restaurant.rating}', style: const TextStyle(fontWeight: FontWeight.bold))
-                        : null,
-                    onTap: () {
-                      // Ici on fera la navigation vers le détail plus tard !
-                      print("Clic sur ${restaurant.name}");
-                    },
+          data: (restaurants) => ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: restaurants.length,
+            itemBuilder: (context,index){
+              return Card(
+                margin: EdgeInsets.zero,
+                child: ListTile(
+                  leading: const Icon(Icons.restaurant, size: 40),
+                  title: const Text('Sushi House'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                          const SizedBox(width: 4),
+                          const Text('Bruxelles'),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.star, size: 14, color: Colors.amber),
+                          const SizedBox(width: 2),
+                          Text(
+                            '4.7',
+                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            '€€€',
+                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                );
-              },
-            );
-          },
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {},
+                ),
+              );
+            }
           ),
-          error: (error, stackTrace) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                error.toString(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(child: Text(error.toString())),
         ),
       ),
     );
   }
 }
+
+
