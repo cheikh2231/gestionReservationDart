@@ -76,15 +76,19 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: restaurantsState.when(
+          // [Restaurant] 6. on crée une listview builder pour pouvoir boucler sur notre variable restaurants qu'on récupère depuis restaurantsState
           data: (restaurants) => ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: restaurants.length,
             itemBuilder: (context,index){
+              final restaurant = restaurants[index];
+              final lastReservation = restaurant.lastReservation != null ? 'Dernière réservation: ${DateFormat('E dd/MM/yyyy', 'fr_FR').format(restaurant.lastReservation!)}' : "";
+              final nbPendingReservation = restaurant.nbPendingReservation != null && restaurant.nbPendingReservation! > 0? '${restaurant.nbPendingReservation} demande${restaurant.nbPendingReservation! > 1 ? 's ' : ''}en attente' : "";
               return Card(
-                margin: EdgeInsets.zero,
+                margin: const EdgeInsets.only(bottom: 8),
                 child: ListTile(
                   leading: const Icon(Icons.restaurant, size: 40),
-                  title: const Text('Sushi House'),
+                  title: Text(restaurant.name),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -92,18 +96,46 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
                         children: [
                           const Icon(Icons.location_on, size: 14, color: Colors.grey),
                           const SizedBox(width: 4),
-                          const Text('Bruxelles'),
+                          Text(restaurant.city),
                           const SizedBox(width: 12),
                           const Icon(Icons.star, size: 14, color: Colors.amber),
                           const SizedBox(width: 2),
                           Text(
-                            '4.7',
+                            restaurant.rating.toString(),
                             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            '€€€',
+                            '€'* restaurant.priceRange!,
                             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      if(lastReservation.isNotEmpty)
+                      Row(
+                        children: [
+                          const Icon(Icons.access_time, size: 14, color: Colors.grey),
+                          const SizedBox(width: 4),
+                          Text(
+                            lastReservation,
+                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      if (nbPendingReservation.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(Icons.pending, size: 14, color: Colors.orange),
+                          SizedBox(width: 4),
+                          Text(
+                            nbPendingReservation,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.orange,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
