@@ -1,6 +1,7 @@
 import 'package:prbd_2526_a04/core/services/security.dart';
 
 class User {
+
   // --- Validation email ---
   static String? validateEmail(String? email) {
     if (email == null || email.trim().isEmpty) {
@@ -52,4 +53,6 @@ class User {
     if (value != password) return 'Les mots de passe ne correspondent pas';
     return null;
   }
+
+
 }
