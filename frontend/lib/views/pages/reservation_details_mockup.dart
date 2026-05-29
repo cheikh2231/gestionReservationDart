@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
+
+import '../../models/reservation.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);
@@ -16,11 +20,38 @@ void main() async {
   );
 }
 
-class ReservationDetailsMockupScreen extends StatelessWidget {
+class ReservationDetailsMockupScreen extends ConsumerStatefulWidget {
   const ReservationDetailsMockupScreen({super.key});
 
   @override
+  ConsumerState<ReservationDetailsMockupScreen> createState() =>
+      _ReservationDetailsMockupState();
+}
+
+class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMockupScreen> {
+  bool _loading = true;
+  Reservation? _reservation;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  bool canMod(Reservation res) {
+    return res.status != "cancelled" && res.status != "completed";
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final arg = ModalRoute.of(context)?.settings.arguments;
+
+
+    if (arg != null) {
+       setState(() {
+         _reservation = arg as Reservation;
+         _loading = false;
+       });
+    }
+
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
 
@@ -28,7 +59,9 @@ class ReservationDetailsMockupScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () { Navigator.pushNamed(context, '/my_reservations'); },
+          onPressed: () {
+            Navigator.pop(context, '/my_reservations');
+          },
         ),
         title: const Text('Détails de la réservation'),
         automaticallyImplyLeading: false,
@@ -52,8 +85,10 @@ class ReservationDetailsMockupScreen extends StatelessWidget {
                 message:
                     'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
                 child: Text(
-                  DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                      .format(simulatedTime),
+                  DateFormat(
+                    'EEEE dd/MM/yyyy HH:mm',
+                    'fr_FR',
+                  ).format(simulatedTime),
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.grey[400],
@@ -71,119 +106,10 @@ class ReservationDetailsMockupScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.restaurant),
-                          const SizedBox(width: 8),
-                          const Expanded(
-                            child: Text(
-                              'La Trattoria',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on,
-                            size: 16,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              'Avenue Louise 45, Bruxelles',
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.phone, size: 16, color: Colors.grey),
-                          const SizedBox(width: 4),
-                          Text(
-                            '+32 2 234 56 78',
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      const Divider(),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          const Icon(Icons.calendar_today, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Date: jeu. 05/12/2024',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.access_time, size: 20),
-                          const SizedBox(width: 8),
-                          const Text('Heure: 20:00'),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.people, size: 20),
-                          const SizedBox(width: 8),
-                          const Text('Nombre de convives: 4'),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.info, size: 20),
-                          const SizedBox(width: 8),
-                          const Text('Statut: '),
-                          Chip(
-                            label: const Text(
-                              'En attente',
-                              style: TextStyle(fontSize: 12, color: Colors.white),
-                            ),
-                            backgroundColor: const Color(0xFFFF9800),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      const Divider(),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Demandes spéciales',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Anniversaire de mariage',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              _loading ? const Center(child: CircularProgressIndicator()) :
+              ReservationDetailCard(reservation: _reservation!),
               const SizedBox(height: 24),
+              if(canMod(_reservation!))
               Row(
                 children: [
                   Expanded(
@@ -208,5 +134,10 @@ class ReservationDetailsMockupScreen extends StatelessWidget {
         ),
       ),
     );
+
+
+
   }
+
+
 }
