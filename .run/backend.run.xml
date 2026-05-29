@@ -4,8 +4,25 @@
     <script-file value="$PROJECT_DIR$/backend/scripts/02_security.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/03_tables_and_data.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/04.00_checks.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.01_br_reservation_with_client.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.02_br_reservation_capacity_tables.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.03_br_reservation_tables_same_restaurant.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.04_br_reservation_within_service_hours.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.05_br_reservation_slot_restaurant.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.06_br_no_double_reservation.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.07_br_cannot_overlap_services.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.08_br_slot_duration.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.09_br_reservations_status_lifecycle_control.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.10_br_have_at_least_one_manager.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/04.11_br_reservations_canceled_or_finished_unmodifiable.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04.12_br_cannot_associated_table_to_reservation.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04_13_br_reservations_prevent_double_booking.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/04_14_br_prevent_past_reservation_on_insert.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.01_ep_reservations.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05_00_restaurant.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05_01_system_time.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05_02_reservation_details_manager.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/XX_suppression_des_triggers.sql" />
     <script-mode>FILE</script-mode>
     <data-source id="6d275bb5-c69c-4f95-bc29-f6a29631655b" namespace="database/&quot;prbd-2526-a04&quot;" />
     <method v="2" />
