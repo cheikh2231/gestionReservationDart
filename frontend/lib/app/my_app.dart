@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/reservation.dart';
 import '../providers/security_provider.dart';
 import '../views/pages/home_client_mockup.dart';
 import '../views/pages/login_mockup.dart';
-import '../views/pages/my_restaurants_mockup.dart';
+import '../views/pages/reservation_details_mockup.dart';
+import '../views/pages/search_restaurants_mockup.dart';
 import '../views/pages/signup_mockup.dart';
 
 class MyApp extends ConsumerWidget {
@@ -23,8 +25,10 @@ class MyApp extends ConsumerWidget {
       routes: {
         '/login': (context) => LoginMockupScreen(),
         '/home': (context) => HomeClientMockupScreen(),
+        '/my_reservations': (context) => HomeClientMockupScreen(),
+        '/search_resto': (context) => SearchRestaurantsMockupScreen(),
         '/signup': (context) => SignupMockupScreen(),
-        '/myrestaurants': (context) => const MyRestaurantsMockupScreen(),
+        '/reservation_details': (context) => ReservationDetailsMockupScreen(),
       },
     );
   }

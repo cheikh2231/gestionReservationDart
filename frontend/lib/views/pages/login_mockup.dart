@@ -314,7 +314,7 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
           // Navigator.pushReplacementNamed(context, '/manager_home');
           print("✅ Connexion Manager réussie !");
         } else {
-          // Navigator.pushReplacementNamed(context, '/client_home');
+          Navigator.pushReplacementNamed(context, '/home');
           print("✅ Connexion Client réussie !");
         }
       },
