@@ -10,6 +10,9 @@ import 'package:prbd_2526_a04/views/pages/login_mockup.dart';
 import 'package:prbd_2526_a04/views/pages/my_restaurants_mockup.dart';
 
 import 'core/services/security.dart';
+import 'package:prbd_2526_a04/providers/my_provider_observer.dart';
+
+import 'app/my_app.dart';
 
 void main() async {
   await Params.init();
@@ -30,6 +33,8 @@ void main() async {
   runApp(
     ProviderScope(
       // observers: [MyProviderObserver()],
+      observers: [MyProviderObserver()],
+      retry: (int _, Object _) => null,
       child: const MyApp(),
     ),
   );

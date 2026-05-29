@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:prbd_2526_a04/core/services/api_client.dart';
 
 class Security {
@@ -50,6 +51,19 @@ class Security {
     if (response.statusCode != 200) {
       final dynamic body = json.decode(response.body);
       throw Exception('Failed to signup\n\n${body['message']}');
+    }
+  }
+  static Future<bool> resetDatabase() async {
+    try {
+      final response = await ApiClient.post(
+        'reset_database',
+        body: '',
+        anonymous: true,
+      );
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (e) {
+      debugPrint('Erreur lors du reset de la DB : $e');
+      return false;
     }
   }
 }

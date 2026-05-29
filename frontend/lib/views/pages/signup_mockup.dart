@@ -1,23 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() async {
-  await initializeDateFormatting('fr_FR', null);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const SignupMockupScreen(),
-    ),
-  );
+import 'package:prbd_2526_a04/providers/security_provider.dart';
+import 'package:prbd_2526_a04/models/user.dart';
+import 'package:prbd_2526_a04/core/tools/validating_text_editing_controller.dart';
+import 'package:prbd_2526_a04/core/widgets/dialog_box.dart';
+
+class SignupMockupScreen extends ConsumerStatefulWidget {
+  const SignupMockupScreen({super.key});
+
+  @override
+  ConsumerState<SignupMockupScreen> createState() => _SignupMockupScreenState();
 }
 
-class SignupMockupScreen extends StatelessWidget {
-  const SignupMockupScreen({super.key});
+class _SignupMockupScreenState extends ConsumerState<SignupMockupScreen> {
+  final _fullNameController = ValidatingTextEditingController(
+    validator: User.validateFullName,
+    initialValue: '',
+  );
+
+  final _emailController = ValidatingTextEditingController(
+    validator: User.validateEmail,
+    asyncValidator: User.validateEmailUnicity,
+    initialValue: '',
+  );
+
+  final _passwordController = ValidatingTextEditingController(
+    validator: User.validatePassword,
+    initialValue: '',
+  );
+
+  late final ValidatingTextEditingController _confirmPasswordController;
+
+  final _phoneController = ValidatingTextEditingController(
+    validator: User.validatePhone, // --- On utilise ta nouvelle méthode ici ! ---
+    initialValue: '',
+  );
+
+  bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    _confirmPasswordController = ValidatingTextEditingController(
+      validator: (value) => User.validateConfirmPassword(value, _passwordController.text),
+      initialValue: '',
+    );
+
+    _fullNameController.onAfterValidated = () => setState(() {});
+    _emailController.onAfterValidated = () => setState(() {});
+    _passwordController.onAfterValidated = () => setState(() {});
+    _confirmPasswordController.onAfterValidated = () => setState(() {});
+    _phoneController.onAfterValidated = () => setState(() {});
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +65,9 @@ class SignupMockupScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         title: const Text('Inscription'),
         automaticallyImplyLeading: false,
@@ -86,51 +125,74 @@ class SignupMockupScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  controller: _fullNameController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: InputDecoration(
                     labelText: 'Nom complet',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.person),
+                    errorText: _fullNameController.errorText,
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  controller: _emailController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: InputDecoration(
                     labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.email),
+                    errorText: _emailController.errorText,
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  controller: _passwordController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: InputDecoration(
                     labelText: 'Mot de passe',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
+                    errorText: _passwordController.errorText,
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  controller: _confirmPasswordController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: InputDecoration(
                     labelText: 'Confirmer le mot de passe',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock_outline),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    errorText: _confirmPasswordController.errorText,
                   ),
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  controller: _phoneController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: InputDecoration(
                     labelText: 'Téléphone (optionnel)',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.phone),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.phone),
+                    errorText: _phoneController.errorText,
                   ),
                   keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => _submitForm(context),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
@@ -138,7 +200,9 @@ class SignupMockupScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                    },
                   child: const Text('Déjà un compte ? Se connecter'),
                 ),
               ],
@@ -146,6 +210,67 @@ class SignupMockupScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitForm(BuildContext context) async {
+    FocusScope.of(context).unfocus();
+    if (!await _validateForm()) return;
+    _signup(context);
+  }
+
+  Future<bool> _validateForm() async {
+    await _fullNameController.validateAndWait();
+    await _emailController.validateAndWait();
+    await _passwordController.validateAndWait();
+    await _confirmPasswordController.validateAndWait();
+    await _phoneController.validateAndWait();
+    return _isFormValid;
+  }
+
+  bool get _isFormValid =>
+      _fullNameController.isValid == true &&
+          _emailController.isValid == true &&
+          _passwordController.isValid == true &&
+          _confirmPasswordController.isValid == true &&
+          _phoneController.isValid == true;
+
+  void _signup(BuildContext context) async {
+    await ref.read(securityProvider.notifier).signup(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      fullName: _fullNameController.text.trim(),
+      phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+    );
+
+    var securityState = ref.read(securityProvider);
+
+    if (!context.mounted) return;
+
+    securityState.when(
+      data: (_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('✅ Inscription réussie !'), backgroundColor: Colors.green),
+        );
+        // Navigator.pushReplacementNamed(context, '/client_home');
+      },
+      error: (error, _) {
+        DialogBox(
+          title: "Erreur d'inscription",
+          message: error.toString().replaceAll('Exception: ', ''),
+          actions: const ['OK'],
+        ).show(context);
+      },
+      loading: () {},
     );
   }
 }
