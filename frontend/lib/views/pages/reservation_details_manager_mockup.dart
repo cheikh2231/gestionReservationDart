@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prbd_2526_a04/providers/security_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);
@@ -16,13 +19,13 @@ void main() async {
   );
 }
 
-class ReservationDetailsManagerMockupScreen extends StatelessWidget {
+class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
   const ReservationDetailsManagerMockupScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final simulatedTimeState = ref.watch(systemTimeProvider);
     final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,15 +54,21 @@ class ReservationDetailsManagerMockupScreen extends StatelessWidget {
               child: Tooltip(
                 message:
                     'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                child: Text(
-                  DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                      .format(simulatedTime),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[400],
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                child: simulatedTimeState.when(
+                  data: (list){
+                    final date = list.first.simulated_time;
+                    return Text(
+                      DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(date!),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[400],
+                        fontWeight: FontWeight.normal,
+                      ),
+                    );
+                  },
+                  loading: () => const Text("...", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                  error: (err, stack) => const Text("Erreur", style: TextStyle(fontSize: 10, color: Colors.red)),
+                )
               ),
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:prbd_2526_a04/providers/security_provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:prbd_2526_a04/providers/my_restaurants_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 
 import '../../core/widgets/restaurant_card.dart';
 
@@ -26,12 +27,12 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
+    final simulatedTimeState = ref.watch(systemTimeProvider);
     final authState = ref.watch(securityProvider);
     final bool estConnecte = authState.value != null;
     final String? userName = ref.read(securityProvider.notifier).loggedName ?? "";
     final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
+    // final simulatedTime = DateTime(2024, 12, 4, 16, 0);
     // [Restaurant] 5. on récupère la liste et l'état du chargement de myrestaurants
     final restaurantsState = ref.watch(myRestaurantsProvider);
     return Scaffold(
@@ -62,15 +63,30 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
               child: Tooltip(
                 message:
                     'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                child: Text(
-                  DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                      .format(simulatedTime),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[400],
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                child: simulatedTimeState.when(
+                  data: (list){
+                    final date = list.first.simulated_time;
+                    return Text(
+                      DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(date!),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey[400],
+                        fontWeight: FontWeight.normal,
+                      ),
+                    );
+                  },
+                  loading: () => const Text("...", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                  error: (err, stack) => const Text("Erreur", style: TextStyle(fontSize: 10, color: Colors.red)),
+                )
+                // Text(
+                //   DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
+                //       .format(simulatedTime),
+                //   style: TextStyle(
+                //     fontSize: 10,
+                //     color: Colors.grey[400],
+                //     fontWeight: FontWeight.normal,
+                //   ),
+                // ),
               ),
             ),
           ),
