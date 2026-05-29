@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/security_provider.dart';
 import '../views/pages/home_client_mockup.dart';
 import '../views/pages/login_mockup.dart';
+import '../views/pages/my_restaurants_mockup.dart';
 import '../views/pages/signup_mockup.dart';
 
 class MyApp extends ConsumerWidget {
@@ -23,7 +24,7 @@ class MyApp extends ConsumerWidget {
         '/login': (context) => LoginMockupScreen(),
         '/home': (context) => HomeClientMockupScreen(),
         '/signup': (context) => SignupMockupScreen(),
-
+        '/myrestaurants': (context) => const MyRestaurantsMockupScreen(),
       },
     );
   }

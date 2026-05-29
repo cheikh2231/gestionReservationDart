@@ -38,7 +38,6 @@ class _HomeClientMockupScreenState extends State<HomeClientMockupScreen> {
   @override
   void initState() {
     super.initState();
-    Params.setValue('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY2xpZW50Iiwic3ViIjoiYnJsYWNyb2l4QGVwZmMuZXUiLCJuYW1lIjoiQnJ1bm8iLCJ1c2VyX2lkIjo2LCJleHAiOjE3Nzk5ODQ5NTN9.G6tV2pqfb9G8cQ22tKKgnXJ2WS1d63XOvrV7d0EujLE'); // le token de bruno en dur pour test
     _loadReservations();
   }
 
@@ -79,7 +78,9 @@ class _HomeClientMockupScreenState extends State<HomeClientMockupScreen> {
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Déconnexion',
-            onPressed: () {},
+            onPressed: () {
+
+            },
           ),
         ],
         elevation: 2,
