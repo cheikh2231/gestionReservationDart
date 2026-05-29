@@ -1,23 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() async {
-  await initializeDateFormatting('fr_FR', null);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const LoginMockupScreen(),
-    ),
-  );
+import 'package:prbd_2526_a04/providers/security_provider.dart';
+import 'package:prbd_2526_a04/models/user.dart';
+import 'package:prbd_2526_a04/core/tools/validating_text_editing_controller.dart';
+import 'package:prbd_2526_a04/core/widgets/dialog_box.dart';
+
+import '../../core/services/security.dart';
+
+class LoginMockupScreen extends ConsumerStatefulWidget {
+  const LoginMockupScreen({super.key});
+
+  @override
+  ConsumerState<LoginMockupScreen> createState() => _LoginMockupScreenState();
 }
 
-class LoginMockupScreen extends StatelessWidget {
-  const LoginMockupScreen({super.key});
+class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
+  final _emailController = ValidatingTextEditingController(
+    validator: User.validateEmail,
+    initialValue: '',
+  );
+
+  final _passwordController = ValidatingTextEditingController(
+    validator: (value) => value == null || value.isEmpty ? 'Le mot de passe est requis' : null,
+    initialValue: '',
+  );
+
+  bool _obscurePassword = true; // afficher ou cacher le mot de passe
+
+  @override
+  void initState() {
+    _emailController.onAfterValidated = () => setState(() {});
+    _passwordController.onAfterValidated = () => setState(() {});
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,25 +110,41 @@ class LoginMockupScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
-                        decoration: const InputDecoration(
+                        autofocus: true,
+                        controller: _emailController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: InputDecoration(
                           labelText: 'Email',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.email),
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.email),
+                          errorText: _emailController.errorText,
                         ),
                         keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
-                        decoration: const InputDecoration(
+                        controller: _passwordController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: InputDecoration(
                           labelText: 'Mot de passe',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.lock),
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.lock),
+                          errorText: _passwordController.errorText,
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
                         ),
-                        obscureText: true,
+                        obscureText: _obscurePassword,
+                        onFieldSubmitted: (_) => _submitForm(context),
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => _submitForm(context),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
@@ -118,7 +152,9 @@ class LoginMockupScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       TextButton(
-                        onPressed: () {},
+                        onPressed:() {
+                          Navigator.pushNamed(context, '/signup');
+                        },
                         child: const Text(
                           'Pas encore de compte ? S\'inscrire',
                         ),
@@ -137,11 +173,7 @@ class LoginMockupScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'Raccourcis de débogage',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
@@ -155,23 +187,19 @@ class LoginMockupScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () => _login(context, 'brlacroix@epfc.eu', password: 'Password1,'),
                           icon: const Icon(Icons.person),
                           label: const Text('Client (Bruno)'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                          ),
+                          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 8)),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () => _login(context, 'mamichel@epfc.eu', password: 'Password1,'),
                           icon: const Icon(Icons.person),
                           label: const Text('Client (Marc)'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                          ),
+                          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 8)),
                         ),
                       ),
                     ],
@@ -181,23 +209,19 @@ class LoginMockupScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () => _login(context, 'bepenelle@epfc.eu', password: 'Password1,'),
                           icon: const Icon(Icons.manage_accounts),
                           label: const Text('Manager (Benoît)'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                          ),
+                          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 8)),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () => _login(context, 'gedielman@epfc.eu', password: 'Password1,'),
                           icon: const Icon(Icons.manage_accounts),
                           label: const Text('Manager (Geoffrey)'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                          ),
+                          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 8)),
                         ),
                       ),
                     ],
@@ -206,7 +230,35 @@ class LoginMockupScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final action = await DialogBox(
+                          title: 'Réinitialiser la base de données',
+                          message: 'Êtes-vous sûr de vouloir réinitialiser la base de données ? Cette action supprimera toutes les données et les restaurera aux valeurs par défaut.',
+                          actions: const ['Annuler', 'Réinitialiser'],
+                        ).show(context);
+
+                        if (action == 'Réinitialiser') {
+                          final success = await Security.resetDatabase();
+
+                          if (!context.mounted) return;
+
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Base de données réinitialisée avec succès'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text('Erreur lors de la réinitialisation.'),
+                                backgroundColor: Theme.of(context).colorScheme.error,
+                              ),
+                            );
+                          }
+                        }
+                      },
                       icon: const Icon(Icons.refresh),
                       label: const Text('Réinitialiser la base de données'),
                       style: OutlinedButton.styleFrom(
@@ -222,6 +274,58 @@ class LoginMockupScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  _submitForm(BuildContext context) {
+    if (!_validateForm()) return;
+    _login(context, _emailController.text, password: _passwordController.text);
+  }
+
+  bool _validateForm() {
+    _emailController.validate();
+    _passwordController.validate();
+    return _isFormValid;
+  }
+
+  bool get _isFormValid =>
+      _emailController.isValid == true && _passwordController.isValid == true;
+
+  void _login(BuildContext context, String mail, {String? password}) async {
+    await ref.read(securityProvider.notifier).login(mail, password ?? mail);
+    var securityState = ref.read(securityProvider);
+
+    if (!context.mounted) return;
+
+    securityState.when(
+      data: (_) {
+        final role = ref
+            .read(securityProvider.notifier)
+            .loggedRole;
+        if (role == 'manager') {
+          // Navigator.pushReplacementNamed(context, '/manager_home');
+          print("✅ Connexion Manager réussie !");
+        } else {
+          // Navigator.pushReplacementNamed(context, '/client_home');
+          print("✅ Connexion Client réussie !");
+        }
+      },
+      error: (error, _) {
+        DialogBox(
+          title: 'Erreur de connexion',
+          message: 'Email et/ou mot de passe incorrect !',
+          actions: ['OK'],
+        ).show(context);
+      },
+      loading: () {}, // Ne rien faire, le bouton affiche déjà le chargement
     );
   }
 }

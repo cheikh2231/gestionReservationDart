@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prbd_2526_a04/core/tools/params.dart';
 
 import 'app/my_app.dart';
-import 'models/my_provider_observer.dart';
+import 'package:prbd_2526_a04/providers/my_provider_observer.dart';
+
 
 void main() async {
   await Params.init();
@@ -13,6 +14,7 @@ void main() async {
   runApp(
     ProviderScope(
       observers: [MyProviderObserver()],
+      retry: (int _, Object _) => null,
       child: const MyApp(),
     ),
   );

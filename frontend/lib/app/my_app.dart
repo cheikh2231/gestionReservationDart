@@ -20,14 +20,15 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      initialRoute: securityNotifier.isLoggedIn ? '/login' : '/home', //j'ai inversé pour le test
+      initialRoute: securityNotifier.isLoggedIn ? '/home' : '/login',
       routes: {
         '/login': (context) => LoginMockupScreen(),
         '/home': (context) => HomeClientMockupScreen(),
-        '/register': (context) => SignupMockupScreen(),
         '/my_reservations': (context) => HomeClientMockupScreen(),
         '/edit_reservation': (context) => ReservationDetailsMockupScreen(),
         '/search_resto': (context) => SearchRestaurantsMockupScreen(),
+        '/signup': (context) => SignupMockupScreen(),
+
       },
     );
   }
