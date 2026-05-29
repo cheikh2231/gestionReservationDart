@@ -27,7 +27,8 @@ BEGIN
                  LEFT JOIN reservations resLast ON resLast.restaurant = r.id
                  LEFT JOIN reservations resPending ON resPending.restaurant = r.id AND resPending.status = 'pending'
         WHERE manager = auth.id()
-        GROUP BY r.id;
+        GROUP BY r.id, r.name
+        ORDER BY MAX(resLast.datetime) DESC, r.name ASC;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

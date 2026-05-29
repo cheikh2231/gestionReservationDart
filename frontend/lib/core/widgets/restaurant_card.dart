@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/restaurant.dart';
 
+import '../../views/pages/restaurant_management_reservations_mockup.dart';
+
 
 class RestaurantCard extends StatelessWidget{
   const RestaurantCard({super.key, required this.restaurant});
@@ -70,7 +72,13 @@ class RestaurantCard extends StatelessWidget{
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
-          print("test");
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => RestaurantManagementReservationsMockupScreen(
+                restaurant: restaurant, // On passe l'objet du restaurant pour l'utiliser dans la view et afficher le bon resto
+              ),
+            ),
+          );
         },
       ),
     );
