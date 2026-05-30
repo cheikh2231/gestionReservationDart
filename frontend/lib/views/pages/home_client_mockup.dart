@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:prbd_2526_a04/models/reservation_details.dart';
 
 import '../../core/services/api_client.dart';
 
@@ -38,11 +39,11 @@ class _HomeClientMockupScreenState
   String _filterReservationString = 'pending';
 
 
-  List<Reservation> _filteredReservations(List<Reservation> reservations) {
+  List<ReservationDetails> _filteredReservations(List<ReservationDetails> reservations) {
     return _filterReservationString == "all"
         ? reservations
         : reservations
-              .where((r) => r.status == _filterReservationString)
+              .where((r) => r.base.status == _filterReservationString)
               .toList();
   }
 
@@ -166,7 +167,7 @@ class _HomeClientMockupScreenState
                         onTap: () => Navigator.pushNamed(
                           context,
                           '/reservation_details',
-                          arguments: r.id,
+                          arguments: r.base.id,
                         ),
                       ),
                   ],

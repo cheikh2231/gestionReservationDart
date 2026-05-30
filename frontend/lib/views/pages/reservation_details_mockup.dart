@@ -9,6 +9,7 @@ import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
 import '../../core/services/api_client.dart';
 import '../../core/widgets/dialog_box.dart';
 import '../../models/reservation.dart';
+import '../../models/reservation_details.dart';
 import '../../providers/reservation_provider.dart';
 
 void main() async {
@@ -35,7 +36,7 @@ class ReservationDetailsMockupScreen extends ConsumerStatefulWidget {
 
 class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMockupScreen> {
   bool _loading = true;
-  Reservation? _reservation;
+  ReservationDetails? _reservation;
 
   @override
   void didChangeDependencies() {
@@ -44,8 +45,8 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
     if (id != null) _loadReservation(id as int);
   }
 
-  bool canMod(Reservation res) {
-    return res.status != "cancelled" && res.status != "completed";
+  bool canMod(ReservationDetails res) {
+    return res.base.status != "cancelled" && res.base.status != "completed";
   }
 
   Future<void> _loadReservation(int id) async {
@@ -53,7 +54,7 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       setState(() {
-        _reservation = Reservation.fromJson(data.first);
+        _reservation = ReservationDetails.fromJson(data.first);
         _loading = false;
       });
     }
@@ -66,7 +67,7 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
    );
     if(response.statusCode == 200){
       final List<dynamic> list = jsonDecode(response.body);
-      final updated = Reservation.fromJson(list.first);
+      final updated = ReservationDetails.fromJson(list.first);
       setState(() {
         _reservation = updated;
         _loading = false;
