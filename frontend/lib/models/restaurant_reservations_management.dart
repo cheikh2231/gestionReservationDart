@@ -41,4 +41,22 @@ class RestaurantReservationsManagement {
       rethrow;
     }
   }
+
+
+  static Future<List<RestaurantReservationsManagement>> search(String query, int limit) async {
+    final response = await ApiClient.post(
+      'get_restaurants',
+      body: json.encode({
+        'search_filter': query.isEmpty ? null : query,
+        'limit_count': limit,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> body = json.decode(response.body);
+      return body.map((dynamic item) => RestaurantReservationsManagement.fromJson(item)).toList();
+    } else {
+      throw Exception('Erreur lors du chargement des restaurants');
+    }
+  }
 }
