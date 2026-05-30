@@ -2,23 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
-void main() async {
-  await initializeDateFormatting('fr_FR', null);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const RestaurantManagementReservationsMockupScreen(),
-    ),
-  );
-}
+import '../../models/restaurant.dart';
+
+// void main() async {
+//   await initializeDateFormatting('fr_FR', null);
+//   runApp(
+//     MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       theme: ThemeData(
+//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+//         useMaterial3: true,
+//       ),
+//       home: const RestaurantManagementReservationsMockupScreen(restaurant: null,),
+//     ),
+//   );
+// }
 
 class RestaurantManagementReservationsMockupScreen extends StatelessWidget {
-  const RestaurantManagementReservationsMockupScreen({super.key});
-
+  const RestaurantManagementReservationsMockupScreen({super.key, required this.restaurant});
+  final Restaurant restaurant;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -28,7 +30,9 @@ class RestaurantManagementReservationsMockupScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/myrestaurants');
+          },
         ),
         title: const Text('Le Gourmet'),
         automaticallyImplyLeading: false,
