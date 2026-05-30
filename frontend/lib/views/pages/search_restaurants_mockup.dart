@@ -207,6 +207,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                       Navigator.pushNamed(
                                         context,
                                         '/restaurant_details',
+                                        arguments: restaurant,
                                       );
                                     },
                                   ),
