@@ -38,6 +38,7 @@ class ReservationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
@@ -56,7 +57,7 @@ class ReservationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      reservation.restaurantName,
+                      reservation.restaurantName ?? '',
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
@@ -65,7 +66,7 @@ class ReservationCard extends StatelessWidget {
                         const Icon(Icons.location_on, size: 14),
                         const SizedBox(width: 4),
                         Text(
-                          reservation.restaurantAddress,
+                          reservation.restaurantAddress ?? '',
                           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
                       ],
@@ -76,14 +77,14 @@ class ReservationCard extends StatelessWidget {
                         const Icon(Icons.access_time, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          DateFormat('EEE dd/MM/yyyy à HH:mm', 'fr_FR').format(reservation.dateTime),
+                          DateFormat('EEE dd/MM/yyyy à HH:mm', 'fr_FR').format(reservation.datetime),
                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         ),
                         const SizedBox(width: 12),
                         const Icon(Icons.people, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          '${reservation.nbGuests} convives',
+                          '${reservation.numberOfGuests} convives',
                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         ),
                       ],

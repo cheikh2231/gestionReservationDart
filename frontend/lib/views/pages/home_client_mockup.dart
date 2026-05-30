@@ -70,7 +70,7 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () { Navigator.pushNamed(context, '/search_resto'); },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -164,12 +164,16 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
                   for (final r in _filteredReservations())
                     ReservationCard(
                       reservation: r,
-                      onTap: () =>
-                          Navigator.pushNamed(
-                            context,
-                            '/reservation_details',
-                            arguments: r,
-                          ),
+                      onTap: () async{
+                        await Navigator.pushNamed(
+                          context,
+                          '/reservation_details',
+                          arguments: r.id,
+                        );
+                        _loadReservations();
+                      }
+
+
                     ),
                 ],
               ),

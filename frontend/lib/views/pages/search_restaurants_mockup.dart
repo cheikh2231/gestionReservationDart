@@ -28,7 +28,7 @@ class SearchRestaurantsMockupScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () { Navigator.pushReplacementNamed(context, '/my_reservations');},
         ),
         title: const Text('Rechercher un restaurant'),
         automaticallyImplyLeading: false,
