@@ -25,18 +25,15 @@ class Reservation {
       id:                json['id'],
       client:            json['client'],
       restaurant:        json['restaurant'],
-      datetime:          DateTime.parse(json['date_time']),
-      numberOfGuests:          json['nb_guests'] ?? 0,
+      datetime:          DateTime.parse(json['datetime']),
+      numberOfGuests:          json['number_of_guests'] ?? 0,
       status:            json['status'] ?? 'pending',
       specialRequests:   json['special_requests'],
     );
   }
 
   static Future<List<Reservation>> getAllReservations() async {
-      final response = await ApiClient.post('get_all_reservations');
-      // print(response.statusCode);
-      // print(response.body);
-
+      final response = await ApiClient.get('get_all_reservations');
       if (response.statusCode == 200) {
         final List<dynamic> body = json.decode(response.body);
         return body.map((dynamic item) => Reservation.fromJson(item)).toList();

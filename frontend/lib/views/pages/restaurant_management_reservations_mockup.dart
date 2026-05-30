@@ -19,14 +19,22 @@ class RestaurantManagementReservationsMockupScreen extends ConsumerStatefulWidge
   ConsumerState<RestaurantManagementReservationsMockupScreen> createState() =>
       _ScreenState();
 }
+
 class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupScreen> {
   String selectedStatus = 'all';
+  List<Reservation> filterReservation(List<Reservation> listReservation) {
+    if(selectedStatus=='all') {
+      return listReservation;
+    }
+    listReservation = listReservation.where((r) => r.status == selectedStatus).toList();
+    return listReservation;
+  }
   @override
   Widget build(BuildContext context) {
-
+    final restaurant = widget.restaurant;
     final theme = Theme.of(context);
     final simulatedTimeState = ref.watch(systemTimeProvider);
-    final restaurantReservationState = ref.watch(restaurantReservationsProvider);
+    final reservationState = ref.watch(restaurantReservationsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +44,7 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
             Navigator.pushReplacementNamed(context, '/myrestaurants');
           },
         ),
-        title: const Text('Le Gourmet'),
+        title: Text(restaurant.name),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -114,24 +122,25 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
                 selected: {selectedStatus},
                 onSelectionChanged: (newSelection) {
                   setState(() => selectedStatus = newSelection.first);
-                  print(selectedStatus);
                 },
               ),
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: restaurantReservationState.when(
-                // [Restaurant] 6. on crée une listview builder pour pouvoir boucler sur notre variable restaurants qu'on récupère depuis restaurantsState
-                data: (reservations) => ListView.builder(
+              child: reservationState.when(
+                data: (reservations) {
+                   final filteredList = filterReservation(reservations);
+                   return ListView.builder(
                     padding: const EdgeInsets.all(16.0),
-                    itemCount: reservations.length,
+                    itemCount: filteredList.length,
                     itemBuilder: (context,index){
                       return RestaurantReservationCard(
-                        reservation: reservations[index],
+                        reservation: filteredList[index],
                         status: selectedStatus,
                       );
-                    }
-                ),
+                    },
+                   );
+                },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => Center(child: Text(error.toString())),
               ),
