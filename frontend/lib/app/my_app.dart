@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/reservation.dart';
@@ -19,11 +20,20 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final securityNotifier = ref.read(securityProvider.notifier);
     return MaterialApp(
-      title: 'Namer App',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('fr', 'FR'),
+        ],
       theme: ThemeData(
-        useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
+
+
       initialRoute: securityNotifier.isLoggedIn ? (securityNotifier.loggedRole=='client' ?'/home':'/my_restaurants') : '/login',
       routes: {
         '/login': (context) => LoginMockupScreen(),
