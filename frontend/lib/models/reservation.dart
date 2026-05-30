@@ -1,20 +1,21 @@
+import 'dart:convert';
+import '../core/services/api_client.dart';
+
 class Reservation {
   final int id;
-  final String restaurantName;
-  final String restaurantAddress;
-  final String restaurantPhone;
-  final DateTime dateTime;
-  final int nbGuests;
+  final int client;
+  final int restaurant;
+  final DateTime datetime;
+  final int numberOfGuests;
   final String status;
   final String? specialRequests;
 
   Reservation({
     required this.id,
-    required this.restaurantName,
-    required this.restaurantAddress,
-    required this.restaurantPhone,
-    required this.dateTime,
-    required this.nbGuests,
+    required this.client,
+    required this.restaurant,
+    required this.datetime,
+    required this.numberOfGuests,
     required this.status,
     this.specialRequests,
   });
@@ -22,13 +23,24 @@ class Reservation {
   factory Reservation.fromJson(Map<String, dynamic> json) {
     return Reservation(
       id:                json['id'],
-      restaurantName:    json['restaurant_name'] ?? 'Nom inconnu',
-      restaurantAddress: json['restaurant_address'] ?? 'Adresse inconnue',
-      restaurantPhone:   json['restaurant_phone'] ?? '',
-      dateTime:          DateTime.parse(json['date_time']),
-      nbGuests:          json['nb_guests'] ?? 0,
+      client:            json['client'],
+      restaurant:        json['restaurant'],
+      datetime:          DateTime.parse(json['datetime']),
+      numberOfGuests:          json['number_of_guests'] ?? 0,
       status:            json['status'] ?? 'pending',
       specialRequests:   json['special_requests'],
     );
   }
+
+  static Future<List<Reservation>> getAllReservations() async {
+      final response = await ApiClient.get('get_all_reservations');
+      if (response.statusCode == 200) {
+        final List<dynamic> body = json.decode(response.body);
+        return body.map((dynamic item) => Reservation.fromJson(item)).toList();
+      } else {
+        throw Exception('Erreur lors du chargement des reservations pour ce restaurant');
+      }
+
+  }
+
 }
