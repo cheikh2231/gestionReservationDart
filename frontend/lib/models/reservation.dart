@@ -1,10 +1,13 @@
+import 'dart:convert';
+
+import '../core/services/api_client.dart';
+
 class Reservation {
   final int id;
-  final String restaurantName;
-  final String restaurantAddress;
-  final String restaurantPhone;
-  final DateTime dateTime;
-  final int nbGuests;
+  final int client;
+  final int restaurant;
+  final DateTime datetime;
+  final int numberOfGuests;
   final String status;
   final String? specialRequests;
 
