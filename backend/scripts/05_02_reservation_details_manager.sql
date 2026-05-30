@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION get_all_reservations()
     RETURNS SETOF reservations AS $$
     BEGIN
         RETURN QUERY
-            SELECT res.*
+            SELECT res.id
             FROM reservations res;
     END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

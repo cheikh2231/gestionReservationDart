@@ -5,6 +5,8 @@ DROP FUNCTION IF EXISTS public.get_reservations();
 CREATE OR REPLACE FUNCTION public.get_reservations()
     RETURNS TABLE (
                       id int,
+                      client int,
+                      restaurant int,
                       restaurant_name text,
                       restaurant_address text,
                       restaurant_phone text,
@@ -16,7 +18,7 @@ CREATE OR REPLACE FUNCTION public.get_reservations()
 BEGIN
     RETURN QUERY
         SELECT
-            r.id,
+            r.id,r.client,r.restaurant,
             res.name::text as restaurant_name,
             res.address::text as restaurant_address,
             res.phone::text as restaurant_phone,

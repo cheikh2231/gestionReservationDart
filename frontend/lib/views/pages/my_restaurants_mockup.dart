@@ -48,7 +48,10 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Déconnexion (Benoît P.)',
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+              ref.read(securityProvider.notifier).logout();
+            },
           ),
         ],
         elevation: 2,
