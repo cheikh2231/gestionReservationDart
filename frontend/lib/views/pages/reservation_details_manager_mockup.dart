@@ -5,23 +5,13 @@ import 'package:prbd_2526_a04/providers/security_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 
-void main() async {
-  await initializeDateFormatting('fr_FR', null);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const ReservationDetailsManagerMockupScreen(),
-    ),
-  );
-}
+import '../../models/reservation.dart';
+import '../../models/reservation_with_user.dart';
+
 
 class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
-  const ReservationDetailsManagerMockupScreen({super.key});
-
+  const ReservationDetailsManagerMockupScreen({super.key, required this.reservation});
+  final Reservation reservation;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final simulatedTimeState = ref.watch(systemTimeProvider);
@@ -31,7 +21,10 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+
+          },
         ),
         title: const Text('Détails de la réservation'),
         automaticallyImplyLeading: false,

@@ -22,7 +22,7 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      initialRoute: securityNotifier.isLoggedIn ? '/home' : '/login',
+      initialRoute: securityNotifier.isLoggedIn ? (securityNotifier.loggedRole=='client' ?'/home':'/my_restaurants') : '/login',
       routes: {
         '/login': (context) => LoginMockupScreen(),
         '/home': (context) => HomeClientMockupScreen(),

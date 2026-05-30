@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation_with_user.dart';
 import '../../models/reservation.dart';
 import '../../models/restaurant.dart';
+import '../../views/pages/reservation_details_manager_mockup.dart';
 
 
 class RestaurantReservationCard extends StatelessWidget {
@@ -25,7 +26,15 @@ class RestaurantReservationCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ReservationDetailsManagerMockupScreen(
+                reservation: reservationWithUser.base,
+              ),
+            ),
+          );
+          },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(

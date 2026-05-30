@@ -154,7 +154,8 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: 0,
-        onTap: (_) {},
+        onTap: (_) {
+        },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
