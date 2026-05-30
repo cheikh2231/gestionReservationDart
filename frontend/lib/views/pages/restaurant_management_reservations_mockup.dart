@@ -41,7 +41,7 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/myrestaurants');
+            Navigator.pushReplacementNamed(context, '/my_restaurants');
           },
         ),
         title: Text(restaurant.name),
