@@ -133,7 +133,18 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () async {
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: _selectedDate!,
+                              firstDate: simulatedTime,
+                              lastDate: _selectedDate!.add(const Duration(days: 365)),
+                              locale: const Locale('fr', 'FR'),
+                            );
+                            if (picked != null) {
+                              setState(() => _selectedDate = picked);
+                            }
+                          },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Row(
