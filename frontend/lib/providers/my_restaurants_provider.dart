@@ -1,22 +1,19 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/models/restaurant.dart';
+import 'package:prbd_2526_a04/models/restaurant_reservations_management.dart';
 import 'package:prbd_2526_a04/providers/security_provider.dart';
 
-// [Restaurant] 4. Je crée le provider qui va etre appelé et observé depuis la vue, le provider lui va appelé le model
-
-final myRestaurantsProvider = AsyncNotifierProvider<MyRestaurantsNotifier, List<Restaurant>>(
-      () => MyRestaurantsNotifier(),
+final myRestaurantsProvider = AsyncNotifierProvider<MyRestaurantReservationManagementNotifier, List<RestaurantReservationsManagement>>(
+      () => MyRestaurantReservationManagementNotifier(),
 );
 
-class MyRestaurantsNotifier extends AsyncNotifier<List<Restaurant>> {
-
+class MyRestaurantReservationManagementNotifier extends AsyncNotifier<List<RestaurantReservationsManagement>> {
   @override
-  Future<List<Restaurant>> build() async {
+  Future<List<RestaurantReservationsManagement>> build() async {
     ref.watch(securityProvider);
     state = const AsyncLoading();
     try {
-      return await Restaurant.getMyRestaurantsWithLastReservation();
+      return await RestaurantReservationsManagement.getMyRestaurantsWithLastReservation();
     } catch (e) {
       throw "Impossible de charger les restaurants.\nVeuillez réessayer plus tard.";
     }

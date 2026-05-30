@@ -1,9 +1,10 @@
 class Reservation {
   final int id;
-  final int client;
-  final int restaurant;
-  final DateTime datetime;
-  final int numberOfGuests;
+  final String restaurantName;
+  final String restaurantAddress;
+  final String restaurantPhone;
+  final DateTime dateTime;
+  final int nbGuests;
   final String status;
   final String? specialRequests;
 
@@ -28,4 +29,16 @@ class Reservation {
       specialRequests: json['special_requests'],
     );
   }
+
+  static Future<List<Reservation>> getAllReservations() async {
+      final response = await ApiClient.get('get_all_reservations');
+      if (response.statusCode == 200) {
+        final List<dynamic> body = json.decode(response.body);
+        return body.map((dynamic item) => Reservation.fromJson(item)).toList();
+      } else {
+        throw Exception('Erreur lors du chargement des reservations pour ce restaurant');
+      }
+
+  }
+
 }

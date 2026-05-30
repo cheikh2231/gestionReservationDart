@@ -1,40 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/models/reservation.dart';
+import 'package:prbd_2526_a04/models/reservation_with_user.dart';
+import 'package:prbd_2526_a04/providers/restaurant_reservation_provider.dart';
 
+import '../../core/widgets/restaurant_reservation_card.dart';
 import '../../models/restaurant.dart';
+import '../../providers/system_time_provider.dart';
 
-// void main() async {
-//   await initializeDateFormatting('fr_FR', null);
-//   runApp(
-//     MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(
-//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-//         useMaterial3: true,
-//       ),
-//       home: const RestaurantManagementReservationsMockupScreen(restaurant: null,),
-//     ),
-//   );
-// }
+class RestaurantManagementReservationsMockupScreen extends ConsumerStatefulWidget {
+  const RestaurantManagementReservationsMockupScreen(
+      {super.key, required this.restaurant});
 
-class RestaurantManagementReservationsMockupScreen extends StatelessWidget {
-  const RestaurantManagementReservationsMockupScreen({super.key, required this.restaurant});
   final Restaurant restaurant;
+
+  @override
+  ConsumerState<RestaurantManagementReservationsMockupScreen> createState() =>
+      _ScreenState();
+}
+
+class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupScreen> {
+  String selectedStatus = 'all';
+  List<ReservationWithUser> filterReservation(List<ReservationWithUser> listReservation) {
+    if(selectedStatus=='all') {
+      return listReservation;
+    }
+    listReservation = listReservation.where((r) => r.base.status == selectedStatus).toList();
+    return listReservation;
+  }
   @override
   Widget build(BuildContext context) {
+    final restaurant = widget.restaurant;
     final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
+    final simulatedTimeState = ref.watch(systemTimeProvider);
+    final reservationState = ref.watch(restaurantReservationsProvider);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/myrestaurants');
+            Navigator.pushReplacementNamed(context, '/my_restaurants');
           },
         ),
-        title: const Text('Le Gourmet'),
+        title: Text(restaurant.name),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -53,17 +63,23 @@ class RestaurantManagementReservationsMockupScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 2.0),
               child: Tooltip(
-                message:
-                    'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                child: Text(
-                  DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                      .format(simulatedTime),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[400],
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                  message:
+                  'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
+                  child: simulatedTimeState.when(
+                    data: (list){
+                      final date = list.first.simulated_time;
+                      return Text(
+                        DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(date!),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey[400],
+                          fontWeight: FontWeight.normal,
+                        ),
+                      );
+                    },
+                    loading: () => const Text("...", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                    error: (err, stack) => const Text("Erreur", style: TextStyle(fontSize: 10, color: Colors.red)),
+                  )
               ),
             ),
           ),
@@ -103,142 +119,33 @@ class RestaurantManagementReservationsMockupScreen extends StatelessWidget {
                     tooltip: 'Annulées',
                   ),
                 ],
-                selected: const {'all'},
-                onSelectionChanged: (_) {},
+                selected: {selectedStatus},
+                onSelectionChanged: (newSelection) {
+                  setState(() {
+                    selectedStatus = newSelection.first;
+                  });
+                },
               ),
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  Card(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            const SizedBox(
-                              width: 32,
-                              height: 32,
-                              child: Icon(Icons.pending, size: 32, color: Colors.orange),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Bruno Lacroix',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.restaurant, size: 16),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'Le Gourmet',
-                                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.access_time, size: 16),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'dim. 24/11/2024 12:30',
-                                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      const Icon(Icons.people, size: 16),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '2 convives',
-                                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Icon(Icons.chevron_right),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            const SizedBox(
-                              width: 32,
-                              height: 32,
-                              child: Icon(Icons.check_circle, size: 32, color: Colors.green),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Marc Michel',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.restaurant, size: 16),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'Le Gourmet',
-                                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.access_time, size: 16),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'mer. 04/12/2024 12:30',
-                                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      const Icon(Icons.people, size: 16),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '2 convives',
-                                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Icon(Icons.chevron_right),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              child: reservationState.when(
+                data: (reservations) {
+                   final filteredList = filterReservation(reservations);
+                   return ListView.builder(
+                    padding: const EdgeInsets.all(16.0),
+                    itemCount: filteredList.length,
+                    itemBuilder: (context,index){
+                      return RestaurantReservationCard(
+                        restaurant: restaurant,
+                        reservationWithUser: filteredList[index],
+                        status: selectedStatus,
+                      );
+                    },
+                   );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(child: Text(error.toString())),
               ),
             ),
           ],
@@ -247,7 +154,8 @@ class RestaurantManagementReservationsMockupScreen extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: 0,
-        onTap: (_) {},
+        onTap: (_) {
+        },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
@@ -265,4 +173,6 @@ class RestaurantManagementReservationsMockupScreen extends StatelessWidget {
       ),
     );
   }
+
+
 }

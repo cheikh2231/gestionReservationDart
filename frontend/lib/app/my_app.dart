@@ -5,8 +5,10 @@ import '../models/reservation.dart';
 import '../providers/security_provider.dart';
 import '../views/pages/home_client_mockup.dart';
 import '../views/pages/login_mockup.dart';
+import '../views/pages/my_restaurants_mockup.dart';
 import '../views/pages/reservation_details_mockup.dart';
 import '../views/pages/reservation_form_mockup.dart';
+import '../views/pages/restaurant_details_mockup.dart';
 import '../views/pages/search_restaurants_mockup.dart';
 import '../views/pages/signup_mockup.dart';
 
@@ -22,7 +24,7 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      initialRoute: securityNotifier.isLoggedIn ? '/home' : '/login',
+      initialRoute: securityNotifier.isLoggedIn ? (securityNotifier.loggedRole=='client' ?'/home':'/my_restaurants') : '/login',
       routes: {
         '/login': (context) => LoginMockupScreen(),
         '/home': (context) => HomeClientMockupScreen(),
@@ -31,6 +33,8 @@ class MyApp extends ConsumerWidget {
         '/signup': (context) => SignupMockupScreen(),
         '/reservation_details': (context) => ReservationDetailsMockupScreen(),
         '/add_edit_reservation': (context) => ReservationFormMockupScreen(),
+        '/my_restaurants': (context) => MyRestaurantsMockupScreen(),
+        '/restaurant_details': (context) => RestaurantDetailsMockupScreen()
       },
     );
   }

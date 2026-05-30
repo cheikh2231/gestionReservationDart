@@ -314,7 +314,7 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
             .read(securityProvider.notifier)
             .loggedRole;
         if (role == 'manager') {
-          // Navigator.pushReplacementNamed(context, '/manager_home');
+          Navigator.pushReplacementNamed(context, '/my_restaurants');
           print("✅ Connexion Manager réussie !");
         } else {
           Navigator.pushReplacementNamed(context, '/home');

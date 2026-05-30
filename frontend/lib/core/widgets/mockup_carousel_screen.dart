@@ -32,7 +32,7 @@ class _MockupCarouselScreenState extends State<MockupCarouselScreen> {
   static final List<({String label, Widget screen})> _mockups = [
     (label: 'Connexion', screen: const LoginMockupScreen()),
     (label: 'Inscription', screen: const SignupMockupScreen()),
-    (label: 'Accueil client', screen: const HomeClientMockupScreen()),
+    // (label: 'Accueil client', screen: const HomeClientMockupScreen()),
     (label: 'Recherche restaurants', screen: const SearchRestaurantsMockupScreen()),
     (label: 'Détails restaurant', screen: const RestaurantDetailsMockupScreen()),
     (label: 'Formulaire réservation', screen: const ReservationFormMockupScreen()),
@@ -41,7 +41,7 @@ class _MockupCarouselScreenState extends State<MockupCarouselScreen> {
     // (label: 'Gestion restaurant - Réservations', screen: const RestaurantManagementReservationsMockupScreen()),
     (label: 'Gestion restaurant - Services', screen: const RestaurantManagementServicesMockupScreen()),
     (label: 'Gestion restaurant - Tables', screen: const RestaurantManagementTablesMockupScreen()),
-    (label: 'Détails réservation (manager)', screen: const ReservationDetailsManagerMockupScreen()),
+    // (label: 'Détails réservation (manager)', screen: const ReservationDetailsManagerMockupScreen()),
     (label: 'Assigner des tables', screen: const AssignTablesMockupScreen()),
     (label: 'Modifier le service', screen: const EditServiceMockupScreen()),
     (label: 'Modifier la table', screen: const EditTableMockupScreen()),
