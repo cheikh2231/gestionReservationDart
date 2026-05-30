@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:prbd_2526_a04/models/reservation_details.dart';
 
 import '../../core/services/api_client.dart';
 
 import '../../core/widgets/reservations_card.dart';
 import '../../models/reservation.dart';
-import '../../models/reservation_details.dart';
+import '../../providers/reservation_provider.dart';
 import '../../providers/security_provider.dart';
 
 void main() async {
@@ -26,43 +27,29 @@ void main() async {
 }
 
 class HomeClientMockupScreen extends ConsumerStatefulWidget {
-
   const HomeClientMockupScreen({super.key});
 
   @override
-  ConsumerState<HomeClientMockupScreen> createState() => _HomeClientMockupScreenState();
+  ConsumerState<HomeClientMockupScreen> createState() =>
+      _HomeClientMockupScreenState();
 }
 
-class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen> {
-  List<ReservationDetails> _reservations = [];
-  bool _loading = true;
+class _HomeClientMockupScreenState
+    extends ConsumerState<HomeClientMockupScreen> {
   String _filterReservationString = 'pending';
 
-  @override
-  void initState() {
-    super.initState();
-    _loadReservations();
+
+  List<ReservationDetails> _filteredReservations(List<ReservationDetails> reservations) {
+    return _filterReservationString == "all"
+        ? reservations
+        : reservations
+              .where((r) => r.base.status == _filterReservationString)
+              .toList();
   }
-
-  Future<void> _loadReservations() async {
-
-    final response = await ApiClient.get('get_reservations');
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      setState(() {
-        _reservations = data.map((json) => ReservationDetails.fromJson(json)).toList();
-        _loading = false;
-      });
-    }
-  }
-
-  List<ReservationDetails> _filteredReservations(){
-    return _filterReservationString == "all" ? _reservations : _reservations.where((r)=>r.base.status == _filterReservationString).toList();
- }
 
   @override
   Widget build(BuildContext context) {
+    final reservationsAsync = ref.watch(reservationsProvider);
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -72,21 +59,24 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, '/search_resto');
+              Navigator.pushNamed(context, '/search_resto');
             },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Rafraîchir les données',
-            onPressed: () { _loadReservations(); },
+            onPressed: () {
+              ref.read(reservationsProvider.notifier).refresh();
+            },
           ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Déconnexion',
             onPressed: () {
-              Navigator.pushReplacementNamed(context, '/login');
               ref.read(securityProvider.notifier).logout();
-              },
+
+              Navigator.pushReplacementNamed(context, '/login');
+            },
           ),
         ],
         elevation: 2,
@@ -99,7 +89,8 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
             child: Padding(
               padding: const EdgeInsets.only(top: 2.0),
               child: Tooltip(
-                message: 'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
+                message:
+                    'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
                 child: Text(
                   'mercredi 04/12/2024 16:00',
                   style: TextStyle(
@@ -134,13 +125,19 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
                   ButtonSegment(
                     value: 'confirmed',
                     icon: Icon(
-                        Icons.check_circle, size: 24, color: Colors.green),
+                      Icons.check_circle,
+                      size: 24,
+                      color: Colors.green,
+                    ),
                     tooltip: 'Confirmées',
                   ),
                   ButtonSegment(
                     value: 'completed',
                     icon: Icon(
-                        Icons.event_available, size: 24, color: Colors.blue),
+                      Icons.event_available,
+                      size: 24,
+                      color: Colors.blue,
+                    ),
                     tooltip: 'Terminées',
                   ),
                   ButtonSegment(
@@ -159,34 +156,37 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: _loading
-                  ? loading()
-                  : ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  for (final r in _filteredReservations())
-                    ReservationCard(
-                      reservationDetails: r,
-                      onTap: () =>
-                          Navigator.pushNamed(
-                            context,
-                            '/reservation_details',
-                            arguments: r,
-                          ),
-                    ),
-                ],
+              child: reservationsAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('Erreur: $e')),
+                data: (reservations) => ListView(
+                  children: [
+                    for (final r in _filteredReservations(reservations))
+                      ReservationCard(
+                        reservation: r,
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          '/reservation_details',
+                          arguments: r.base.id,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () { Navigator.pushNamed(context, '/search_resto');},
+        onPressed: () {
+          Navigator.pushNamed(context, '/search_resto');
+        },
         icon: const Icon(Icons.add),
         label: const Text('Nouvelle réservation'),
       ),
     );
   }
+
   Widget loading() {
     return Center(child: CircularProgressIndicator(color: Colors.black));
   }

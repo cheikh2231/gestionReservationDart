@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import '../core/services/api_client.dart';
 
 class Reservation {
@@ -22,13 +23,13 @@ class Reservation {
 
   factory Reservation.fromJson(Map<String, dynamic> json) {
     return Reservation(
-      id:                json['id'],
-      client:            json['client'],
-      restaurant:        json['restaurant'],
-      datetime:          DateTime.parse(json['datetime']),
-      numberOfGuests:          json['number_of_guests'] ?? 0,
-      status:            json['status'] ?? 'pending',
-      specialRequests:   json['special_requests'],
+      id: json['id'],
+      client: json['client'],
+      restaurant: json['restaurant'],
+      datetime: DateTime.parse(json['datetime']),
+      numberOfGuests: json['number_of_guests'] ?? 0,
+      status: json['status'] ?? 'pending',
+      specialRequests: json['special_requests'],
     );
   }
 
