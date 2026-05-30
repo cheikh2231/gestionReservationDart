@@ -71,7 +71,9 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/search_resto');
+            },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
