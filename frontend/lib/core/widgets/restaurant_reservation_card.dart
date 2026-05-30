@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/models/reservation_with_user.dart';
 import '../../models/reservation.dart';
 import '../../models/restaurant.dart';
 
 
 class RestaurantReservationCard extends StatelessWidget {
-  const RestaurantReservationCard({super.key, required this.reservation,required this.status});
-  final Reservation reservation;
+  const RestaurantReservationCard({super.key,required this.restaurant, required this.reservationWithUser,required this.status});
+  final Restaurant restaurant;
+  final ReservationWithUser reservationWithUser;
   final String status;
-
   @override
   Widget build(BuildContext context) {
+    final reservation = reservationWithUser;
+    final reservationDateFormated = DateFormat('E dd/MM/yyyy', 'fr_FR').format(reservation.base.datetime);
+    final Map<String, ({IconData icon, Color color})> statusIcons = {
+      'all': (icon: Icons.list, color: Colors.grey),
+      'pending': (icon: Icons.pending, color: Colors.orange),
+      'confirmed': (icon: Icons.check_circle, color: Colors.green),
+      'completed': (icon: Icons.event_available, color: Colors.blue),
+      'cancelled': (icon: Icons.cancel, color: Colors.red),
+    };
+    final reservationIcon = statusIcons[reservation.base.status] ?? (icon: Icons.error, color: Colors.grey);;
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
@@ -18,18 +30,18 @@ class RestaurantReservationCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              const SizedBox(
+               SizedBox(
                 width: 32,
                 height: 32,
-                child: Icon(Icons.pending, size: 32, color: Colors.orange),
+                child: Icon(reservationIcon.icon, size: 32, color: reservationIcon.color),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Bruno Lacroix',
+                    Text(
+                      '${reservation.clientName}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -41,7 +53,7 @@ class RestaurantReservationCard extends StatelessWidget {
                         const Icon(Icons.restaurant, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          'Le Gourmet',
+                          restaurant.name,
                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         ),
                       ],
@@ -52,14 +64,14 @@ class RestaurantReservationCard extends StatelessWidget {
                         const Icon(Icons.access_time, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          'dim. 24/11/2024 12:30',
+                          reservationDateFormated,
                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         ),
                         const SizedBox(width: 12),
                         const Icon(Icons.people, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          '2 convives',
+                            '${reservationWithUser.base.numberOfGuests} ' '${reservationWithUser.base.numberOfGuests > 1 ? "convives" : "convive"}',
                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         ),
                       ],

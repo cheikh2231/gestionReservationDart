@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation.dart';
+import 'package:prbd_2526_a04/models/reservation_with_user.dart';
 import 'package:prbd_2526_a04/providers/restaurant_reservation_provider.dart';
 
 import '../../core/widgets/restaurant_reservation_card.dart';
@@ -22,11 +22,11 @@ class RestaurantManagementReservationsMockupScreen extends ConsumerStatefulWidge
 
 class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupScreen> {
   String selectedStatus = 'all';
-  List<Reservation> filterReservation(List<Reservation> listReservation) {
+  List<ReservationWithUser> filterReservation(List<ReservationWithUser> listReservation) {
     if(selectedStatus=='all') {
       return listReservation;
     }
-    listReservation = listReservation.where((r) => r.status == selectedStatus).toList();
+    listReservation = listReservation.where((r) => r.base.status == selectedStatus).toList();
     return listReservation;
   }
   @override
@@ -121,7 +121,9 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
                 ],
                 selected: {selectedStatus},
                 onSelectionChanged: (newSelection) {
-                  setState(() => selectedStatus = newSelection.first);
+                  setState(() {
+                    selectedStatus = newSelection.first;
+                  });
                 },
               ),
             ),
@@ -135,7 +137,8 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
                     itemCount: filteredList.length,
                     itemBuilder: (context,index){
                       return RestaurantReservationCard(
-                        reservation: filteredList[index],
+                        restaurant: restaurant,
+                        reservationWithUser: filteredList[index],
                         status: selectedStatus,
                       );
                     },
