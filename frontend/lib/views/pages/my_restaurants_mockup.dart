@@ -86,7 +86,6 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: restaurantsState.when(
-          // [Restaurant] 6. on crée une listview builder pour pouvoir boucler sur notre variable restaurants qu'on récupère depuis restaurantsState
           data: (restaurantReservationsManagement) => ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: restaurantReservationsManagement.length,
