@@ -42,4 +42,32 @@ class Reservation {
       restaurantPhone:   json['restaurant_phone'],
     );
   }
+
+  Reservation copyWith({
+    int? id,
+    int? client,
+    int? restaurant,
+    DateTime? datetime,
+    int? numberOfGuests,
+    String? status,
+    String? specialRequests,
+    String? restaurantName,
+    String? restaurantAddress,
+    String? restaurantCity,
+    String? restaurantPhone,
+  }) {
+    return Reservation(
+      id:                id                ?? this.id,
+      client:            client            ?? this.client,
+      restaurant:        restaurant        ?? this.restaurant,
+      datetime:          datetime          ?? this.datetime,
+      numberOfGuests:    numberOfGuests    ?? this.numberOfGuests,
+      status:            status            ?? this.status,
+      specialRequests:   specialRequests   ?? this.specialRequests,
+      restaurantName:    restaurantName    ?? this.restaurantName,
+      restaurantAddress: restaurantAddress ?? this.restaurantAddress,
+      restaurantCity:    restaurantCity    ?? this.restaurantCity,
+      restaurantPhone:   restaurantPhone   ?? this.restaurantPhone,
+    );
+  }
 }

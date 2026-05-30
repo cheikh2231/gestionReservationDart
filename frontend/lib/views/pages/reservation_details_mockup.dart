@@ -9,6 +9,7 @@ import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
 import '../../core/services/api_client.dart';
 import '../../core/widgets/dialog_box.dart';
 import '../../models/reservation.dart';
+import '../../providers/reservation_provider.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);
@@ -65,10 +66,12 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
    );
     if(response.statusCode == 200){
       final List<dynamic> list = jsonDecode(response.body);
+      final updated = Reservation.fromJson(list.first);
       setState(() {
-        _reservation = Reservation.fromJson(list.first);
+        _reservation = updated;
         _loading = false;
       });
+      ref.read(reservationsProvider.notifier).updateReservation(updated);
     }
 
     return response.statusCode == 200;
