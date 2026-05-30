@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/models/reservation_details.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);
@@ -15,22 +17,51 @@ void main() async {
     ),
   );
 }
-
-class ReservationFormMockupScreen extends StatelessWidget {
+class ReservationFormMockupScreen extends ConsumerStatefulWidget {
   const ReservationFormMockupScreen({super.key});
 
   @override
+  ConsumerState<ReservationFormMockupScreen> createState() =>
+      _ReservationFormMockupScreen();
+}
+
+class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupScreen> {
+
+  late int _nbGuests;
+  String _nameResto = '';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final reservation = args?['reservation'] as ReservationDetails?;
+
+    if (reservation != null) {
+      _nbGuests = reservation.base.numberOfGuests;
+    } else {
+      _nbGuests = 2;
+    }
+    _nameResto = reservation!.restaurantName;
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
-
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final reservation = args?['reservation'] as ReservationDetails?;
+    final isNew = reservation == null;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+            onPressed: () {
+                Navigator.pop(context);
+            },
         ),
-        title: const Text('Nouvelle réservation'),
+        title: Text((isNew) ? 'Nouvelle réservation':'Modifier réservation'),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -73,9 +104,9 @@ class ReservationFormMockupScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Le Gourmet',
-                  style: TextStyle(
+                Text(
+                  _nameResto,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -295,17 +326,21 @@ class ReservationFormMockupScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.people),
                   title: const Text('Nombre de convives'),
-                  subtitle: const Text('2'),
+                  subtitle: Text('$_nbGuests'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.remove),
-                        onPressed: () {},
+                        onPressed: () {setState(() {
+                          _nbGuests --;
+                        });},
                       ),
                       IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () {},
+                        onPressed: () { setState(() {
+                          _nbGuests ++;
+                        });},
                       ),
                     ],
                   ),
@@ -361,8 +396,8 @@ class ReservationFormMockupScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Créer la réservation'),
+                  icon: Icon(isNew ? Icons.add : Icons.edit),
+                  label: Text(isNew ? 'Créer la réservation' : 'Modifier la réservation'),
                 ),
               ],
             ),

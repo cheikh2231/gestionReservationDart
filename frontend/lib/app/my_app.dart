@@ -6,6 +6,7 @@ import '../providers/security_provider.dart';
 import '../views/pages/home_client_mockup.dart';
 import '../views/pages/login_mockup.dart';
 import '../views/pages/reservation_details_mockup.dart';
+import '../views/pages/reservation_form_mockup.dart';
 import '../views/pages/search_restaurants_mockup.dart';
 import '../views/pages/signup_mockup.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends ConsumerWidget {
         '/search_resto': (context) => SearchRestaurantsMockupScreen(),
         '/signup': (context) => SignupMockupScreen(),
         '/reservation_details': (context) => ReservationDetailsMockupScreen(),
+        '/add_edit_reservation': (context) => ReservationFormMockupScreen(),
       },
     );
   }

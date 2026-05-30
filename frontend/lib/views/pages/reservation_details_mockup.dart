@@ -8,7 +8,6 @@ import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
 
 import '../../core/services/api_client.dart';
 import '../../core/widgets/dialog_box.dart';
-import '../../models/reservation.dart';
 import '../../models/reservation_details.dart';
 import '../../providers/reservation_provider.dart';
 
@@ -176,7 +175,12 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(
+                      context,
+                      '/add_edit_reservation', arguments: {'reservation': _reservation},
+                      );
+                    },
                       icon: const Icon(Icons.edit),
                       label: const Text('Modifier'),
                     ),
