@@ -32,8 +32,6 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
     final bool estConnecte = authState.value != null;
     final String? userName = ref.read(securityProvider.notifier).loggedName ?? "";
     final theme = Theme.of(context);
-    // final simulatedTime = DateTime(2024, 12, 4, 16, 0);
-    // [Restaurant] 5. on récupère la liste et l'état du chargement de myrestaurants
     final restaurantsState = ref.watch(myRestaurantsProvider);
     return Scaffold(
       appBar: AppBar(
@@ -81,15 +79,6 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
                   loading: () => const Text("...", style: TextStyle(fontSize: 10, color: Colors.grey)),
                   error: (err, stack) => const Text("Erreur", style: TextStyle(fontSize: 10, color: Colors.red)),
                 )
-                // Text(
-                //   DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                //       .format(simulatedTime),
-                //   style: TextStyle(
-                //     fontSize: 10,
-                //     color: Colors.grey[400],
-                //     fontWeight: FontWeight.normal,
-                //   ),
-                // ),
               ),
             ),
           ),
@@ -98,13 +87,13 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
       body: SafeArea(
         child: restaurantsState.when(
           // [Restaurant] 6. on crée une listview builder pour pouvoir boucler sur notre variable restaurants qu'on récupère depuis restaurantsState
-          data: (restaurants) => ListView.builder(
+          data: (restaurantReservationsManagement) => ListView.builder(
             padding: const EdgeInsets.all(16.0),
-            itemCount: restaurants.length,
+            itemCount: restaurantReservationsManagement.length,
             itemBuilder: (context,index){
-              final restaurant = restaurants[index];
+              final restaurantReservationManagement = restaurantReservationsManagement[index];
               return RestaurantCard(
-                restaurant: restaurant,
+                restaurantReservationManagement: restaurantReservationManagement,
               );
             }
           ),

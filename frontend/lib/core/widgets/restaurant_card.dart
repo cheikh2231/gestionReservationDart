@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/restaurant.dart';
+import 'package:prbd_2526_a04/models/restaurant_reservations_management.dart';
 
 import '../../views/pages/restaurant_management_reservations_mockup.dart';
 
 
 class RestaurantCard extends StatelessWidget{
-  const RestaurantCard({super.key, required this.restaurant});
-  final Restaurant restaurant;
+  const RestaurantCard({super.key, required this.restaurantReservationManagement});
+  final RestaurantReservationsManagement restaurantReservationManagement;
 
   @override
   Widget build(BuildContext context) {
-    final lastReservation = restaurant.lastReservation != null ? 'Dernière réservation: ${DateFormat('E dd/MM/yyyy', 'fr_FR').format(restaurant.lastReservation!)}' : "";
-    final nbPendingReservation = restaurant.nbPendingReservation != null && restaurant.nbPendingReservation! > 0? '${restaurant.nbPendingReservation} demande${restaurant.nbPendingReservation! > 1 ? 's ' : ''}en attente' : "";
+    final restaurant = restaurantReservationManagement.base;
+    final lastReservation = restaurantReservationManagement.lastReservation != null ? 'Dernière réservation: ${DateFormat('E dd/MM/yyyy', 'fr_FR').format(restaurantReservationManagement.lastReservation!)}' : "";
+    final nbPendingReservation = restaurantReservationManagement.nbPendingReservation != null && restaurantReservationManagement.nbPendingReservation! > 0? '${restaurantReservationManagement.nbPendingReservation} demande${restaurantReservationManagement.nbPendingReservation! > 1 ? 's ' : ''}en attente' : "";
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
