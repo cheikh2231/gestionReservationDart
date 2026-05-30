@@ -4,6 +4,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation_details.dart';
 
+import '../../providers/system_time_provider.dart';
+
 void main() async {
   await initializeDateFormatting('fr_FR', null);
   runApp(
@@ -17,6 +19,7 @@ void main() async {
     ),
   );
 }
+
 class ReservationFormMockupScreen extends ConsumerStatefulWidget {
   const ReservationFormMockupScreen({super.key});
 
@@ -26,30 +29,42 @@ class ReservationFormMockupScreen extends ConsumerStatefulWidget {
 }
 
 class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupScreen> {
-
+  bool _initialized = false;
   late int _nbGuests;
   String _nameResto = '';
+  DateTime? _selectedDate;
+  ReservationDetails? _reservation;
+  String _specialRequests= '';
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
 
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final reservation = args?['reservation'] as ReservationDetails?;
+    _reservation = args?['reservation'] as ReservationDetails?;
 
-    if (reservation != null) {
-      _nbGuests = reservation.base.numberOfGuests;
+    if (_reservation != null) {
+        _nbGuests = _reservation!.base.numberOfGuests;
+        _nameResto = _reservation!.restaurantName;
+        _selectedDate = _reservation!.base.datetime;
     } else {
       _nbGuests = 2;
+      _nameResto = 'brol';
     }
-    _nameResto = reservation!.restaurantName;
   }
 
   @override
   Widget build(BuildContext context) {
+    final systemTimeAsync = ref.watch(systemTimeProvider);
+    final simulatedTime = systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
+    if (!_initialized) {
+      _selectedDate = _reservation?.base.datetime ?? simulatedTime;
+      _initialized = true;
+    }
 
     final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final reservation = args?['reservation'] as ReservationDetails?;
     final isNew = reservation == null;
@@ -133,7 +148,8 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                                     children: [
                                       const Text('Date'),
                                       Text(
-                                        'Mercredi 4/12/2024',
+                                        DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
+                                            .format(_selectedDate ?? simulatedTime),
                                         style: theme.textTheme.bodySmall,
                                       ),
                                     ],
@@ -149,11 +165,15 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                     const SizedBox(width: 8),
                     IconButton(
                       icon: const Icon(Icons.remove),
-                      onPressed: () {},
+                      onPressed: () { setState(() {
+                        _selectedDate = _selectedDate?.subtract(Duration(days: 1));
+                      });},
                     ),
                     IconButton(
                       icon: const Icon(Icons.add),
-                      onPressed: () {},
+                      onPressed: () { setState(() {
+                        _selectedDate = _selectedDate?.add(Duration(days: 1));
+                      });},
                     ),
                     const SizedBox(width: 16),
                   ],
