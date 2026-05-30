@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
 
 import '../../models/reservation.dart';
+import '../../models/reservation_details.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);
@@ -30,7 +31,7 @@ class ReservationDetailsMockupScreen extends ConsumerStatefulWidget {
 
 class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMockupScreen> {
   bool _loading = true;
-  Reservation? _reservation;
+  ReservationDetails? _reservationDetails;
   @override
   void initState() {
     super.initState();
@@ -47,7 +48,7 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
 
     if (arg != null) {
        setState(() {
-         _reservation = arg as Reservation;
+         _reservationDetails = arg as ReservationDetails;
          _loading = false;
        });
     }
@@ -106,10 +107,15 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _loading ? const Center(child: CircularProgressIndicator()) :
-              ReservationDetailCard(reservation: _reservation!),
+              // 1. Ton bloc de chargement ou carte
+              _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ReservationDetailCard(reservationDetails: _reservationDetails!),
+
               const SizedBox(height: 24),
-              if(canMod(_reservation!))
+
+              // 2. Ton bloc conditionnel (le "if" est ici un mot-clé Dart spécial)
+              if (_reservationDetails != null && canMod(_reservationDetails!.base))
               Row(
                 children: [
                   Expanded(

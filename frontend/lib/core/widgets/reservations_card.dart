@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation.dart';
+import 'package:prbd_2526_a04/models/reservation_details.dart';
 
 class ReservationCard extends StatelessWidget {
-  final Reservation reservation;
   final VoidCallback onTap;
-
+  final ReservationDetails reservationDetails;
   const ReservationCard({
     super.key,
-    required this.reservation,
+    required this.reservationDetails,
     required this.onTap,
   });
 
-  IconData get _statusIcon => switch (reservation.status) {
+  IconData get _statusIcon => switch (reservationDetails.base.status) {
     'pending'   => Icons.pending,
     'confirmed' => Icons.check_circle,
     'completed' => Icons.event_available,
@@ -20,7 +20,7 @@ class ReservationCard extends StatelessWidget {
     _           => Icons.help,
   };
 
-  Color get _statusColor => switch (reservation.status) {
+  Color get _statusColor => switch (reservationDetails.base.status) {
     'pending'   => Colors.orange,
     'confirmed' => Colors.green,
     'completed' => Colors.blue,
@@ -28,7 +28,7 @@ class ReservationCard extends StatelessWidget {
     _           => Colors.grey,
   };
 
-  String get _statusLabel => switch (reservation.status) {
+  String get _statusLabel => switch (reservationDetails.base.status) {
     'pending'   => 'En attente',
     'confirmed' => 'Confirmée',
     'completed' => 'Terminée',
@@ -56,7 +56,7 @@ class ReservationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      reservation.restaurantName,
+                      reservationDetails.restaurantName,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
@@ -65,7 +65,7 @@ class ReservationCard extends StatelessWidget {
                         const Icon(Icons.location_on, size: 14),
                         const SizedBox(width: 4),
                         Text(
-                          reservation.restaurantAddress,
+                          reservationDetails.restaurantAddress,
                           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
                       ],
@@ -76,14 +76,14 @@ class ReservationCard extends StatelessWidget {
                         const Icon(Icons.access_time, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          DateFormat('EEE dd/MM/yyyy à HH:mm', 'fr_FR').format(reservation.dateTime),
+                          DateFormat('EEE dd/MM/yyyy à HH:mm', 'fr_FR').format(reservationDetails.base.datetime),
                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         ),
                         const SizedBox(width: 12),
                         const Icon(Icons.people, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          '${reservation.nbGuests} convives',
+                          '${reservationDetails.base.numberOfGuests} convives',
                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         ),
                       ],

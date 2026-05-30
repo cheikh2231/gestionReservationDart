@@ -8,6 +8,7 @@ import '../../core/services/api_client.dart';
 
 import '../../core/widgets/reservations_card.dart';
 import '../../models/reservation.dart';
+import '../../models/reservation_details.dart';
 import '../../providers/security_provider.dart';
 
 void main() async {
@@ -33,7 +34,7 @@ class HomeClientMockupScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen> {
-  List<Reservation> _reservations = [];
+  List<ReservationDetails> _reservations = [];
   bool _loading = true;
   String _filterReservationString = 'pending';
 
@@ -50,14 +51,14 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       setState(() {
-        _reservations = data.map((json) => Reservation.fromJson(json)).toList();
+        _reservations = data.map((json) => ReservationDetails.fromJson(json)).toList();
         _loading = false;
       });
     }
   }
 
-  List<Reservation> _filteredReservations(){
-    return _filterReservationString == "all" ? _reservations : _reservations.where((r)=>r.status == _filterReservationString).toList();
+  List<ReservationDetails> _filteredReservations(){
+    return _filterReservationString == "all" ? _reservations : _reservations.where((r)=>r.base.status == _filterReservationString).toList();
  }
 
   @override
@@ -163,7 +164,7 @@ class _HomeClientMockupScreenState extends ConsumerState<HomeClientMockupScreen>
                 children: [
                   for (final r in _filteredReservations())
                     ReservationCard(
-                      reservation: r,
+                      reservationDetails: r,
                       onTap: () =>
                           Navigator.pushNamed(
                             context,

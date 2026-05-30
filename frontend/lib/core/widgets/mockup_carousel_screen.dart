@@ -36,7 +36,7 @@ class _MockupCarouselScreenState extends State<MockupCarouselScreen> {
     (label: 'Recherche restaurants', screen: const SearchRestaurantsMockupScreen()),
     (label: 'Détails restaurant', screen: const RestaurantDetailsMockupScreen()),
     (label: 'Formulaire réservation', screen: const ReservationFormMockupScreen()),
-    // (label: 'Détails réservation', screen: const ReservationDetailsMockupScreen()),
+    (label: 'Détails réservation', screen: const ReservationDetailsMockupScreen()),
     (label: 'Mes restaurants', screen: const MyRestaurantsMockupScreen()),
     // (label: 'Gestion restaurant - Réservations', screen: const RestaurantManagementReservationsMockupScreen()),
     (label: 'Gestion restaurant - Services', screen: const RestaurantManagementServicesMockupScreen()),
