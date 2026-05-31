@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation.dart';
-import 'package:prbd_2526_a04/models/reservation_with_user.dart';
+import 'package:prbd_2526_a04/models/reservation_restaurant.dart';
 import 'package:prbd_2526_a04/providers/restaurant_reservation_provider.dart';
 
 import '../../core/widgets/restaurant_reservation_card.dart';

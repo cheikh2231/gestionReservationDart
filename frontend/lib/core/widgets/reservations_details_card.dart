@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation.dart';
 
-import '../../models/reservation_details.dart';
+import '../../models/reservation_client.dart';
 
 class ReservationDetailCard extends StatelessWidget {
   final ReservationDetails reservationDetails;

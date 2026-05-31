@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:prbd_2526_a04/models/reservation_with_user.dart';
+import 'package:prbd_2526_a04/models/reservation_restaurant.dart';
 import '../../models/reservation.dart';
 import '../../models/restaurant.dart';
 import '../../views/pages/reservation_details_manager_mockup.dart';

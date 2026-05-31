@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation.dart';
-import 'package:prbd_2526_a04/models/reservation_details.dart';
+import 'package:prbd_2526_a04/models/reservation_client.dart';
 
 class ReservationCard extends StatelessWidget {
   final VoidCallback onTap;

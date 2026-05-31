@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prbd_2526_a04/providers/security_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
-import '../../models/reservation_with_user.dart';
+import '../../models/reservation_restaurant.dart';
 
 
 class ReservationDetailsManagerMockupScreen extends ConsumerWidget {

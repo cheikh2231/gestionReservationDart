@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
 
 import '../../models/reservation.dart';
-import '../../models/reservation_details.dart';
+import '../../models/reservation_client.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);

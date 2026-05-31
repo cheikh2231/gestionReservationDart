@@ -23,7 +23,7 @@
     <script-file value="$PROJECT_DIR$/backend/scripts/05.03_restaurant.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.04_system_time.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/XX_suppression_des_triggers.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.05_reservations_with_user.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.05_reservations.sql" />
     <script-mode>FILE</script-mode>
     <data-source id="6d275bb5-c69c-4f95-bc29-f6a29631655b" namespace="database/&quot;prbd-2526-a04&quot;" />
     <method v="2" />
