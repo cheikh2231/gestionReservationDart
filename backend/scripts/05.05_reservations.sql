@@ -1,3 +1,8 @@
+DROP TYPE IF EXISTS reservations_info;
+DROP TYPE IF EXISTS table_info;
+DROP TYPE IF EXISTS restaurant_info;
+DROP TYPE IF EXISTS user_info;
+
 CREATE TYPE user_info AS (
     id          integer,
     full_name   text,
@@ -21,7 +26,7 @@ CREATE TYPE table_info AS (
     capacity        integer
 );
 
-CREATE TYPE reservation_info AS (
+CREATE TYPE reservations_info AS (
     id                  integer,
     client              user_info,
     restaurant          restaurant_info,
@@ -34,7 +39,7 @@ CREATE TYPE reservation_info AS (
 
 DROP FUNCTION IF EXISTS get_reservations();
 CREATE OR REPLACE FUNCTION get_reservations()
-    RETURNS SETOF reservation_info AS $$
+    RETURNS SETOF reservations_info AS $$
 BEGIN
     RETURN QUERY
         SELECT
@@ -45,14 +50,12 @@ BEGIN
             r.number_of_guests,
             r.status,
             r.special_requests,
-
             ARRAY(
                     SELECT (t.id, t.restaurant, t.table_number, t.capacity)::table_info
                     FROM reservation_tables rt
                              JOIN tables t ON t.id = rt.table
                     WHERE rt.reservation = r.id
             )
-
         FROM reservations r
                  JOIN users c ON c.id = r.client
                  JOIN restaurants res ON res.id = r.restaurant;
@@ -60,3 +63,5 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION get_reservations() TO authenticated;
+
+
