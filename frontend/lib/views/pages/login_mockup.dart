@@ -9,6 +9,7 @@ import 'package:prbd_2526_a04/core/tools/validating_text_editing_controller.dart
 import 'package:prbd_2526_a04/core/widgets/dialog_box.dart';
 
 import '../../core/services/security.dart';
+import '../../providers/reservation_provider.dart';
 
 class LoginMockupScreen extends ConsumerStatefulWidget {
   const LoginMockupScreen({super.key});
@@ -243,6 +244,8 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
                           if (!context.mounted) return;
 
                           if (success) {
+                            ref.invalidate(reservationsProvider);
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Base de données réinitialisée avec succès'),

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/models/reservation_details.dart';
+
+import '../../providers/system_time_provider.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);
@@ -16,21 +20,63 @@ void main() async {
   );
 }
 
-class ReservationFormMockupScreen extends StatelessWidget {
+class ReservationFormMockupScreen extends ConsumerStatefulWidget {
   const ReservationFormMockupScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
+  ConsumerState<ReservationFormMockupScreen> createState() =>
+      _ReservationFormMockupScreen();
+}
 
+class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupScreen> {
+  bool _initialized = false;
+  late int _nbGuests;
+  String _nameResto = '';
+  DateTime? _selectedDate;
+  ReservationDetails? _reservation;
+  String _specialRequests= '';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    _reservation = args?['reservation'] as ReservationDetails?;
+
+    if (_reservation != null) {
+        _nbGuests = _reservation!.base.numberOfGuests;
+        _nameResto = _reservation!.restaurantName;
+        _selectedDate = _reservation!.base.datetime;
+    } else {
+      _nbGuests = 2;
+      _nameResto = 'brol';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final systemTimeAsync = ref.watch(systemTimeProvider);
+    final simulatedTime = systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
+    if (!_initialized) {
+      _selectedDate = _reservation?.base.datetime ?? simulatedTime;
+      _initialized = true;
+    }
+
+    final theme = Theme.of(context);
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final reservation = args?['reservation'] as ReservationDetails?;
+    final isNew = reservation == null;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+            onPressed: () {
+                Navigator.pop(context);
+            },
         ),
-        title: const Text('Nouvelle réservation'),
+        title: Text((isNew) ? 'Nouvelle réservation':'Modifier réservation'),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -73,9 +119,9 @@ class ReservationFormMockupScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Le Gourmet',
-                  style: TextStyle(
+                Text(
+                  _nameResto,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -87,7 +133,18 @@ class ReservationFormMockupScreen extends StatelessWidget {
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () async {
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: _selectedDate!,
+                              firstDate: simulatedTime,
+                              lastDate: _selectedDate!.add(const Duration(days: 365)),
+                              locale: const Locale('fr', 'FR'),
+                            );
+                            if (picked != null) {
+                              setState(() => _selectedDate = picked);
+                            }
+                          },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Row(
@@ -102,7 +159,8 @@ class ReservationFormMockupScreen extends StatelessWidget {
                                     children: [
                                       const Text('Date'),
                                       Text(
-                                        'Mercredi 4/12/2024',
+                                        DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
+                                            .format(_selectedDate ?? simulatedTime),
                                         style: theme.textTheme.bodySmall,
                                       ),
                                     ],
@@ -118,11 +176,15 @@ class ReservationFormMockupScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     IconButton(
                       icon: const Icon(Icons.remove),
-                      onPressed: () {},
+                      onPressed: () { setState(() {
+                        _selectedDate = _selectedDate?.subtract(Duration(days: 1));
+                      });},
                     ),
                     IconButton(
                       icon: const Icon(Icons.add),
-                      onPressed: () {},
+                      onPressed: () { setState(() {
+                        _selectedDate = _selectedDate?.add(Duration(days: 1));
+                      });},
                     ),
                     const SizedBox(width: 16),
                   ],
@@ -295,17 +357,21 @@ class ReservationFormMockupScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.people),
                   title: const Text('Nombre de convives'),
-                  subtitle: const Text('2'),
+                  subtitle: Text('$_nbGuests'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.remove),
-                        onPressed: () {},
+                        onPressed: () {setState(() {
+                          _nbGuests --;
+                        });},
                       ),
                       IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () {},
+                        onPressed: () { setState(() {
+                          _nbGuests ++;
+                        });},
                       ),
                     ],
                   ),
@@ -361,8 +427,8 @@ class ReservationFormMockupScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Créer la réservation'),
+                  icon: Icon(isNew ? Icons.add : Icons.edit),
+                  label: Text(isNew ? 'Créer la réservation' : 'Modifier la réservation'),
                 ),
               ],
             ),
