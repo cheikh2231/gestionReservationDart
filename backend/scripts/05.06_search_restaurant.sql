@@ -3,7 +3,7 @@ set search_path to public;
 DROP FUNCTION IF EXISTS get_restaurants(text, int);
 
 CREATE OR REPLACE FUNCTION get_restaurants(search_filter text, limit_count int)
-    RETURNS SETOF restaurant_with_last_reservation AS $$
+    RETURNS SETOF restaurants_info AS $$
 BEGIN
     RETURN QUERY
         SELECT

@@ -1,20 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/models/old_restaurant.dart';
-import 'package:prbd_2526_a04/models/old_restaurant_reservations_management.dart';
+import 'package:prbd_2526_a04/models/restaurant.dart';
 
 // Parametre configurable (Limite de la recherche)
 const int maxRestaurantsLimit = 5;
 
-final searchRestaurantsProvider = AsyncNotifierProvider<SearchRestaurantsNotifier, List<RestaurantReservationsManagement>>(
+final searchRestaurantsProvider = AsyncNotifierProvider<SearchRestaurantsNotifier, List<Restaurant>>(
       () => SearchRestaurantsNotifier(),
 );
 
-class SearchRestaurantsNotifier extends AsyncNotifier<List<RestaurantReservationsManagement>> {
+class SearchRestaurantsNotifier extends AsyncNotifier<List<Restaurant>> {
   // requete de saisi de base
   String currentQuery = '';
 
   @override
-  Future<List<RestaurantReservationsManagement>> build() async {
+  Future<List<Restaurant>> build() async {
     return await _fetchData(currentQuery);
   }
 
@@ -29,11 +28,11 @@ class SearchRestaurantsNotifier extends AsyncNotifier<List<RestaurantReservation
     }
   }
 
-  Future<List<RestaurantReservationsManagement>> _fetchData(String query) async {
+  Future<List<Restaurant>> _fetchData(String query) async {
     // limite + 1 pour le message d'erreur
     final limitForServer = maxRestaurantsLimit + 1;
 
-    return await RestaurantReservationsManagement.search(query, limitForServer);
+    return await Restaurant.search(query, limitForServer);
   }
 
 }

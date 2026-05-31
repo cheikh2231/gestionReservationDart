@@ -72,13 +72,13 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: restaurantsState.when(
-          data: (restaurantReservationsManagement) => ListView.builder(
+          data: (restaurants) => ListView.builder(
             padding: const EdgeInsets.all(16.0),
-            itemCount: restaurantReservationsManagement.length,
+            itemCount: restaurants.length,
             itemBuilder: (context,index){
-              final restaurantReservationManagement = restaurantReservationsManagement[index];
+              final restaurant = restaurants[index];
               return RestaurantCard(
-                restaurantReservationManagement: restaurantReservationManagement,
+                restaurant: restaurant,
               );
             }
           ),

@@ -1,6 +1,6 @@
 set search_path to public;
-DROP TYPE IF EXISTS restaurants_info;
-DROP TYPE IF EXISTS reservation_info;
+DROP TYPE IF EXISTS restaurants_info CASCADE;
+DROP TYPE IF EXISTS reservation_info CASCADE;
 
 CREATE TYPE reservation_info AS (
     id                  integer,
@@ -32,10 +32,10 @@ BEGIN
     RETURN QUERY
         SELECT r.id, r.name, r.address, r.city, r.phone,
                r.description, r.rating, r.price_range, r.slot_duration,
-               (SELECT (resLast.id, resLast.client, resLast.restaurant,resLast.datetime,resLast.number_of_guests,resLast.status,resLast.special_requests)
+               (SELECT (resLast.id, resLast.client, resLast.restaurant,resLast.datetime,resLast.number_of_guests,resLast.status,resLast.special_requests)::reservation_info
                 FROM reservations resLast
                 WHERE resLast.restaurant = r.id
-                ORDER BY resLast.datetime DESC LIMIT 1)::reservation_info,
+                ORDER BY resLast.datetime DESC LIMIT 1),
                 (SELECT COUNT(*)::int
                  FROM reservations resPending
                  WHERE r.id = resPending.restaurant

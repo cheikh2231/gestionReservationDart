@@ -26,7 +26,7 @@ class RestaurantReservation {
       numberOfGuests: json['number_of_guests'],
       status: json['status'],
       specialRequests: json['special_requests'],
-      countPending: json['nb_pending_reservation']?.toInt() ?? 0,
+      countPending: json['nb_pending_reservation']?.toInt(),
     );
   }
 }

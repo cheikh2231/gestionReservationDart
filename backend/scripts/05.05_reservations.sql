@@ -1,7 +1,7 @@
-DROP TYPE IF EXISTS reservations_info;
-DROP TYPE IF EXISTS table_info;
-DROP TYPE IF EXISTS restaurant_info;
-DROP TYPE IF EXISTS user_info;
+DROP TYPE IF EXISTS reservations_info CASCADE ;
+DROP TYPE IF EXISTS table_info CASCADE;
+DROP TYPE IF EXISTS restaurant_info CASCADE;
+DROP TYPE IF EXISTS user_info CASCADE;
 
 CREATE TYPE user_info AS (
     id          integer,
