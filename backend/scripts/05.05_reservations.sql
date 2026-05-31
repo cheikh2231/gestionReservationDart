@@ -27,31 +27,36 @@ CREATE TYPE reservation_info AS (
     restaurant          restaurant_info,
     datetime            timestamp,
     number_of_guests    integer,
-    status              text,
+    status              status_type,
     special_requests    text,
     tables              table_info[]
 );
 
 DROP FUNCTION IF EXISTS get_reservations();
 CREATE OR REPLACE FUNCTION get_reservations()
-    RETURNS reservation_info AS $$
-DECLARE
-    result reservation_info;
+    RETURNS SETOF reservation_info AS $$
 BEGIN
-        SELECT (
-                r.id,
-                (c.id,c.full_name,c.email,c.phone)::user_info,
-                (res.id,res.name,res.address,res.city,res.phone)::restaurant_info,
-                r.datetime,r.number_of_guests,r.status,r.special_requests,
-                ARRAY(
-                        SELECT (t.id, t.restaurant, t.table_number, t.capacity)::table_info
-                        FROM reservation_tables rt
-                        JOIN tables t ON t.id = rt.table
-                        WHERE rt.reservation = r.id
-                ))::reservation_info INTO result
-                FROM reservations r
-                JOIN users c ON c.id = r.client
-                JOIN restaurants res ON res.id = r.restaurant;
-        RETURN result;
+    RETURN QUERY
+        SELECT
+            r.id,
+            (c.id, c.full_name, c.email, c.phone)::user_info,
+            (res.id, res.name, res.address, res.city, res.phone)::restaurant_info,
+            r.datetime,
+            r.number_of_guests,
+            r.status,
+            r.special_requests,
+
+            ARRAY(
+                    SELECT (t.id, t.restaurant, t.table_number, t.capacity)::table_info
+                    FROM reservation_tables rt
+                             JOIN tables t ON t.id = rt.table
+                    WHERE rt.reservation = r.id
+            )
+
+        FROM reservations r
+                 JOIN users c ON c.id = r.client
+                 JOIN restaurants res ON res.id = r.restaurant;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION get_reservations() TO authenticated;

@@ -16,7 +16,9 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
   Future<List<Reservation>> _chargeReservations() async {
     try{
       return await Reservation.getReservations();
-    }catch(e){
+    }catch(e,stack){
+      print('Erreur: $e');
+      print('Stack: $stack');
       return [];
     }
   }

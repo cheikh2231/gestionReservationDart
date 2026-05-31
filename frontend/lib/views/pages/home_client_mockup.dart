@@ -36,10 +36,11 @@ class _HomeClientMockupScreenState
 
 
   List<Reservation> _filteredReservations(List<Reservation> reservations) {
+    final int? userId = ref.read(securityProvider.notifier).loggedId;
     return _filterReservationString == "all"
-        ? reservations
+        ? reservations.where((r) => (r.client.id == userId )).toList()
         : reservations
-              .where((r) => r.status == _filterReservationString)
+              .where((r) =>( r.status == _filterReservationString && r.client.id == userId ))
               .toList();
   }
 

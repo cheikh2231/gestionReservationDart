@@ -39,12 +39,18 @@ class Reservation {
   );
 
   static Future<List<Reservation>> getReservations() async {
+    // Votre appel API actuel
     final response = await ApiClient.get('get_reservations');
+
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => Reservation.fromJson(item)).toList();
     } else {
-      throw Exception('Failed to get reservations');
+      // AJOUTEZ CES DEUX LIGNES POUR DÉBOGUER :
+      print('ERREUR SERVEUR : ${response.statusCode}');
+      print('MESSAGE SERVEUR : ${response.body}');
+
+      throw Exception('Failed to get reservations'); // Ligne 47
     }
   }
 }
