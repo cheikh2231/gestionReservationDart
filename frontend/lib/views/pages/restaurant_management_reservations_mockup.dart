@@ -5,7 +5,7 @@ import 'package:prbd_2526_a04/models/reservation.dart';
 import 'package:prbd_2526_a04/providers/reservation_provider.dart';
 
 import '../../core/widgets/restaurant_reservation_card.dart';
-import '../../models/restaurant.dart';
+import '../../models/old_restaurant.dart';
 import '../../providers/system_time_provider.dart';
 
 class RestaurantManagementReservationsMockupScreen extends ConsumerStatefulWidget {

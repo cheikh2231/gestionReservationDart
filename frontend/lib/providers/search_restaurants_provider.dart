@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/models/restaurant.dart';
-import 'package:prbd_2526_a04/models/restaurant_reservations_management.dart';
+import 'package:prbd_2526_a04/models/old_restaurant.dart';
+import 'package:prbd_2526_a04/models/old_restaurant_reservations_management.dart';
 
 // Parametre configurable (Limite de la recherche)
 const int maxRestaurantsLimit = 5;

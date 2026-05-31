@@ -8,20 +8,6 @@ import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 
 import '../../core/widgets/restaurant_card.dart';
 
-void main() async {
-  await initializeDateFormatting('fr_FR', null);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const MyRestaurantsMockupScreen(),
-    ),
-  );
-}
-
 class MyRestaurantsMockupScreen extends ConsumerWidget {
   const MyRestaurantsMockupScreen({super.key});
 

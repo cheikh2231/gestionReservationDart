@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import '../core/services/api_client.dart';
-import 'restaurant.dart';
+import 'old_restaurant.dart';
 
 class RestaurantReservationsManagement {
   final Restaurant base;
-  final DateTime? lastReservation;
   final int nbPendingReservation;
 
   RestaurantReservationsManagement({

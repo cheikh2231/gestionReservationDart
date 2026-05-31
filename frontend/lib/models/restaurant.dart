@@ -1,6 +1,6 @@
-import 'dart:convert';
 
-import '../core/services/api_client.dart';
+
+import 'package:prbd_2526_a04/models/restaurant_reservation.dart';
 
 class Restaurant {
   final int id;
@@ -12,6 +12,7 @@ class Restaurant {
   final double? rating;
   final int? priceRange;
   final int slotDuration;
+  final RestaurantReservation? lastReservation;
 
   const Restaurant({
     required this.id,
@@ -23,6 +24,7 @@ class Restaurant {
     this.rating,
     this.priceRange,
     required this.slotDuration,
+    this.lastReservation
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,10 @@ class Restaurant {
       rating: json['rating']?.toDouble(),
       priceRange: json['price_range'],
       slotDuration: json['slot_duration'],
+      lastReservation: json['last_reservation'] != null
+          ? RestaurantReservation.fromJson(json['last_reservation'])
+          : null,
     );
   }
 }
+

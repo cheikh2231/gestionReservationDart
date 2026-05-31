@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/models/restaurant_reservations_management.dart';
+import 'package:prbd_2526_a04/models/old_restaurant_reservations_management.dart';
 import 'package:prbd_2526_a04/providers/security_provider.dart';
 
 final myRestaurantsProvider = AsyncNotifierProvider<MyRestaurantReservationManagementNotifier, List<RestaurantReservationsManagement>>(
