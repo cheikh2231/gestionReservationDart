@@ -4,19 +4,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prbd_2526_a04/providers/security_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
-
-import '../../models/reservation.dart';
 import '../../models/reservation_with_user.dart';
 
 
 class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
-  const ReservationDetailsManagerMockupScreen({super.key, required this.reservation});
-  final Reservation reservation;
+  const ReservationDetailsManagerMockupScreen({super.key, required this.reservationWithUser});
+  final ReservationWithUser reservationWithUser;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final simulatedTimeState = ref.watch(systemTimeProvider);
     final theme = Theme.of(context);
-
+    final Map<String, ({Color color, bool btnConfirm, String? btnConfirmText, IconData? icon, bool btnCancelled})> statusManager = {
+      'pending': (color: const Color(0xFFFB8C00), btnConfirm: true, btnConfirmText: "Confirmer et assigner tables", icon: Icons.restaurant, btnCancelled: true),
+      'confirmed': (color: const Color(0xFF4CAF50), btnConfirm: true, btnConfirmText: "Marquer comme terminée", icon: Icons.check_circle, btnCancelled: true),
+      'completed': (color: const Color(0xFF2196F3), btnConfirm: false, btnConfirmText: null, icon: null, btnCancelled: false),
+      'cancelled': (color: const Color(0xFFF44336), btnConfirm: false, btnConfirmText: null, icon: null, btnCancelled: false),
+    };
+    final statusManagerData = statusManager[reservationWithUser.base.status] ??
+        (color: Colors.grey, btnConfirm: false, btnConfirmText: null, icon: null, btnCancelled: false);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -87,19 +93,19 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Row(
+                      Row(
                         children: [
                           Icon(Icons.person, size: 20),
                           SizedBox(width: 8),
-                          Text('Nom: Xavier'),
+                          Text('Nom: ${reservationWithUser.clientName}'),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      const Row(
+                      Row(
                         children: [
                           Icon(Icons.email, size: 20),
                           SizedBox(width: 8),
-                          Text('Email: xapigeolet@epfc.eu'),
+                          Text('Email: ${reservationWithUser.clientEmail}'),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -108,7 +114,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           const Icon(Icons.phone, size: 20),
                           const SizedBox(width: 8),
                           Text(
-                            'Téléphone: Non renseigné',
+                            reservationWithUser.clientPhone ?? 'Téléphone: Non renseigné',
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                         ],
@@ -155,7 +161,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           const Icon(Icons.calendar_today, size: 20),
                           const SizedBox(width: 8),
                           Text(
-                            'Date: jeu. 21/11/2024',
+                            'Date: ${DateFormat('EE dd/MM/yyyy', 'fr_FR').format(reservationWithUser.base.datetime)}',
                           ),
                         ],
                       ),
@@ -164,15 +170,16 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                         children: [
                           const Icon(Icons.access_time, size: 20),
                           const SizedBox(width: 8),
-                          const Text('Heure: 19:30'),
-                        ],
+                          Text(
+                            'Heure: ${DateFormat('HH:mm', 'fr_FR').format(reservationWithUser.base.datetime)}',
+                          )],
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           const Icon(Icons.people, size: 20),
                           const SizedBox(width: 8),
-                          const Text('Nombre de convives: 8'),
+                          Text('Nombre de convives: ${reservationWithUser.base.numberOfGuests}'),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -182,14 +189,14 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           const SizedBox(width: 8),
                           const Text('Statut: '),
                           Chip(
-                            label: const Text(
-                              'Confirmée',
+                            label:  Text(
+                              reservationWithUser.base.status,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.white,
                               ),
                             ),
-                            backgroundColor: const Color(0xFF4CAF50),
+                            backgroundColor: statusManagerData.color,
                             padding: EdgeInsets.zero,
                           ),
                         ],
@@ -206,7 +213,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Célébration',
+                        reservationWithUser.base.specialRequests ?? 'Aucune demande',
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                     ],
@@ -260,12 +267,14 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              if(statusManagerData.btnConfirm)
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.check_circle),
-                label: const Text('Marquer comme terminée'),
+                label: Text(statusManagerData.btnConfirmText ?? ""),
               ),
               const SizedBox(height: 8),
+              if(statusManagerData.btnCancelled)
               OutlinedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.cancel),
@@ -278,3 +287,5 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
     );
   }
 }
+
+

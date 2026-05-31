@@ -22,7 +22,7 @@ class RestaurantReservationCard extends StatelessWidget {
       'completed': (icon: Icons.event_available, color: Colors.blue),
       'cancelled': (icon: Icons.cancel, color: Colors.red),
     };
-    final reservationIcon = statusIcons[reservation.base.status] ?? (icon: Icons.error, color: Colors.grey);;
+    final reservationIcon = statusIcons[reservation.base.status] ?? (icon: Icons.error, color: Colors.grey);
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
@@ -30,7 +30,7 @@ class RestaurantReservationCard extends StatelessWidget {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => ReservationDetailsManagerMockupScreen(
-                reservation: reservationWithUser.base,
+                reservationWithUser: reservationWithUser,
               ),
             ),
           );

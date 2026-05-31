@@ -6,16 +6,22 @@ import '../core/services/api_client.dart';
 class ReservationWithUser {
   final Reservation base;
   final String? clientName;
+  final String? clientEmail;
+  final String? clientPhone;
 
   ReservationWithUser({
     required this.base,
-    required this.clientName,
+    this.clientName,
+    this.clientEmail,
+    this.clientPhone,
   });
 
   factory ReservationWithUser.fromJson(Map<String, dynamic> json) {
     return ReservationWithUser(
       base: Reservation.fromJson(json),
       clientName: json['full_name'],
+      clientEmail: json['email'],
+      clientPhone: json['phone'],
     );
   }
 
@@ -26,8 +32,8 @@ class ReservationWithUser {
         final List<dynamic> body = json.decode(response.body);
         return body.map((dynamic item) => ReservationWithUser.fromJson(item)).toList();
       } else {
-        print("DEBUG: ERREUR API = ${response.statusCode}");
-        print("DEBUG: MESSAGE ERREUR = ${response.body}");
+        print(response.statusCode);
+        print(response.body);
         throw Exception('Erreur lors du chargement des reservationss');
       }
     } catch (e) {
