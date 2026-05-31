@@ -4,12 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prbd_2526_a04/providers/security_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
-import '../../models/reservation_restaurant.dart';
+import '../../models/reservation.dart';
 
 
 class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
-  const ReservationDetailsManagerMockupScreen({super.key, required this.reservationWithUser});
-  final ReservationWithUser reservationWithUser;
+  const ReservationDetailsManagerMockupScreen({super.key, required this.reservation});
+  final Reservation reservation;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +21,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
       'completed': (color: const Color(0xFF2196F3), btnConfirm: false, btnConfirmText: null, icon: null, btnCancelled: false),
       'cancelled': (color: const Color(0xFFF44336), btnConfirm: false, btnConfirmText: null, icon: null, btnCancelled: false),
     };
-    final statusManagerData = statusManager[reservationWithUser.base.status] ??
+    final statusManagerData = statusManager[reservation.status] ??
         (color: Colors.grey, btnConfirm: false, btnConfirmText: null, icon: null, btnCancelled: false);
     return Scaffold(
       appBar: AppBar(
@@ -97,7 +97,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                         children: [
                           Icon(Icons.person, size: 20),
                           SizedBox(width: 8),
-                          Text('Nom: ${reservationWithUser.clientName}'),
+                          Text('Nom: ${reservation.client.fullName}'),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -105,7 +105,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                         children: [
                           Icon(Icons.email, size: 20),
                           SizedBox(width: 8),
-                          Text('Email: ${reservationWithUser.clientEmail}'),
+                          Text('Email: ${reservation.client.email}'),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -114,7 +114,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           const Icon(Icons.phone, size: 20),
                           const SizedBox(width: 8),
                           Text(
-                            reservationWithUser.clientPhone ?? 'Téléphone: Non renseigné',
+                            reservation.client.phone ?? 'Téléphone: Non renseigné',
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                         ],
@@ -161,7 +161,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           const Icon(Icons.calendar_today, size: 20),
                           const SizedBox(width: 8),
                           Text(
-                            'Date: ${DateFormat('EE dd/MM/yyyy', 'fr_FR').format(reservationWithUser.base.datetime)}',
+                            'Date: ${DateFormat('EE dd/MM/yyyy', 'fr_FR').format(reservation.datetime)}',
                           ),
                         ],
                       ),
@@ -171,7 +171,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           const Icon(Icons.access_time, size: 20),
                           const SizedBox(width: 8),
                           Text(
-                            'Heure: ${DateFormat('HH:mm', 'fr_FR').format(reservationWithUser.base.datetime)}',
+                            'Heure: ${DateFormat('HH:mm', 'fr_FR').format(reservation.datetime)}',
                           )],
                       ),
                       const SizedBox(height: 8),
@@ -179,7 +179,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                         children: [
                           const Icon(Icons.people, size: 20),
                           const SizedBox(width: 8),
-                          Text('Nombre de convives: ${reservationWithUser.base.numberOfGuests}'),
+                          Text('Nombre de convives: ${reservation.numberOfGuests}'),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -190,7 +190,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           const Text('Statut: '),
                           Chip(
                             label:  Text(
-                              reservationWithUser.base.status,
+                              reservation.status,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.white,
@@ -213,7 +213,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        reservationWithUser.base.specialRequests ?? 'Aucune demande',
+                        reservation.specialRequests ?? 'Aucune demande',
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                     ],

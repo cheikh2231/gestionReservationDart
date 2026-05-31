@@ -7,14 +7,13 @@ import '../../views/pages/reservation_details_manager_mockup.dart';
 
 
 class RestaurantReservationCard extends StatelessWidget {
-  const RestaurantReservationCard({super.key,required this.restaurant, required this.reservationWithUser,required this.status});
+  const RestaurantReservationCard({super.key,required this.restaurant, required this.reservation,required this.status});
   final Restaurant restaurant;
-  final ReservationWithUser reservationWithUser;
+  final Reservation reservation;
   final String status;
   @override
   Widget build(BuildContext context) {
-    final reservation = reservationWithUser;
-    final reservationDateFormated = DateFormat('E dd/MM/yyyy', 'fr_FR').format(reservation.base.datetime);
+    final reservationDateFormated = DateFormat('E dd/MM/yyyy', 'fr_FR').format(reservation.datetime);
     final Map<String, ({IconData icon, Color color})> statusIcons = {
       'all': (icon: Icons.list, color: Colors.grey),
       'pending': (icon: Icons.pending, color: Colors.orange),
@@ -22,7 +21,7 @@ class RestaurantReservationCard extends StatelessWidget {
       'completed': (icon: Icons.event_available, color: Colors.blue),
       'cancelled': (icon: Icons.cancel, color: Colors.red),
     };
-    final reservationIcon = statusIcons[reservation.base.status] ?? (icon: Icons.error, color: Colors.grey);
+    final reservationIcon = statusIcons[reservation.status] ?? (icon: Icons.error, color: Colors.grey);
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
@@ -30,7 +29,7 @@ class RestaurantReservationCard extends StatelessWidget {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => ReservationDetailsManagerMockupScreen(
-                reservationWithUser: reservationWithUser,
+                reservation: reservation,
               ),
             ),
           );
@@ -50,7 +49,7 @@ class RestaurantReservationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${reservation.clientName}',
+                      '${reservation.client.fullName}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -80,7 +79,7 @@ class RestaurantReservationCard extends StatelessWidget {
                         const Icon(Icons.people, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                            '${reservationWithUser.base.numberOfGuests} ' '${reservationWithUser.base.numberOfGuests > 1 ? "convives" : "convive"}',
+                            '${reservation.numberOfGuests} ' '${reservation.numberOfGuests > 1 ? "convives" : "convive"}',
                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         ),
                       ],

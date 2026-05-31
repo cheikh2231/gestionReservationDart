@@ -1,19 +1,5 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/models/reservation_restaurant.dart';
-import 'package:prbd_2526_a04/providers/security_provider.dart';
-import '../models/reservation.dart';
-
-import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/models/reservation_restaurant.dart';
-import 'package:prbd_2526_a04/providers/security_provider.dart';
-import '../models/reservation.dart';
-
-import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/models/reservation_restaurant.dart';
-import 'package:prbd_2526_a04/providers/security_provider.dart';
 import '../models/reservation.dart';
 
 final reservationsProvider = AsyncNotifierProvider<ReservationsNotifier, List<Reservation>>(
@@ -24,14 +10,34 @@ final reservationsProvider = AsyncNotifierProvider<ReservationsNotifier, List<Re
 class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
   @override
   Future<List<Reservation>> build() async {
+    return _chargeReservations();
+  }
 
-    ref.watch(securityProvider);
-    state = const AsyncLoading();
-    try {
-
+  Future<List<Reservation>> _chargeReservations() async {
+    try{
       return await Reservation.getReservations();
-    } catch (e,stack) {
-      throw "Impossible de charger les reservations pour ce restaurant.\nVeuillez réessayer plus tard.";
+    }catch(e){
+      return [];
     }
   }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _chargeReservations());
+  }
+
+  void updateReservation(Reservation updated) {
+    state.whenData((list) {
+      state = AsyncData(
+        list.map((r) => r.id == updated.id ? updated : r).toList(),
+      );
+    });
+  }
+
+  void removeReservation(int id) {
+    state.whenData((list) {
+      state = AsyncData(list.where((r) => r.id != id).toList());
+    });
+  }
+
 }
