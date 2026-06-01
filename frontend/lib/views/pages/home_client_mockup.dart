@@ -3,10 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:prbd_2526_a04/models/reservation_details.dart';
-
-import '../../core/services/api_client.dart';
-
 import '../../core/widgets/reservations_card.dart';
 import '../../models/reservation.dart';
 import '../../providers/reservation_provider.dart';
@@ -39,11 +35,12 @@ class _HomeClientMockupScreenState
   String _filterReservationString = 'pending';
 
 
-  List<ReservationDetails> _filteredReservations(List<ReservationDetails> reservations) {
+  List<Reservation> _filteredReservations(List<Reservation> reservations) {
+    final int? userId = ref.read(securityProvider.notifier).loggedId;
     return _filterReservationString == "all"
-        ? reservations
+        ? reservations.where((r) => (r.client.id == userId )).toList()
         : reservations
-              .where((r) => r.base.status == _filterReservationString)
+              .where((r) =>( r.status == _filterReservationString && r.client.id == userId ))
               .toList();
   }
 
@@ -167,7 +164,7 @@ class _HomeClientMockupScreenState
                         onTap: () => Navigator.pushNamed(
                           context,
                           '/reservation_details',
-                          arguments: r.base.id,
+                          arguments: r.id,
                         ),
                       ),
                   ],

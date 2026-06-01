@@ -1,6 +1,18 @@
 set search_path to public;
+DROP TYPE IF EXISTS restaurants_info CASCADE;
+DROP TYPE IF EXISTS reservation_info CASCADE;
 
-CREATE TYPE restaurant_with_last_reservation AS (
+CREATE TYPE reservation_info AS (
+    id                  integer,
+    client              integer,
+    restaurant          integer,
+    datetime            timestamp,
+    number_of_guests    integer,
+    status              status_type,
+    special_requests    text
+);
+
+CREATE TYPE restaurants_info AS (
     id int,
     name varchar,
     address varchar,
@@ -10,29 +22,28 @@ CREATE TYPE restaurant_with_last_reservation AS (
     rating double precision,
     price_range int,
     slot_duration int,
-    last_reservation timestamp,
+    last_reservation reservation_info,
     nb_pending_reservation int
 );
-
-CREATE OR REPLACE FUNCTION get_my_restaurants_with_last_reservation()
-    RETURNS SETOF restaurant_with_last_reservation AS $$
+DROP FUNCTION IF EXISTS get_restaurants();
+CREATE OR REPLACE FUNCTION get_restaurants()
+    RETURNS SETOF restaurants_info AS $$
 BEGIN
     RETURN QUERY
         SELECT r.id, r.name, r.address, r.city, r.phone,
                r.description, r.rating, r.price_range, r.slot_duration,
-               MAX(resLast.datetime) as last_reservation,
-               COUNT(resPending.id)::int as nb_pending_reservation
-        FROM restaurant_managers rm
-                 JOIN restaurants r ON r.id = rm.restaurant
-                 LEFT JOIN reservations resLast ON resLast.restaurant = r.id
-                 LEFT JOIN reservations resPending ON resPending.restaurant = r.id AND resPending.status = 'pending'
-        WHERE manager = auth.id()
-        GROUP BY r.id, r.name
-        ORDER BY MAX(resLast.datetime) DESC, r.name ASC;
-END;
+               (SELECT (resLast.id, resLast.client, resLast.restaurant,resLast.datetime,resLast.number_of_guests,resLast.status,resLast.special_requests)::reservation_info
+                FROM reservations resLast
+                WHERE resLast.restaurant = r.id
+                ORDER BY resLast.datetime DESC LIMIT 1),
+                (SELECT COUNT(*)::int
+                 FROM reservations resPending
+                 WHERE r.id = resPending.restaurant
+                 AND resPending.status = 'pending')
+        FROM restaurants r;
+    END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-GRANT EXECUTE ON FUNCTION get_my_restaurants_with_last_reservation() TO authenticated;
 
-GRANT SELECT ON restaurants TO authenticated;
-GRANT SELECT ON restaurant_managers TO authenticated;
+GRANT EXECUTE ON FUNCTION get_restaurants() TO authenticated;
+

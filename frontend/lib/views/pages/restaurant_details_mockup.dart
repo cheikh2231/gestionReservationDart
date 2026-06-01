@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import 'package:prbd_2526_a04/models/restaurant.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
+
+import '../../models/restaurant.dart';
 
 class RestaurantDetailsMockupScreen extends ConsumerWidget {
   const RestaurantDetailsMockupScreen({super.key});

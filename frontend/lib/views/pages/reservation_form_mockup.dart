@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:prbd_2526_a04/models/reservation_details.dart';
 
+import '../../models/reservation.dart';
 import '../../providers/system_time_provider.dart';
 
 void main() async {
@@ -33,7 +33,7 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
   late int _nbGuests;
   String _nameResto = '';
   DateTime? _selectedDate;
-  ReservationDetails? _reservation;
+  Reservation? _reservation;
   String _specialRequests= '';
 
   @override
@@ -43,12 +43,12 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
     _initialized = true;
 
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    _reservation = args?['reservation'] as ReservationDetails?;
+    _reservation = args?['reservation'] as Reservation?;
 
     if (_reservation != null) {
-        _nbGuests = _reservation!.base.numberOfGuests;
-        _nameResto = _reservation!.restaurantName;
-        _selectedDate = _reservation!.base.datetime;
+        _nbGuests = _reservation!.numberOfGuests;
+        _nameResto = _reservation!.restaurant.name;
+        _selectedDate = _reservation!.datetime;
     } else {
       _nbGuests = 2;
       _nameResto = 'brol';
@@ -60,13 +60,13 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
     final systemTimeAsync = ref.watch(systemTimeProvider);
     final simulatedTime = systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
     if (!_initialized) {
-      _selectedDate = _reservation?.base.datetime ?? simulatedTime;
+      _selectedDate = _reservation?.datetime ?? simulatedTime;
       _initialized = true;
     }
 
     final theme = Theme.of(context);
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final reservation = args?['reservation'] as ReservationDetails?;
+    final reservation = args?['reservation'] as Reservation?;
     final isNew = reservation == null;
     return Scaffold(
       appBar: AppBar(

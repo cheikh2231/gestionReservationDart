@@ -6,6 +6,8 @@ import 'package:prbd_2526_a04/core/tools/debounce.dart';
 import 'package:prbd_2526_a04/providers/search_restaurants_provider.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 
+import '../../models/restaurant.dart';
+
 
 
 class SearchRestaurantsMockupScreen extends ConsumerStatefulWidget {
@@ -141,7 +143,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                               itemBuilder: (context, index) {
 
                                 final restaurantMgmt = displayList[index];
-                                final restaurant = restaurantMgmt.base;
+                                final restaurant = restaurantMgmt;
 
                                 return Card(
                                   margin: const EdgeInsets.only(bottom: 8.0),
@@ -171,7 +173,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                           ],
                                         ),
 
-                                        if (restaurantMgmt.lastReservation != null)
+                                        if (restaurant.lastReservation != null)
                                           Padding(
                                             padding: const EdgeInsets.only(top: 4.0),
                                             child: Row(
@@ -179,14 +181,14 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                                 const Icon(Icons.access_time, size: 14, color: Colors.grey),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  'Dernière réservation: ${DateFormat('EEE dd/MM/yyyy', 'fr_FR').format(restaurantMgmt.lastReservation!)}',
+                                                  'Dernière réservation: ${DateFormat('EEE dd/MM/yyyy', 'fr_FR').format(restaurant.lastReservation!.datetime)}',
                                                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                                                 ),
                                               ],
                                             ),
                                           ),
 
-                                        if (restaurantMgmt.nbPendingReservation > 0)
+                                        if (restaurant.lastReservation?.countPending != null)
                                           Padding(
                                             padding: const EdgeInsets.only(top: 4.0),
                                             child: Row(
@@ -194,7 +196,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                                 const Icon(Icons.pending_actions, size: 14, color: Colors.orange),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  '${restaurantMgmt.nbPendingReservation} demande(s) en attente',
+                                                  '${restaurant.lastReservation?.countPending} demande(s) en attente',
                                                   style: const TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
                                                 ),
                                               ],

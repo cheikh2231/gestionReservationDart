@@ -61,6 +61,11 @@ class SecurityNotifier extends AsyncNotifier<String?> {
     return _getUserFieldFromToken(state.value, 'role');
   }
 
+  int? get loggedId {
+    return _getIdFromToken(state.value);
+  }
+
+
   String? get loggedName {
     return _getNameFromToken(state.value);
   }
@@ -70,6 +75,17 @@ class SecurityNotifier extends AsyncNotifier<String?> {
     try {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
       return decodedToken['name'];
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static int? _getIdFromToken(String? token) {
+    if (token == null) return null;
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      print(decodedToken);
+      return decodedToken['user_id'];
     } catch (e) {
       return null;
     }
