@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/services/api_client.dart';
 import '../models/reservation.dart';
 
 final reservationsProvider = AsyncNotifierProvider<ReservationsNotifier, List<Reservation>>(
@@ -41,5 +43,23 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
       state = AsyncData(list.where((r) => r.id != id).toList());
     });
   }
+
+  Future<Reservation?> cancelReservation(int id) async {
+    try{
+       final resUpdated = await Reservation.cancelReservation(id);
+       updateReservation(resUpdated);
+       return resUpdated;
+    }catch(e){
+      return null;
+    }
+  }
+
+  // Future<Reservation?> getReservationWithId(int id) async{
+  //   final response = await _chargeReservations();
+  //   if(response.isEmpty){
+  //     return null;
+  //   }
+  //   return response.where((r)=>r.id==id) as Reservation;
+  // }
 
 }

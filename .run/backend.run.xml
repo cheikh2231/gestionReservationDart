@@ -20,9 +20,9 @@
     <script-file value="$PROJECT_DIR$/backend/scripts/04_14_br_prevent_past_reservation_on_insert.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.01_ep_reservations.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.02_ep_reservation_with_id.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.03_ep_cancel_reservation.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.04_restaurant.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.05_reservations.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.03_ep_cancel_reservation.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.06_search_restaurant.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.07_system_time.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/XX_suppression_des_triggers.sql" />

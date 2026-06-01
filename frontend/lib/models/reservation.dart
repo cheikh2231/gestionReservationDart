@@ -53,4 +53,12 @@ class Reservation {
       throw Exception('Failed to get reservations'); // Ligne 47
     }
   }
+
+  static Future<Reservation> cancelReservation(int id) async{
+      final response = await ApiClient.post(
+        'cancel_reservation',
+        body: jsonEncode({'id_res': id}),
+      );
+      return Reservation.fromJson(jsonDecode(response.body));
+  }
 }
