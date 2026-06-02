@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prbd_2526_a04/providers/reservation_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
-import '../../models/reservation.dart';
+import 'package:prbd_2526_a04/views/pages/assign_tables_mockup.dart';
 
 class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
   const ReservationDetailsManagerMockupScreen({
@@ -328,7 +328,13 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                     ElevatedButton.icon(
                       onPressed: () async {
                         if(reservation.status == 'pending')
-                          print("pending btn");
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => AssignTablesMockupScreen(
+                                reservationId: reservation.id,
+                              ),
+                            ),
+                          );
                         if(reservation.status == 'confirmed')
                           await ref.read(reservationsProvider.notifier).completeReservation(reservation.id);
                       },
