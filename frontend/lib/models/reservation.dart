@@ -27,7 +27,7 @@ class Reservation {
     required this.tables,
   });
 
-  factory Reservation.fromJson(Map<String, dynamic> json) => Reservation(
+   factory Reservation.fromJson(Map<String, dynamic> json) => Reservation(
     id: json['id'],
     client: ReservationClient.fromJson(json['client']),
     restaurant: ReservationRestaurant.fromJson(json['restaurant']),
@@ -39,18 +39,17 @@ class Reservation {
   );
 
   static Future<List<Reservation>> getReservations() async {
-    // Votre appel API actuel
     final response = await ApiClient.get('get_reservations');
 
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => Reservation.fromJson(item)).toList();
     } else {
-      // AJOUTEZ CES DEUX LIGNES POUR DÉBOGUER :
+      //  POUR DÉBOGUER :
       print('ERREUR SERVEUR : ${response.statusCode}');
       print('MESSAGE SERVEUR : ${response.body}');
 
-      throw Exception('Failed to get reservations'); // Ligne 47
+      throw Exception('Failed to get reservations');
     }
   }
 
@@ -60,5 +59,13 @@ class Reservation {
         body: jsonEncode({'id_res': id}),
       );
       return Reservation.fromJson(jsonDecode(response.body));
+  }
+
+  static String? validateSpecialRequest(String? request) {
+      if(request==null) return null;
+      if(request.trim().isNotEmpty && request.trim().length<10){
+          return "Les demandes speciales doivent contenir au moins 10 caracteres";
+      }
+      return null;
   }
 }

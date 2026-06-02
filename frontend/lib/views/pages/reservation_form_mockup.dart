@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/tools/validating_text_editing_controller.dart';
 import '../../models/reservation.dart';
+import '../../models/restaurant.dart';
 import '../../providers/system_time_provider.dart';
 
 void main() async {
@@ -34,7 +36,12 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
   String _nameResto = '';
   DateTime? _selectedDate;
   Reservation? _reservation;
-  String _specialRequests= '';
+  bool? isClosed = false;
+
+  final _specialRequestController = ValidatingTextEditingController(
+    validator: Reservation.validateSpecialRequest,
+    initialValue: '',
+  );
 
   @override
   void didChangeDependencies() {
@@ -49,16 +56,39 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
         _nbGuests = _reservation!.numberOfGuests;
         _nameResto = _reservation!.restaurant.name;
         _selectedDate = _reservation!.datetime;
+        _specialRequestController.text = _reservation!.specialRequests ?? '';
     } else {
+      _specialRequestController.text = '';
       _nbGuests = 2;
       _nameResto = 'brol';
     }
   }
+  void refreshDateAndClosedRestaurantDays(Reservation? reservation , int days) async{
 
+    final datePlusOne = _selectedDate?.add(Duration(days: days));
+    if(datePlusOne == null) return;
+    setState(() {
+      _selectedDate = datePlusOne;
+    });
+    bool isResClosed = false;
+    try{
+      final listClosedDay = reservation != null ? await Restaurant.getClosedDays(reservation.restaurant.id) : await Restaurant.getClosedDays(5);
+    isResClosed = listClosedDay.contains(datePlusOne.weekday);
+    }catch(e){
+      print(e.toString());
+      print('pas bonnnnnnnnnnnnnnnnnnnnnnn');
+    return;
+  }
+    setState(() {
+      isClosed = isResClosed;
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
     final systemTimeAsync = ref.watch(systemTimeProvider);
     final simulatedTime = systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
+    _specialRequestController.onAfterValidated = () => setState(() {});
     if (!_initialized) {
       _selectedDate = _reservation?.datetime ?? simulatedTime;
       _initialized = true;
@@ -176,20 +206,21 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                     const SizedBox(width: 8),
                     IconButton(
                       icon: const Icon(Icons.remove),
-                      onPressed: () { setState(() {
-                        _selectedDate = _selectedDate?.subtract(Duration(days: 1));
-                      });},
+                      onPressed: () {
+                        refreshDateAndClosedRestaurantDays(reservation,-1);
+                       },
                     ),
                     IconButton(
                       icon: const Icon(Icons.add),
-                      onPressed: () { setState(() {
-                        _selectedDate = _selectedDate?.add(Duration(days: 1));
-                      });},
+                      onPressed: () async {
+                        refreshDateAndClosedRestaurantDays(reservation,1);
+                      },
                     ),
                     const SizedBox(width: 16),
                   ],
                 ),
                 const Divider(),
+                if(isClosed == true)
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -197,10 +228,12 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.orange),
                   ),
+
                   child: Row(
                     children: [
                       const Icon(Icons.warning, color: Colors.orange),
                       const SizedBox(width: 8),
+
                       const Expanded(
                         child: Text(
                           'Le restaurant est fermé ce jour-là.',
@@ -214,6 +247,7 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                   ),
                 ),
                 const SizedBox(height: 24),
+                if (isClosed == false)
                 const Text(
                   'Créneaux disponibles',
                   style: TextStyle(
@@ -221,7 +255,9 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                if (isClosed == false)
                 const SizedBox(height: 12),
+                if (isClosed == false)
                 Wrap(
                   spacing: 8.0,
                   runSpacing: 8.0,
@@ -353,6 +389,7 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                     ),
                   ],
                 ),
+                if (isClosed == false)
                 const SizedBox(height: 24),
                 ListTile(
                   leading: const Icon(Icons.people),
@@ -414,16 +451,21 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  controller: _specialRequestController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: InputDecoration(
                     labelText: 'Demandes spéciales (optionnel)',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     hintText: 'Allergies, préférences...',
+                    errorText: _specialRequestController.errorText,
                   ),
                   maxLines: 3,
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: isClosed! ? null : (){
+
+                  },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
@@ -436,5 +478,6 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
         ),
       ),
     );
+
   }
 }

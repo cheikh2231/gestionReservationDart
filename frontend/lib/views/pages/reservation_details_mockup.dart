@@ -5,8 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
-
-import '../../core/services/api_client.dart';
 import '../../core/widgets/dialog_box.dart';
 import '../../models/reservation.dart';
 import '../../providers/reservation_provider.dart';
@@ -34,9 +32,13 @@ class ReservationDetailsMockupScreen extends ConsumerStatefulWidget {
 }
 
 class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMockupScreen> {
+  final simulatedTime = DateTime(2024, 12, 4, 16, 0);
 
-  bool canMod(Reservation res) {
+  bool canTouch(Reservation res) {
     return res.status != "cancelled" && res.status != "completed";
+  }
+  bool canMod(Reservation res) {
+    return canTouch(res) && res.datetime.isAfter(simulatedTime);
   }
 
   Future<void> _onCancelPressed() async {
@@ -72,7 +74,6 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
 
     final reservation = reservationsAsync.value?.firstWhere((r) => r.id == id);
     final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
     if(reservationsAsync.isLoading){
         return const Center(child: CircularProgressIndicator());
     }
@@ -107,6 +108,7 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
               child: Tooltip(
                 message:
                     'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
+
                 child: Text(
                   DateFormat(
                     'EEEE dd/MM/yyyy HH:mm',
@@ -131,12 +133,12 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
             children: [
               ReservationDetailCard(reservation: reservation! ),
               const SizedBox(height: 24),
-              if(canMod(reservation))
+              if(canTouch(reservation))
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                    onPressed: () {
+                    onPressed: !canMod(reservation) ? null :() {
                       Navigator.pushNamed(
                       context,
                       '/add_edit_reservation', arguments: {'reservation': reservation},
