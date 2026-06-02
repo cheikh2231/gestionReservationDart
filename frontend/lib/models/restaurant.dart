@@ -41,7 +41,9 @@ class Restaurant {
       rating: json['rating']?.toDouble(),
       priceRange: json['price_range'],
       slotDuration: json['slot_duration'],
-      lastReservation: RestaurantReservation.fromJson(json['last_reservation']),
+      lastReservation: json['last_reservation'] != null
+          ? RestaurantReservation.fromJson(json['last_reservation'])
+          : null,
     );
   }
 
@@ -66,7 +68,7 @@ class Restaurant {
 
   static Future<List<Restaurant>> search(String query, int limit) async {
     final response = await ApiClient.post(
-      'get_restaurants',
+      'get_search_restaurants',
       body: json.encode({
         'search_filter': query.isEmpty ? null : query,
         'limit_count': limit,
