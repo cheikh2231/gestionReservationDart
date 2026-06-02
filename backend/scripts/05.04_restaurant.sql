@@ -1,8 +1,8 @@
 set search_path to public;
 DROP TYPE IF EXISTS restaurants_info CASCADE;
-DROP TYPE IF EXISTS reservation_info CASCADE;
+DROP TYPE IF EXISTS restaurant_reservation_info CASCADE;
 
-CREATE TYPE reservation_info AS (
+CREATE TYPE restaurant_reservation_info AS (
     id                  integer,
     client              integer,
     restaurant          integer,
@@ -22,7 +22,7 @@ CREATE TYPE restaurants_info AS (
     rating double precision,
     price_range int,
     slot_duration int,
-    last_reservation reservation_info,
+    last_reservation restaurant_reservation_info,
     nb_pending_reservation int
 );
 DROP FUNCTION IF EXISTS get_restaurants();
@@ -32,7 +32,7 @@ BEGIN
     RETURN QUERY
         SELECT r.id, r.name, r.address, r.city, r.phone,
                r.description, r.rating, r.price_range, r.slot_duration,
-               (SELECT (resLast.id, resLast.client, resLast.restaurant,resLast.datetime,resLast.number_of_guests,resLast.status,resLast.special_requests)::reservation_info
+               (SELECT (resLast.id, resLast.client, resLast.restaurant,resLast.datetime,resLast.number_of_guests,resLast.status,resLast.special_requests)::restaurant_reservation_info
                 FROM reservations resLast
                 WHERE resLast.restaurant = r.id
                 ORDER BY resLast.datetime DESC LIMIT 1),

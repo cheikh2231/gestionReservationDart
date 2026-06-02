@@ -1,19 +1,22 @@
-DROP TYPE IF EXISTS restaurant_info CASCADE;
+DROP TYPE IF EXISTS table_restaurant_info CASCADE;
 DROP TYPE IF EXISTS table_info CASCADE;
 
-
-CREATE TYPE restaurant_info AS (
+CREATE TYPE table_restaurant_info AS (
     id          integer,
     name        text,
     address     text,
     city        text,
-    phone       text
+    phone       text,
+    description text,
+    rating      double precision,
+    price_range  int,
+    slot_duration int
     );
 
 
 CREATE TYPE table_info AS (
     id              integer,
-    restaurant      restaurant_info,
+    restaurant      table_restaurant_info,
     table_number    integer,
     capacity        integer
     );
@@ -26,10 +29,11 @@ BEGIN
 RETURN QUERY
 SELECT
     t.id,
-    (res.id, res.name, res.address, res.city, res.phone)::restaurant_info,
+    (res.id, res.name, res.address, res.city, res.phone, res.description,
+     res.rating, res.price_range, res.slot_duration)::table_restaurant_info,
     t.table_number,
     t.capacity
-FROM tables t
+    FROM tables t
          JOIN restaurants res ON res.id = t.restaurant;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
