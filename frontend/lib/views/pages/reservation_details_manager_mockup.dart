@@ -4,6 +4,7 @@ import 'package:prbd_2526_a04/providers/reservation_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 import 'package:prbd_2526_a04/views/pages/assign_tables_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/restaurant_management_reservations_mockup.dart';
 
 class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
   const ReservationDetailsManagerMockupScreen({
@@ -81,7 +82,13 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => RestaurantManagementReservationsMockupScreen(
+                      restaurantId: reservation.restaurant.id,
+                    ),
+                  ),
+                );
               },
             ),
             title: const Text('Détails de la réservation'),
@@ -269,18 +276,20 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           const SizedBox(height: 16),
                           const Divider(),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Demandes spéciales',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                          if(reservation.specialRequests != null && reservation.specialRequests!.isNotEmpty) ...[
+                            const Text(
+                              'Demandes spéciales',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            reservation.specialRequests ?? 'Aucune demande',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
+                            const SizedBox(height: 4),
+                            Text(
+                              reservation.specialRequests ?? 'Aucune demande',
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -327,7 +336,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                   if (statusManagerData.btnConfirm)
                     ElevatedButton.icon(
                       onPressed: () async {
-                        if(reservation.status == 'pending')
+                        if(reservation.status == 'pending') {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => AssignTablesMockupScreen(
@@ -335,8 +344,13 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                               ),
                             ),
                           );
-                        if(reservation.status == 'confirmed')
-                          await ref.read(reservationsProvider.notifier).completeReservation(reservation.id);
+                        }
+                        if(reservation.status == 'confirmed') {
+
+                          await ref
+                              .read(reservationsProvider.notifier)
+                              .completeReservation(reservation.id);
+                        }
                       },
                       icon: const Icon(Icons.check_circle),
                       label: Text(statusManagerData.btnConfirmText ?? ""),

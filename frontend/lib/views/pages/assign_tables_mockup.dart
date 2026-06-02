@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/views/pages/reservation_details_manager_mockup.dart';
 
 import '../../providers/reservation_provider.dart';
 
@@ -24,7 +25,15 @@ class AssignTablesMockupScreen extends ConsumerWidget {
             appBar: AppBar(
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ReservationDetailsManagerMockupScreen(
+                        reservationId: reservation.id,
+                      ),
+                    ),
+                  );
+                },
               ),
               title: const Text('Assigner des tables'),
               automaticallyImplyLeading: false,
