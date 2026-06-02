@@ -339,9 +339,31 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                   if (statusManagerData.btnCancelled)
                     OutlinedButton.icon(
                       onPressed: () async {
-                        final cancelResult = await ref.read(reservationsProvider.notifier).cancelReservation(reservation.id);
-                        if(cancelResult!=null && reservation.tables.isNotEmpty)
-                          await ref.read(reservationsProvider.notifier).deleteReservationTables(reservation.id);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Annuler la réservation"),
+                              content: Text("Êtes-vous sûr de vouloir annuler cette réservation ?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(), // Ferme le modal
+                                  child: Text("Non"),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    final cancelResult = await ref.read(reservationsProvider.notifier).cancelReservation(reservation.id);
+                                    if(cancelResult!=null && reservation.tables.isNotEmpty)
+                                      await ref.read(reservationsProvider.notifier).deleteReservationTables(reservation.id);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Oui"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
                       },
                       icon: const Icon(Icons.cancel),
                       label: const Text('Annuler'),
