@@ -142,8 +142,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                               itemCount: displayList.length,
                               itemBuilder: (context, index) {
 
-                                final restaurantMgmt = displayList[index];
-                                final restaurant = restaurantMgmt;
+                                final restaurant = displayList[index];
 
                                 return Card(
                                   margin: const EdgeInsets.only(bottom: 8.0),
@@ -188,7 +187,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                             ),
                                           ),
 
-                                        if (restaurant.lastReservation?.countPending != null)
+                                        if (restaurant.lastReservation?.countPending != null && restaurant.lastReservation!.countPending! > 0)
                                           Padding(
                                             padding: const EdgeInsets.only(top: 4.0),
                                             child: Row(

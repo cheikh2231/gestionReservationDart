@@ -163,10 +163,14 @@ class RestaurantDetailsMockupScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // Naviguer vers le formulaire de réservation
+                    Navigator.pushNamed(
+                      context,
+                      '/add_edit_reservation',
+                      arguments: {'restaurant': restaurant},
+                    );
                   },
                   icon: const Icon(Icons.add),
-                  label: const Text('Réserver un table'),
+                  label: const Text('Réserver une table'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: theme.colorScheme.primary,
