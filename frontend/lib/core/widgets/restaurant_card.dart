@@ -75,7 +75,7 @@ class RestaurantCard extends StatelessWidget{
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => RestaurantManagementReservationsMockupScreen(
-                restaurant: restaurant, // On passe l'objet du restaurant pour l'utiliser dans la view et afficher le bon resto
+                restaurantId: restaurant.id, // On passe l'objet du restaurant pour l'utiliser dans la view et afficher le bon resto
               ),
             ),
           );

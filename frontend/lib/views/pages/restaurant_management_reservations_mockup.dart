@@ -6,13 +6,14 @@ import 'package:prbd_2526_a04/providers/reservation_provider.dart';
 
 import '../../core/widgets/restaurant_reservation_card.dart';
 import '../../models/restaurant.dart';
+import '../../providers/my_restaurants_provider.dart';
 import '../../providers/system_time_provider.dart';
 
 class RestaurantManagementReservationsMockupScreen extends ConsumerStatefulWidget {
   const RestaurantManagementReservationsMockupScreen(
-      {super.key, required this.restaurant});
+      {super.key, required this.restaurantId});
 
-  final Restaurant restaurant;
+  final restaurantId;
 
   @override
   ConsumerState<RestaurantManagementReservationsMockupScreen> createState() =>
@@ -30,7 +31,7 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
   }
   @override
   Widget build(BuildContext context) {
-    final restaurant = widget.restaurant;
+    final restaurant = ref.watch(myRestaurantsProvider).value?.firstWhere((r) => r.id == widget.restaurantId);
     final theme = Theme.of(context);
     final simulatedTimeState = ref.watch(systemTimeProvider);
     final reservationState = ref.watch(reservationsProvider);
@@ -43,7 +44,7 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
             Navigator.pushReplacementNamed(context, '/my_restaurants');
           },
         ),
-        title: Text(restaurant.name),
+        title: Text(restaurant!.name),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
