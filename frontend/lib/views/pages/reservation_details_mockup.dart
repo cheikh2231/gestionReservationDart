@@ -8,7 +8,7 @@ import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
 
 import '../../core/services/api_client.dart';
 import '../../core/widgets/dialog_box.dart';
-import '../../models/reservation_details.dart';
+import '../../models/reservation.dart';
 import '../../providers/reservation_provider.dart';
 
 void main() async {
@@ -34,47 +34,9 @@ class ReservationDetailsMockupScreen extends ConsumerStatefulWidget {
 }
 
 class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMockupScreen> {
-  bool _loading = true;
-  ReservationDetails? _reservation;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final id = ModalRoute.of(context)?.settings.arguments;
-    if (id != null) _loadReservation(id as int);
-  }
-
-  bool canMod(ReservationDetails res) {
-    return res.base.status != "cancelled" && res.base.status != "completed";
-  }
-
-  Future<void> _loadReservation(int id) async {
-    final response = await ApiClient.get('get_reservation?id_res=$id');
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      setState(() {
-        _reservation = ReservationDetails.fromJson(data.first);
-        _loading = false;
-      });
-    }
-  }
-
-  Future<bool> _cancelReservation(int id) async{
-    final response = await ApiClient.post(
-        'cancel_reservation',
-        body: jsonEncode({'id_res': id})
-   );
-    if(response.statusCode == 200){
-      final List<dynamic> list = jsonDecode(response.body);
-      final updated = ReservationDetails.fromJson(list.first);
-      setState(() {
-        _reservation = updated;
-        _loading = false;
-      });
-      ref.read(reservationsProvider.notifier).updateReservation(updated);
-    }
-
-    return response.statusCode == 200;
+  bool canMod(Reservation res) {
+    return res.status != "cancelled" && res.status != "completed";
   }
 
   Future<void> _onCancelPressed() async {
@@ -87,8 +49,8 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
     if (action != 'Confirmer') return;
 
     final id = ModalRoute.of(context)!.settings.arguments as int;
-    final success = await _cancelReservation(id);
-
+    final reservation = await ref.watch(reservationsProvider.notifier).cancelReservation(id);
+    final success = reservation != null;
     if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -105,20 +67,21 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
 
   @override
   Widget build(BuildContext context) {
+    final id = ModalRoute.of(context)!.settings.arguments as int;
+    final reservationsAsync = ref.watch(reservationsProvider);
 
+    final reservation = reservationsAsync.value?.firstWhere((r) => r.id == id);
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
-    if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+    if(reservationsAsync.isLoading){
+        return const Center(child: CircularProgressIndicator());
     }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context, '/my_reservations');
+            Navigator.pop(context);
           },
         ),
         title: const Text('Détails de la réservation'),
@@ -128,8 +91,7 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
             icon: const Icon(Icons.refresh),
             tooltip: 'Rafraîchir les données',
             onPressed: () {
-              final id = ModalRoute.of(context)!.settings.arguments as int;
-              _loadReservation(id);
+              ref.read(reservationsProvider.notifier).refresh();
             },
           ),
         ],
@@ -167,10 +129,9 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _loading ? const Center(child: CircularProgressIndicator()) :
-              ReservationDetailCard(reservation: _reservation!),
+              ReservationDetailCard(reservation: reservation! ),
               const SizedBox(height: 24),
-              if(canMod(_reservation!))
+              if(canMod(reservation))
               Row(
                 children: [
                   Expanded(
@@ -178,7 +139,7 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
                     onPressed: () {
                       Navigator.pushNamed(
                       context,
-                      '/add_edit_reservation', arguments: {'reservation': _reservation},
+                      '/add_edit_reservation', arguments: {'reservation': reservation},
                       );
                     },
                       icon: const Icon(Icons.edit),
@@ -203,9 +164,6 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
       ),
     );
 
-
-
   }
-
 
 }

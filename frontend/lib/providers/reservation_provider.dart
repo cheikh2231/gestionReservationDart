@@ -1,27 +1,28 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/core/services/api_client.dart';
-import 'package:prbd_2526_a04/models/reservation.dart';
+import '../core/services/api_client.dart';
+import '../models/reservation.dart';
 
-import '../models/reservation_details.dart';
-
-final reservationsProvider = AsyncNotifierProvider<ReservationsNotifier, List<ReservationDetails>>(
+final reservationsProvider = AsyncNotifierProvider<ReservationsNotifier, List<Reservation>>(
       () => ReservationsNotifier(),
 );
 
-class ReservationsNotifier extends AsyncNotifier<List<ReservationDetails>> {
+
+class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
   @override
-  Future<List<ReservationDetails>> build() async {
+  Future<List<Reservation>> build() async {
     return _chargeReservations();
   }
 
-  Future<List<ReservationDetails>> _chargeReservations() async {
-    final response = await ApiClient.get('get_reservations');
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => ReservationDetails.fromJson(json)).toList();
+  Future<List<Reservation>> _chargeReservations() async {
+    try{
+      return await Reservation.getReservations();
+    }catch(e,stack){
+      print('Erreur: $e');
+      print('Stack: $stack');
+      return [];
     }
-    return [];
   }
 
   Future<void> refresh() async {
@@ -29,17 +30,36 @@ class ReservationsNotifier extends AsyncNotifier<List<ReservationDetails>> {
     state = await AsyncValue.guard(() => _chargeReservations());
   }
 
-  void updateReservation(ReservationDetails updated) {
+  void updateReservation(Reservation updated) {
     state.whenData((list) {
       state = AsyncData(
-        list.map((r) => r.base.id == updated.base.id ? updated : r).toList(),
+        list.map((r) => r.id == updated.id ? updated : r).toList(),
       );
     });
   }
 
   void removeReservation(int id) {
     state.whenData((list) {
-      state = AsyncData(list.where((r) => r.base.id != id).toList());
+      state = AsyncData(list.where((r) => r.id != id).toList());
     });
   }
+
+  Future<Reservation?> cancelReservation(int id) async {
+    try{
+       final resUpdated = await Reservation.cancelReservation(id);
+       updateReservation(resUpdated);
+       return resUpdated;
+    }catch(e){
+      return null;
+    }
+  }
+
+  // Future<Reservation?> getReservationWithId(int id) async{
+  //   final response = await _chargeReservations();
+  //   if(response.isEmpty){
+  //     return null;
+  //   }
+  //   return response.where((r)=>r.id==id) as Reservation;
+  // }
+
 }

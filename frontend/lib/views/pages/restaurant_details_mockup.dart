@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import 'package:prbd_2526_a04/models/restaurant.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
+
+import '../../models/restaurant.dart';
 
 class RestaurantDetailsMockupScreen extends ConsumerWidget {
   const RestaurantDetailsMockupScreen({super.key});
@@ -162,10 +163,14 @@ class RestaurantDetailsMockupScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // Naviguer vers le formulaire de réservation
+                    Navigator.pushNamed(
+                      context,
+                      '/add_edit_reservation',
+                      arguments: {'restaurant': restaurant},
+                    );
                   },
                   icon: const Icon(Icons.add),
-                  label: const Text('Réserver un table'),
+                  label: const Text('Réserver une table'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: theme.colorScheme.primary,

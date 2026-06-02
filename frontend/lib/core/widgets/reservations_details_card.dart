@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation.dart';
-import 'package:prbd_2526_a04/models/reservation_details.dart';
 
 class ReservationDetailCard extends StatelessWidget {
-  final ReservationDetails reservation;
+  final Reservation reservation;
 
   const ReservationDetailCard({
     super.key,
     required this.reservation,
   });
 
-  Color get _statusColor => switch (reservation.base.status) {
+  Color get _statusColor => switch (reservation.status) {
     'pending'   => const Color(0xFFFF9800),
     'confirmed' => Colors.green,
     'completed' => Colors.blue,
@@ -19,7 +18,7 @@ class ReservationDetailCard extends StatelessWidget {
     _           => Colors.grey,
   };
 
-  String get _statusLabel => switch (reservation.base.status) {
+  String get _statusLabel => switch (reservation.status) {
     'pending'   => 'En attente',
     'confirmed' => 'Confirmée',
     'completed' => 'Terminée',
@@ -41,7 +40,7 @@ class ReservationDetailCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    reservation.restaurantName,
+                    reservation.restaurant.name,
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -54,7 +53,7 @@ class ReservationDetailCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    reservation.restaurantAddress,
+                    reservation.restaurant.address,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ),
@@ -66,7 +65,7 @@ class ReservationDetailCard extends StatelessWidget {
                 const Icon(Icons.phone, size: 16, color: Colors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  reservation.restaurantPhone,
+                  reservation.restaurant.phone,
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ],
@@ -78,7 +77,7 @@ class ReservationDetailCard extends StatelessWidget {
               children: [
                 const Icon(Icons.calendar_today, size: 20),
                 const SizedBox(width: 8),
-                Text('Date: ${DateFormat('EEE dd/MM/yyyy', 'fr_FR').format(reservation.base.datetime)}'),
+                Text('Date: ${DateFormat('EEE dd/MM/yyyy', 'fr_FR').format(reservation.datetime)}'),
               ],
             ),
             const SizedBox(height: 8),
@@ -86,7 +85,7 @@ class ReservationDetailCard extends StatelessWidget {
               children: [
                 const Icon(Icons.access_time, size: 20),
                 const SizedBox(width: 8),
-                Text('Heure: ${DateFormat('HH:mm').format(reservation.base.datetime)}'),
+                Text('Heure: ${DateFormat('HH:mm').format(reservation.datetime)}'),
               ],
             ),
             const SizedBox(height: 8),
@@ -94,7 +93,7 @@ class ReservationDetailCard extends StatelessWidget {
               children: [
                 const Icon(Icons.people, size: 20),
                 const SizedBox(width: 8),
-                Text('Nombre de convives: ${reservation.base.numberOfGuests}'),
+                Text('Nombre de convives: ${reservation.numberOfGuests}'),
               ],
             ),
             const SizedBox(height: 8),
@@ -113,7 +112,7 @@ class ReservationDetailCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (reservation.base.specialRequests != null) ...[
+            if (reservation.specialRequests != null) ...[
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 8),
@@ -123,7 +122,7 @@ class ReservationDetailCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                reservation.base.specialRequests!,
+                reservation.specialRequests!,
                 style: TextStyle(color: Colors.grey[700]),
               ),
             ],
