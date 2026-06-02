@@ -82,5 +82,21 @@ class Restaurant {
       throw Exception('Erreur lors du chargement des restaurants');
     }
   }
+  static Future<Restaurant> getRestaurantById(int id) async {
+    final response = await ApiClient.post('get_restaurant_byId',
+      body: json.encode({'restaurant_id': id}),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> body = json.decode(response.body);
+      if (body.isNotEmpty) {
+        return Restaurant.fromJson(body.first);
+      } else {
+        throw Exception("Aucun restaurant trouvé avec cet ID");
+      }
+    } else {
+      throw Exception("Erreur lors du chargement des détails du restaurant");
+    }
+  }
 }
 
