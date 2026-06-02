@@ -336,7 +336,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                   if (statusManagerData.btnConfirm)
                     ElevatedButton.icon(
                       onPressed: () async {
-                        if(reservation.status == 'pending')
+                        if(reservation.status == 'pending') {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => AssignTablesMockupScreen(
@@ -344,8 +344,13 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                               ),
                             ),
                           );
-                        if(reservation.status == 'confirmed')
-                          await ref.read(reservationsProvider.notifier).completeReservation(reservation.id);
+                        }
+                        if(reservation.status == 'confirmed') {
+
+                          await ref
+                              .read(reservationsProvider.notifier)
+                              .completeReservation(reservation.id);
+                        }
                       },
                       icon: const Icon(Icons.check_circle),
                       label: Text(statusManagerData.btnConfirmText ?? ""),
