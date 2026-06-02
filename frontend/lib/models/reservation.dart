@@ -61,4 +61,22 @@ class Reservation {
       );
       return Reservation.fromJson(jsonDecode(response.body));
   }
+
+  static Future<Reservation> deleteReservationTables(int id) async{
+    final response = await ApiClient.post(
+      'delete_reservation_tables',
+      body: jsonEncode({'id_res': id}),
+    );
+    // print( "${response.body} erreur dans le model et le param : ${id}  ");
+    return Reservation.fromJson(jsonDecode(response.body));
+  }
+
+  static Future<Reservation> completeReservation(int id) async{
+    final response = await ApiClient.post(
+      'complete_reservation',
+      body: jsonEncode({'id_res': id}),
+    );
+    // print( "${response.body} erreur dans le model et le param : ${id}  ");
+    return Reservation.fromJson(jsonDecode(response.body));
+  }
 }

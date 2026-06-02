@@ -54,12 +54,29 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
     }
   }
 
-  // Future<Reservation?> getReservationWithId(int id) async{
-  //   final response = await _chargeReservations();
-  //   if(response.isEmpty){
-  //     return null;
-  //   }
-  //   return response.where((r)=>r.id==id) as Reservation;
-  // }
+  Future<Reservation?> deleteReservationTables(int id) async {
+    try{
+      final resUpdated = await Reservation.deleteReservationTables(id);
+      // print('Reservation reçue après suppression : ${resUpdated.tables}');
+      updateReservation(resUpdated);
+      return resUpdated;
+    }catch(e){
+      // print("DEBUG: deleteReservationTables l'ID est : $id $e");
+      return null;
+    }
+  }
+
+  Future<Reservation?> completeReservation(int id) async {
+    try{
+      final resUpdated = await Reservation.completeReservation(id);
+      // print('Reservation reçue après suppression : ${resUpdated.tables}');
+      updateReservation(resUpdated);
+      return resUpdated;
+    }catch(e){
+      // print("DEBUG: deleteReservationTables l'ID est : $id $e");
+      return null;
+    }
+  }
+
 
 }
