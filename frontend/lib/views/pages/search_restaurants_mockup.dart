@@ -6,7 +6,6 @@ import 'package:prbd_2526_a04/core/tools/debounce.dart';
 import 'package:prbd_2526_a04/providers/search_restaurants_provider.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 
-import '../../models/restaurant.dart';
 
 
 
