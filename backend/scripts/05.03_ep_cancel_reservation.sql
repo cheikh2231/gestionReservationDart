@@ -1,4 +1,4 @@
-set search_path to public, auth;
+set search_path to public;
 
 DROP FUNCTION IF EXISTS public.cancel_reservation(int);
 CREATE OR REPLACE FUNCTION cancel_reservation(id_res int)
@@ -10,7 +10,7 @@ BEGIN
     UPDATE reservations SET status ='cancelled' WHERE id = id_res;
     SELECT * INTO result
     FROM get_reservations()
-    WHERE id = id_res AND auth.id() = (client).id;
+    WHERE id = id_res;
     RETURN result;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

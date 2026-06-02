@@ -28,7 +28,7 @@ class RestaurantReservationCard extends StatelessWidget {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => ReservationDetailsManagerMockupScreen(
-                reservation: reservation,
+                reservationId: reservation.id,
               ),
             ),
           );

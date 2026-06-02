@@ -7,6 +7,8 @@ import 'package:prbd_2526_a04/models/restaurant.dart';
 
 import 'package:prbd_2526_a04/providers/restaurant_services_provider.dart';
 
+import '../../providers/restaurant_details_provider.dart';
+
 class RestaurantDetailsMockupScreen extends ConsumerStatefulWidget {
   const RestaurantDetailsMockupScreen({super.key});
 
@@ -34,7 +36,9 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
     final theme = Theme.of(context);
     final simulatedTimeState = ref.watch(systemTimeProvider);
 
-    final restaurant = ModalRoute.of(context)!.settings.arguments as Restaurant;
+    final initialRestaurant = ModalRoute.of(context)!.settings.arguments as Restaurant;
+    final detailsAsync = ref.watch(restaurantDetailsProvider);
+    final restaurant = detailsAsync.value ?? initialRestaurant;
     final servicesAsync = ref.watch(restaurantServicesProvider);
 
     return Scaffold(
@@ -51,6 +55,7 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
             tooltip: 'Rafraîchir les données',
             onPressed: () {
               ref.read(restaurantServicesProvider.notifier).loadServices(restaurant.id);
+              ref.read(restaurantDetailsProvider.notifier).loadRestaurant(restaurant.id);
             },
           ),
         ],
