@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:prbd_2526_a04/models/reservation_client.dart';
 import 'package:prbd_2526_a04/models/reservation_restaurant.dart';
 import 'package:prbd_2526_a04/models/reservation_table.dart';
-
 import '../core/services/api_client.dart';
 
 class Reservation {
@@ -39,18 +37,16 @@ class Reservation {
   );
 
   static Future<List<Reservation>> getReservations() async {
-    // Votre appel API actuel
     final response = await ApiClient.get('get_reservations');
 
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => Reservation.fromJson(item)).toList();
     } else {
-      // AJOUTEZ CES DEUX LIGNES POUR DÉBOGUER :
       print('ERREUR SERVEUR : ${response.statusCode}');
       print('MESSAGE SERVEUR : ${response.body}');
 
-      throw Exception('Failed to get reservations'); // Ligne 47
+      throw Exception('Failed to get reservations');
     }
   }
 
