@@ -28,7 +28,7 @@ SELECT
     t.id,
     (res.id, res.name, res.address, res.city, res.phone)::restaurant_info,
     t.table_number,
-    r.capacity,
+    t.capacity
 FROM tables t
          JOIN restaurants res ON res.id = t.restaurant;
 END;
