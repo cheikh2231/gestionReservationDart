@@ -21,10 +21,13 @@ class Table {
   factory Table.fromJson(Map<String, dynamic> json) {
     return Table(
       id: json['id'],
-      restaurant: Restaurant.fromJson(json['restaurant']),
+      restaurant: json['restaurant'] is Map<String, dynamic>
+          ? Restaurant.fromJson(json['restaurant'])
+          : Restaurant(id: json['restaurant'], name: '', address: '', city: '', phone: '',
+        slotDuration: 0,),
       tableNumber: json['table_number'],
       capacity: json['capacity'],
-      reserved: json['reserved'] ?? null,
+      reserved: json['reserved'],
     );
   }
 
@@ -41,15 +44,14 @@ class Table {
     }
   }
 
-  static Future<List<Table>> getTablesWithAndWhitoutAvailability($restaurant_id, $reservation_id)  async {
-    final response = await ApiClient.get('get_tables_with_and_whitout_availability');
-
+  static Future<List<Table>> getTablesWithAndWhitoutAvailability(int restaurantId, int reservationId)  async {
+    final response = await ApiClient.get('get_tables_with_and_whitout_availability?restaurant_id=$restaurantId&reservation_id=$reservationId');
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => Table.fromJson(item)).toList();
     } else {
-      // print('ERREUR SERVEUR : ${response.statusCode}');
-      // print('MESSAGE SERVEUR : ${response.body}');
+      print('ERREUR SERVEUR : ${response.statusCode}');
+      print('MESSAGE SERVEUR : ${response.body}');
       throw Exception('Failed to get tables');
     }
   }
