@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import '../core/services/api_client.dart';
-import 'last_reservation.dart';
+import 'reservation_last.dart';
 import 'restaurant.dart';
 
 class RestaurantFull {
   final Restaurant restaurant;
-  final LastReservation? lastReservation;
+  final ReservationLast? lastReservation;
   final int nbPending;
 
   const RestaurantFull({
@@ -19,7 +19,7 @@ class RestaurantFull {
     return RestaurantFull(
       restaurant: Restaurant.fromJson(json['restaurant']),
       lastReservation: json['last_reservation'] != null
-          ? LastReservation.fromJson(json['last_reservation'])
+          ? ReservationLast.fromJson(json['last_reservation'])
           : null,
       nbPending: json['nb_pending'],
     );
