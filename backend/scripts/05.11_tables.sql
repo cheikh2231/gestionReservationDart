@@ -7,10 +7,12 @@ BEGIN
 RETURN QUERY
 SELECT
     t.id,
+    (res.id, res.name, res.address, res.city, res.phone, res.description, res.rating, res.price_range, res.slot_duration)::restaurant_info,
     t.restaurant,
     t.table_number,
     t.capacity
-    FROM tables t;
+    FROM tables t
+    JOIN restaurants res ON res.id = t.restaurant;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

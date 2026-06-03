@@ -4,7 +4,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/views/pages/reservation_details_manager_mockup.dart';
 
+import '../../core/widgets/table_card.dart';
 import '../../providers/reservation_provider.dart';
+import '../../providers/tables_provider.dart';
 
 class AssignTablesMockupScreen extends ConsumerWidget {
   const AssignTablesMockupScreen({super.key, required this.reservationId});
@@ -15,6 +17,8 @@ class AssignTablesMockupScreen extends ConsumerWidget {
     final asyncReservations = ref.watch(reservationsProvider);
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
+    // final asyncTables = ref.watch(tablesProvider);
+    final nbPlaceTotal=0;
     return asyncReservations.when(
         loading: () =>
         const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -89,9 +93,10 @@ class AssignTablesMockupScreen extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            const Text('4 convives'),
-                            const Text('05/12/2024 à 20:00'),
-                          ],
+                            Text('${reservation.numberOfGuests} convives'),
+                            Text(
+                              '${DateFormat('dd/MM/yyyy', 'fr_FR').format(reservation.datetime)} à ${DateFormat('HH:mm', 'fr_FR').format(reservation.datetime)}',
+                            )                          ],
                         ),
                       ),
                     ),
@@ -121,13 +126,7 @@ class AssignTablesMockupScreen extends ConsumerWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    '✓ Capacité suffisante pour 4 convives',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.green.shade700,
-                                    ),
-                                  ),
+
                                 ],
                               ),
                             ),
@@ -150,73 +149,8 @@ class AssignTablesMockupScreen extends ConsumerWidget {
                     ),
                   ),
                   Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.all(16.0),
-                      children: [
-                        Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: CheckboxListTile(
-                            value: true,
-                            onChanged: (_) {},
-                            title: const Text('Table 1'),
-                            subtitle: const Text(
-                              'Capacité: 2 personnes',
-                            ),
-                            secondary: const Icon(Icons.table_restaurant),
-                          ),
-                        ),
-                        Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: CheckboxListTile(
-                            value: true,
-                            onChanged: (_) {},
-                            title: const Text('Table 2'),
-                            subtitle: const Text(
-                              'Capacité: 4 personnes',
-                            ),
-                            secondary: const Icon(Icons.table_restaurant),
-                          ),
-                        ),
-                        Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: CheckboxListTile(
-                            value: false,
-                            onChanged: (_) {},
-                            title: const Text('Table 3'),
-                            subtitle: const Text(
-                              'Capacité: 6 personnes',
-                            ),
-                            secondary: const Icon(Icons.table_restaurant),
-                          ),
-                        ),
-                        Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          color: Colors.grey.shade100,
-                          child: CheckboxListTile(
-                            value: false,
-                            onChanged: null,
-                            title: Text(
-                              'Table 4',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                            subtitle: Text(
-                              'Occupée pour ce service',
-                              style: TextStyle(
-                                color: Colors.red.shade300,
-                              ),
-                            ),
-                            secondary: Icon(
-                              Icons.table_restaurant,
-                              color: Colors.grey.shade400,
-                            ),
-                          ),
-                        ),
-                      ],
+                    child:Text("test"),
                     ),
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: SizedBox(

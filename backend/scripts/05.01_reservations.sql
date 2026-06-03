@@ -12,7 +12,7 @@ BEGIN
             r.status,
             r.special_requests,
             ARRAY(
-                    SELECT (t.id, t.restaurant, t.table_number, t.capacity)::table_info
+                    SELECT (t.id,  (res.id, res.name, res.address, res.city, res.phone, res.description, res.rating, res.price_range, res.slot_duration), t.table_number, t.capacity)::table_info
                     FROM reservation_tables rt
                              JOIN tables t ON t.id = rt.table
                     WHERE rt.reservation = r.id
