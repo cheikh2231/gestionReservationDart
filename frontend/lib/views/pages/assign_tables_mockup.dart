@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/providers/tables_provider.dart';
 import 'package:prbd_2526_a04/views/pages/reservation_details_manager_mockup.dart';
 
 import '../../core/widgets/table_card.dart';
 import '../../providers/reservation_provider.dart';
-import '../../providers/tables_provider.dart';
 
 class AssignTablesMockupScreen extends ConsumerWidget {
   const AssignTablesMockupScreen({super.key, required this.reservationId});
@@ -17,14 +17,16 @@ class AssignTablesMockupScreen extends ConsumerWidget {
     final asyncReservations = ref.watch(reservationsProvider);
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
-    // final asyncTables = ref.watch(tablesProvider);
     final nbPlaceTotal=0;
+
     return asyncReservations.when(
         loading: () =>
         const Scaffold(body: Center(child: CircularProgressIndicator())),
         error: (e, _) => Scaffold(body: Center(child: Text("Erreur : $e"))),
         data: (list) {
           final reservation = list.firstWhere((r) => r.id == reservationId);
+          ref.read(tablesProvider.notifier).getTablesWithAndWhitoutAvailability(reservation.restaurant.id, reservation.id);
+          final asyncTables = ref.watch(tablesProvider);
           return Scaffold(
             appBar: AppBar(
               leading: IconButton(
@@ -149,8 +151,20 @@ class AssignTablesMockupScreen extends ConsumerWidget {
                     ),
                   ),
                   Expanded(
-                    child:Text("test"),
+                    child: asyncTables.when(
+                    data: (tables) => ListView.builder(
+                      padding: const EdgeInsets.all(16.0),
+                      itemCount: tables.length,
+                      itemBuilder: (context, index) {
+                        return TableCard(
+                         table:tables[index],
+                        );
+                      },
                     ),
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (err, stack) => Center(child: Text('Erreur: $err')),
+                  ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: SizedBox(

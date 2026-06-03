@@ -19,4 +19,15 @@ class TablesNotifier extends AsyncNotifier<List<Table>> {
       throw "Impossible de charger les tables.\nVeuillez réessayer plus tard.";
     }
   }
+
+
+  Future<void> getTablesWithAndWhitoutAvailability(int restaurantId, int reservationId) async {
+    state = const AsyncLoading();
+    try {
+      final tables = await Table.getTablesWithAndWhitoutAvailability(restaurantId,reservationId);
+      state = AsyncData(tables);
+    } catch (e, st) {
+      state = AsyncError("Erreur lors du chargement des tables disponibles", st);
+    }
+  }
 }
