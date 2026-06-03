@@ -20,6 +20,7 @@ class RestaurantManagementReservationsMockupScreen extends ConsumerStatefulWidge
 }
 
 class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupScreen> {
+
   String selectedStatus = 'all';
   List<Reservation> filterReservation(List<Reservation> listReservation) {
     if(selectedStatus=='all') {
@@ -131,7 +132,8 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
             Expanded(
               child: reservationState.when(
                 data: (reservations) {
-                   final filteredList = filterReservation(reservations);
+                   final reservationsFiltered = reservations.where( (r) => r.restaurant.id == widget.restaurantId).toList();
+                   final filteredList = filterReservation(reservationsFiltered);
                    return ListView.builder(
                     padding: const EdgeInsets.all(16.0),
                     itemCount: filteredList.length,
@@ -154,7 +156,18 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: 0,
-        onTap: (_) {
+        onTap: (index) {
+          if (index == 0) {
+            return;
+          } else if (index == 1) {
+            // service ...
+          } else if (index == 2) {
+            Navigator.pushNamed(
+              context,
+              '/restaurant_tables',
+              arguments: restaurant,
+            );
+          }
         },
         items: const [
           BottomNavigationBarItem(
@@ -173,6 +186,4 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
       ),
     );
   }
-
-
 }

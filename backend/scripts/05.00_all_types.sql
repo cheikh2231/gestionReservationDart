@@ -26,7 +26,7 @@ CREATE TYPE restaurant_info AS (
 
 CREATE TYPE table_info AS (
     id           integer,
-    restaurant   integer,
+    restaurant   restaurant_info,
     table_number integer,
     capacity     integer
 );

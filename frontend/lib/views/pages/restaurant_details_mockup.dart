@@ -177,7 +177,7 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
 
                   Widget buildDayRow(int dayId) {
                     final dayServices = groupeServices[dayId]!;
-                    final dayName = dayServices.first.dayName; // on prend que le nom di service de midi car tout les 2 sont le meme jour
+                    final dayName = dayServices.first.dayName; // on prend que le nom du service de midi car tout les 2 sont le meme jour
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),

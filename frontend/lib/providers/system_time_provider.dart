@@ -15,7 +15,7 @@ class SystemTimeNotifier extends AsyncNotifier<List<SystemTime>>{
     try {
       return await SystemTime.getSimulatedTime();
     } catch (e) {
-      throw "Impossible de charger les restaurants.\nVeuillez réessayer plus tard.";
+      throw "Impossible de charger le temps.\nVeuillez réessayer plus tard.";
     }
   }
 }
