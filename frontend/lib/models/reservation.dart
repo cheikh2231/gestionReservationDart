@@ -90,6 +90,44 @@ class Reservation {
     return Reservation.fromJson(jsonDecode(response.body));
   }
 
+  Reservation copyWith({
+    DateTime? datetime,
+    int? numberOfGuests,
+    String? specialRequests,
+    String? status,
+  }) {
+    return Reservation(
+      id: id,
+      client: client,
+      restaurant: restaurant,
+      datetime: datetime ?? this.datetime,
+      numberOfGuests: numberOfGuests ?? this.numberOfGuests,
+      specialRequests: specialRequests ?? this.specialRequests,
+      status: status ?? this.status,
+      tables: tables,
+    );
+  }
 
+  Future<bool> updateReservation(Reservation reservation) async {
+    final String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(reservation.datetime);
+    try {
+      final response = await ApiClient.post(
+        'update_reservation',
+        body: jsonEncode({
+          'datetimeupdated': formattedDateTime,
+          'idres' : reservation.id,
+          'nog': reservation.numberOfGuests,
+          'request': reservation.specialRequests,
+          'statusupdated': reservation.status,
+        }),
+      );
+      print(response.statusCode);
+      print(response.body);
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (e) {
+      print("Erreur lors de la mise à jour : $e");
+      return false;
+    }
+  }
 
 }
