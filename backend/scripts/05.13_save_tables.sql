@@ -7,7 +7,7 @@ CREATE OR REPLACE FUNCTION get_restaurant_tables(p_restaurant_id int)
 BEGIN
     RETURN QUERY
         SELECT t.id,
-               (res.id, res.name, res.address, res.city, res.phone)::restaurant_info,
+               (res.id, res.name, res.address, res.city, res.phone, res.description, res.rating, res.price_range, res.slot_duration)::restaurant_info,
                 t.table_number,t.capacity
         FROM tables t
         JOIN restaurants res ON res.id = t.restaurant

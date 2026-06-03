@@ -20,7 +20,7 @@ begin
     end;
 $$language plpgsql;
 
-drop function if exists no_double_reservation();
+drop function if exists no_double_reservation() cascade;
 
 create or replace function no_double_reservation()
     returns trigger

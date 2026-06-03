@@ -1,18 +1,19 @@
 import 'dart:convert';
-import 'package:prbd_2526_a04/models/reservation_client.dart';
-import 'package:prbd_2526_a04/models/reservation_restaurant.dart';
-import 'package:prbd_2526_a04/models/reservation_table.dart';
+
+import 'package:prbd_2526_a04/models/restaurant.dart';
+import 'package:prbd_2526_a04/models/table.dart';
+import 'package:prbd_2526_a04/models/user.dart';
 import '../core/services/api_client.dart';
 
 class Reservation {
   final int id;
-  final ReservationClient client;
-  final ReservationRestaurant restaurant;
+  final User client;
+  final Restaurant restaurant;
   final DateTime datetime;
   final int numberOfGuests;
   final String status;
   final String? specialRequests;
-  final List<ReservationTable> tables;
+  final List<Table> tables;
 
   Reservation({
     required this.id,
@@ -27,13 +28,13 @@ class Reservation {
 
   factory Reservation.fromJson(Map<String, dynamic> json) => Reservation(
     id: json['id'],
-    client: ReservationClient.fromJson(json['client']),
-    restaurant: ReservationRestaurant.fromJson(json['restaurant']),
+    client: User.fromJson(json['client']),
+    restaurant: Restaurant.fromJson(json['restaurant']),
     datetime: DateTime.parse(json['datetime']),
     numberOfGuests: json['number_of_guests'],
     status: json['status'],
     specialRequests: json['special_requests'],
-    tables: (json['tables'] as List).map((i) => ReservationTable.fromJson(i)).toList(),
+    tables: (json['tables'] as List).map((i) => Table.fromJson(i)).toList(),
   );
 
   static Future<List<Reservation>> getReservations() async {
@@ -43,6 +44,7 @@ class Reservation {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => Reservation.fromJson(item)).toList();
     } else {
+      // AJOUTEZ CES DEUX LIGNES POUR DÉBOGUER :
       print('ERREUR SERVEUR : ${response.statusCode}');
       print('MESSAGE SERVEUR : ${response.body}');
 
@@ -56,6 +58,14 @@ class Reservation {
         body: jsonEncode({'id_res': id}),
       );
       return Reservation.fromJson(jsonDecode(response.body));
+  }
+
+  static String? validateSpecialRequest(String? request) {
+      if(request==null) return null;
+      if(request.trim().isNotEmpty && request.trim().length<10){
+          return "Les demandes speciales doivent contenir au moins 10 caracteres";
+      }
+      return null;
   }
 
   static Future<Reservation> deleteReservationTables(int id) async{

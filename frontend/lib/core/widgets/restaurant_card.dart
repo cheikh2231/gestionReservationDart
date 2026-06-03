@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../../models/restaurant.dart';
+import 'package:prbd_2526_a04/models/restaurant_full.dart';
 import '../../views/pages/restaurant_management_reservations_mockup.dart';
 
 
 class RestaurantCard extends StatelessWidget{
-  const RestaurantCard({super.key, required this.restaurant});
-  final Restaurant restaurant;
-
+  const RestaurantCard({super.key, required this.restaurantFull});
+  final RestaurantFull restaurantFull;
   @override
   Widget build(BuildContext context) {
-    final lastReservation = 'Dernière réservation: ${DateFormat('E dd/MM/yyyy', 'fr_FR').format(restaurant.lastReservation!.datetime)}';
-    final nbPendingReservation = restaurant.lastReservation?.countPending != null ? '${restaurant.lastReservation?.countPending} demande${restaurant.lastReservation!.countPending == 1 ? ' ' : 's '}en attente' : "";
+    final lastReservation = 'Dernière réservation: ${DateFormat('E dd/MM/yyyy', 'fr_FR').format(restaurantFull.lastReservation!.datetime)}';
+    final restaurant = restaurantFull.restaurant;
+    final pendingReservationMessage = restaurantFull.nbPending > 1 ? '${restaurantFull.nbPending} demandes en attente' : restaurantFull.nbPending>0 ? '${restaurantFull.nbPending} demande en attente':"";
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -53,13 +52,13 @@ class RestaurantCard extends StatelessWidget{
                 ],
               ),
             const SizedBox(height: 4),
-            if (nbPendingReservation.isNotEmpty)
+            if (pendingReservationMessage.isNotEmpty)
               Row(
                 children: [
                   Icon(Icons.pending, size: 14, color: Colors.orange),
                   SizedBox(width: 4),
                   Text(
-                    nbPendingReservation,
+                    pendingReservationMessage,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.orange,
