@@ -9,12 +9,13 @@ class Table {
   final Restaurant restaurant;
   final int tableNumber;
   final int capacity;
-
+  final bool? reserved;
   Table({
     required this.id,
     required this.restaurant,
     required this.tableNumber,
-    required this.capacity
+    required this.capacity,
+    this.reserved
   });
 
   factory Table.fromJson(Map<String, dynamic> json) {
@@ -23,11 +24,25 @@ class Table {
       restaurant: Restaurant.fromJson(json['restaurant']),
       tableNumber: json['table_number'],
       capacity: json['capacity'],
+      reserved: json['reserved'] ?? null,
     );
   }
 
   static Future<List<Table>> getTables() async {
     final response = await ApiClient.get('get_tables');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> body = json.decode(response.body);
+      return body.map((dynamic item) => Table.fromJson(item)).toList();
+    } else {
+      // print('ERREUR SERVEUR : ${response.statusCode}');
+      // print('MESSAGE SERVEUR : ${response.body}');
+      throw Exception('Failed to get tables');
+    }
+  }
+
+  static Future<List<Table>> getTablesWithAndWhitoutAvailability($restaurant_id, $reservation_id)  async {
+    final response = await ApiClient.get('get_tables_with_and_whitout_availability');
 
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
