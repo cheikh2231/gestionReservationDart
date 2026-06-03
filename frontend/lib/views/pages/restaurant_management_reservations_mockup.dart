@@ -156,7 +156,18 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: 0,
-        onTap: (_) {
+        onTap: (index) {
+          if (index == 0) {
+            return;
+          } else if (index == 1) {
+            // service ...
+          } else if (index == 2) {
+            Navigator.pushNamed(
+              context,
+              '/restaurant_tables',
+              arguments: restaurant,
+            );
+          }
         },
         items: const [
           BottomNavigationBarItem(
@@ -175,6 +186,4 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
       ),
     );
   }
-
-
 }

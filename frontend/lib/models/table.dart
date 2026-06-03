@@ -55,4 +55,43 @@ class Table {
       throw Exception('Failed to get tables');
     }
   }
+
+  static Future<List<Table>> getTablesByRestaurant(int restaurantId) async {
+    final response = await ApiClient.post(
+      'get_restaurant_tables',
+      body: json.encode({'p_restaurant_id': restaurantId}),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> body = json.decode(response.body);
+      return body.map((dynamic item) => Table.fromJson(item)).toList();
+    } else {
+      throw Exception('Erreur lors du chargement des tables du restaurant');
+    }
+  }
+
+  static Future<Table> saveTable({
+    required int restaurantId,
+    required int tableNumber,
+    required int capacity,
+    int? tableId,
+  }) async {
+    final response = await ApiClient.post(
+      'save_table',
+      body: json.encode({
+        'p_restaurant_id': restaurantId,
+        'p_table_number': tableNumber,
+        'p_capacity': capacity,
+        'p_table_id': tableId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonBody = json.decode(response.body);
+      return Table.fromJson(jsonBody);
+    } else {
+      throw Exception('Erreur lors de la sauvegarde de la table');
+    }
+  }
+
 }
