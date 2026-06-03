@@ -2,15 +2,17 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prbd_2526_a04/models/restaurant.dart';
 
-final restaurantDetailsProvider = AsyncNotifierProvider<RestaurantDetailsNotifier, Restaurant?>(
+import '../models/restaurant_full.dart';
+
+final restaurantDetailsProvider = AsyncNotifierProvider<RestaurantDetailsNotifier, RestaurantFull?>(
       () => RestaurantDetailsNotifier(),
 );
 
-class RestaurantDetailsNotifier extends AsyncNotifier<Restaurant?> {
+class RestaurantDetailsNotifier extends AsyncNotifier<RestaurantFull?> {
   int? _currentRestaurantId;
 
   @override
-  Future<Restaurant?> build() async {
+  Future<RestaurantFull?> build() async {
     return null;
   }
 
@@ -18,9 +20,9 @@ class RestaurantDetailsNotifier extends AsyncNotifier<Restaurant?> {
     _currentRestaurantId = restaurantId;
 
     try {
-      final restaurant = await Restaurant.refreshRestaurantById(restaurantId);
+      final restaurantFull = await RestaurantFull.refreshRestaurantById(restaurantId);
 
-      state = AsyncData(restaurant);
+      state = AsyncData(restaurantFull);
     } catch (e, st) {
       state = AsyncError("Erreur lors du rafraîchissement", st);
     }

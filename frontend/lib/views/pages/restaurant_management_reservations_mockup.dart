@@ -5,7 +5,6 @@ import 'package:prbd_2526_a04/models/reservation.dart';
 import 'package:prbd_2526_a04/providers/reservation_provider.dart';
 
 import '../../core/widgets/restaurant_reservation_card.dart';
-import '../../models/restaurant.dart';
 import '../../providers/my_restaurants_provider.dart';
 import '../../providers/system_time_provider.dart';
 
@@ -31,7 +30,8 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
   }
   @override
   Widget build(BuildContext context) {
-    final restaurant = ref.watch(myRestaurantsProvider).value?.firstWhere((r) => r.id == widget.restaurantId);
+    final restaurantFull = ref.watch(myRestaurantsProvider).value?.firstWhere((r) => r.restaurant.id == widget.restaurantId);
+    final restaurant= restaurantFull?.restaurant;
     final theme = Theme.of(context);
     final simulatedTimeState = ref.watch(systemTimeProvider);
     final reservationState = ref.watch(reservationsProvider);

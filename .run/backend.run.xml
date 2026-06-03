@@ -18,17 +18,17 @@
     <script-file value="$PROJECT_DIR$/backend/scripts/04.12_br_cannot_associated_table_to_reservation.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/04_13_br_reservations_prevent_double_booking.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/04_14_br_prevent_past_reservation_on_insert.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.01_ep_reservations.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.02_ep_reservation_with_id.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.03_ep_cancel_reservation.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.04_restaurant.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.05_reservations.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.06_search_restaurant.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.07_system_time.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.09_ep_services.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.10_delete_reservation_tables.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.11_complete_reservation.sql" />
-    <script-file value="$PROJECT_DIR$/backend/scripts/05.12_tables.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.00_all_types.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.01_reservations.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.02_ep_cancel_reservation.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.03_restaurant.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.04_search_restaurant.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.06_system_time.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.07_get_restaurant_closed_days.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.08_ep_services.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.09_delete_reservation_tables.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.10_complete_reservation.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.11_tables.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/XX_suppression_des_triggers.sql" />
     <script-mode>FILE</script-mode>
     <data-source id="6d275bb5-c69c-4f95-bc29-f6a29631655b" namespace="database/&quot;prbd-2526-a04&quot;" />
