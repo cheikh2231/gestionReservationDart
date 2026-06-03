@@ -10,12 +10,19 @@ BEGIN
                (SELECT (resLast.id, resLast.datetime)::last_reservation_info
                 FROM reservations resLast
                 WHERE resLast.restaurant = r.id
-                ORDER BY resLast.datetime DESC LIMIT 1),
+                ORDER BY resLast.datetime LIMIT 1),
                 (SELECT COUNT(*)::int
                  FROM reservations resPending
                  WHERE r.id = resPending.restaurant
                  AND resPending.status = 'pending')
-        FROM restaurants r;
+        FROM restaurants r
+        ORDER BY (
+                     SELECT resLast.datetime
+                     FROM reservations resLast
+                     WHERE resLast.restaurant = r.id
+                     ORDER BY resLast.datetime DESC LIMIT 1
+                 ) DESC NULLS LAST, r.name;
+
     END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
