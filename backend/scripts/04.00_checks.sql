@@ -232,7 +232,7 @@ END IF;
 RETURN NEW;
 END;
 $$;
-
+-- // restaurant manager et restaurant table
 DROP TRIGGER IF EXISTS forbid_update_restaurant_or_client_services on reservations;
 
 CREATE TRIGGER forbid_update_restaurant_or_client_services
@@ -240,3 +240,40 @@ BEFORE UPDATE
 ON reservations
 FOR EACH ROW
 EXECUTE FUNCTION forbid_update_restaurant_or_client_services();
+
+
+-- reservation_tables --
+DROP FUNCTION IF EXISTS forbid_update_reservation_tables();
+CREATE OR REPLACE FUNCTION forbid_update_reservation_tables()
+    RETURNS TRIGGER AS $$
+BEGIN
+    IF (OLD.reservation != NEW.reservation OR OLD."table" != NEW."table") THEN
+        RAISE EXCEPTION 'Il est interdit de modifier la clé primaire de reservation_tables';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS forbid_update_reservation_tables ON reservation_tables;
+CREATE TRIGGER forbid_update_reservation_tables
+    BEFORE UPDATE ON reservation_tables
+    FOR EACH ROW EXECUTE FUNCTION forbid_update_reservation_tables();
+
+
+--  restaurant_managers --
+DROP FUNCTION IF EXISTS forbid_update_restaurant_managers();
+CREATE OR REPLACE FUNCTION forbid_update_restaurant_managers()
+    RETURNS TRIGGER AS $$
+BEGIN
+    IF (OLD.restaurant != NEW.restaurant OR OLD.manager != NEW.manager) THEN
+        RAISE EXCEPTION 'Il est interdit de modifier la clé primaire de restaurant_managers';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS forbid_update_restaurant_managers ON restaurant_managers;
+CREATE TRIGGER forbid_update_restaurant_managers
+BEFORE UPDATE ON restaurant_managers
+FOR EACH ROW
+EXECUTE FUNCTION forbid_update_restaurant_managers();

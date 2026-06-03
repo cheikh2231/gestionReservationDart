@@ -21,7 +21,7 @@ $$
     DECLARE
         current_simulated_time TIMESTAMP;
     BEGIN
-        SELECT simulated_time INTO current_simulated_time FROM system_time LIMIT 1;
+        SELECT COALESCE(simulated_time, public.now_local()) INTO current_simulated_time FROM system_time LIMIT 1;
     IF (NEW.datetime < current_simulated_time) THEN
         RAISE EXCEPTION 'Merci de verifier la date de votre reservation';
     END IF;

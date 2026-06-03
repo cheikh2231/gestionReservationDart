@@ -23,7 +23,7 @@ AND (
     )
 AND r.id <> NEW.id;
     IF (client_reservations >= 1) THEN
-        RAISE EXCEPTION 'Vous avez déjà une réservation pour ce service !'
+        RAISE EXCEPTION 'Vous avez déjà une réservation pour ce service !';
     END IF;
 RETURN NEW;
 END;

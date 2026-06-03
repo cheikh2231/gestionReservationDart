@@ -10,6 +10,7 @@ environment:
   flutter: 3.38.7
 
 dependencies:
+  jwt_decoder: ^2.0.1
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -19,7 +20,7 @@ dependencies:
   hive_ce: ^2.6.0
   async: ^2.11.0
   flutter_riverpod: ^3.1.0
-
+  http: ^1.6.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

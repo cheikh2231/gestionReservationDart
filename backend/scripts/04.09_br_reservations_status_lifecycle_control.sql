@@ -23,7 +23,9 @@ DECLARE
 BEGIN
     SELECT simulated_time INTO current_simulated_time FROM system_time LIMIT 1;
     IF (TG_OP = 'INSERT') THEN
-        NEW.status := 'pending';
+        IF (NEW.status != 'pending') THEN
+            RAISE EXCEPTION 'BR-09: Une nouvelle réservation doit avoir le status pending.';
+        END IF;
         RETURN NEW;
     END IF;
     IF (TG_OP = 'UPDATE') THEN
@@ -31,19 +33,19 @@ BEGIN
             RETURN NEW;
         END IF;
         IF (OLD.STATUS = 'completed') THEN
-            RAISE EXCEPTION 'Le status ne peut pas être mis a jours.';
+            RAISE EXCEPTION 'BR-09: Le status ne peut pas être mis a jours.';
         END IF;
         IF (OLD.status = 'cancelled') THEN
-            RAISE EXCEPTION 'Le status ne peut pas être mis a jours.';
+            RAISE EXCEPTION 'BR-09: Le status ne peut pas être mis a jours.';
         END IF;
         IF (OLD.status = 'confirmed') THEN
-            IF (NEW.status = 'pending' AND current_simulated_time > NEW.date_time) THEN
-                RAISE EXCEPTION 'Le status ne peut pas être mis a jours.';
+            IF (NEW.status = 'pending' AND current_simulated_time > NEW.datetime) THEN
+                RAISE EXCEPTION 'BR-09: Le status ne peut pas être mis a jours.';
             END IF;
         END IF;
         IF (OLD.status = 'pending') THEN
            IF(NEW.status = 'completed') THEN
-                RAISE EXCEPTION 'Le status ne peut pas être mis a jours.';
+                RAISE EXCEPTION 'BR-09: Le status ne peut pas être mis a jours.';
            END IF;
         END IF;
     END IF;
