@@ -2,10 +2,10 @@ set search_path to public, auth;
 
 DROP FUNCTION IF EXISTS public.delete_reservation_tables(int);
 CREATE OR REPLACE FUNCTION delete_reservation_tables(id_res int)
-    RETURNS reservations_info AS
+    RETURNS reservation_info AS
 $$
 DECLARE
-    result reservations_info;
+    result reservation_info;
 BEGIN
     DELETE FROM reservation_tables WHERE reservation = id_res;
     SELECT * INTO result

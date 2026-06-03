@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/models/restaurant_full.dart';
 
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 import 'package:prbd_2526_a04/models/restaurant.dart';
 
 import 'package:prbd_2526_a04/providers/restaurant_services_provider.dart';
+
+import '../../providers/restaurant_details_provider.dart';
 
 class RestaurantDetailsMockupScreen extends ConsumerStatefulWidget {
   const RestaurantDetailsMockupScreen({super.key});
@@ -19,12 +22,12 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final restaurant = ModalRoute.of(context)!.settings.arguments as Restaurant;
+    final restaurantFull = ModalRoute.of(context)!.settings.arguments as RestaurantFull;
 
     Future.microtask(() {
       final notifier = ref.read(restaurantServicesProvider.notifier);
       if (notifier.state.value == null || notifier.state.value!.isEmpty) {
-        notifier.loadServices(restaurant.id);
+        notifier.loadServices(restaurantFull.restaurant.id);
       }
     });
   }
@@ -34,7 +37,10 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
     final theme = Theme.of(context);
     final simulatedTimeState = ref.watch(systemTimeProvider);
 
-    final restaurant = ModalRoute.of(context)!.settings.arguments as Restaurant;
+    final initialRestaurant = ModalRoute.of(context)!.settings.arguments as RestaurantFull;
+    final detailsAsync = ref.watch(restaurantDetailsProvider);
+    final restaurantFull = detailsAsync.value ?? initialRestaurant;
+    final restaurant = restaurantFull.restaurant;
     final servicesAsync = ref.watch(restaurantServicesProvider);
 
     return Scaffold(
@@ -51,6 +57,7 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
             tooltip: 'Rafraîchir les données',
             onPressed: () {
               ref.read(restaurantServicesProvider.notifier).loadServices(restaurant.id);
+              ref.read(restaurantDetailsProvider.notifier).loadRestaurant(restaurant.id);
             },
           ),
         ],

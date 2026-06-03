@@ -48,7 +48,7 @@ class RestaurantReservationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${reservation.client.fullName}',
+                      reservation.client.fullName,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
