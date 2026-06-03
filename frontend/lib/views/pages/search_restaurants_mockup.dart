@@ -6,7 +6,6 @@ import 'package:prbd_2526_a04/core/tools/debounce.dart';
 import 'package:prbd_2526_a04/providers/search_restaurants_provider.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 
-import '../../models/restaurant.dart';
 
 
 
@@ -142,9 +141,8 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                               itemCount: displayList.length,
                               itemBuilder: (context, index) {
 
-                                final restaurantMgmt = displayList[index];
-                                final restaurant = restaurantMgmt;
-
+                                final restaurantFull = displayList[index];
+                                final restaurant = restaurantFull.restaurant;
                                 return Card(
                                   margin: const EdgeInsets.only(bottom: 8.0),
                                   child: ListTile(
@@ -173,7 +171,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                           ],
                                         ),
 
-                                        if (restaurant.lastReservation != null)
+                                        if (restaurantFull.lastReservation != null)
                                           Padding(
                                             padding: const EdgeInsets.only(top: 4.0),
                                             child: Row(
@@ -181,14 +179,14 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                                 const Icon(Icons.access_time, size: 14, color: Colors.grey),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  'Dernière réservation: ${DateFormat('EEE dd/MM/yyyy', 'fr_FR').format(restaurant.lastReservation!.datetime)}',
+                                                  'Dernière réservation: ${DateFormat('EEE dd/MM/yyyy', 'fr_FR').format(restaurantFull.lastReservation!.datetime)}',
                                                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                                                 ),
                                               ],
                                             ),
                                           ),
 
-                                        if (restaurant.lastReservation?.countPending != null)
+                                        if (restaurantFull.nbPending  > 0)
                                           Padding(
                                             padding: const EdgeInsets.only(top: 4.0),
                                             child: Row(
@@ -196,7 +194,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                                 const Icon(Icons.pending_actions, size: 14, color: Colors.orange),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  '${restaurant.lastReservation?.countPending} demande(s) en attente',
+                                                  '${restaurantFull.nbPending} demande(s) en attente',
                                                   style: const TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
                                                 ),
                                               ],
@@ -209,7 +207,7 @@ class _SearchRestaurantsMockupScreenState extends ConsumerState<SearchRestaurant
                                       Navigator.pushNamed(
                                         context,
                                         '/restaurant_details',
-                                        arguments: restaurant,
+                                        arguments: restaurantFull,
                                       );
                                     },
                                   ),

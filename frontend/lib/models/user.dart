@@ -1,6 +1,29 @@
 import 'package:prbd_2526_a04/core/services/security.dart';
 
 class User {
+  final int id;
+  final String fullName;
+  final String email;
+  final String? phone;
+  final String role;
+
+  User({
+    required this.id,
+    required this.fullName,
+    required this.email,
+    this.phone,
+    required this.role
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'],
+      fullName: json['full_name'],
+      email: json['email'],
+      phone: json['phone'],
+      role:  json['role']
+    );
+  }
   static String? validateEmail(String? email) {
     if (email == null || email.trim().isEmpty) {
       return 'L\'adresse email est requise';
@@ -57,4 +80,5 @@ class User {
     }
     return null;
   }
+
 }

@@ -1,18 +1,18 @@
-class ReservationTable {
+class Table {
   final int id;
   final int restaurant;
   final int tableNumber;
   final int capacity;
 
-  ReservationTable({
+  Table({
     required this.id,
     required this.restaurant,
     required this.tableNumber,
     required this.capacity
   });
 
-  factory ReservationTable.fromJson(Map<String, dynamic> json) {
-    return ReservationTable(
+  factory Table.fromJson(Map<String, dynamic> json) {
+    return Table(
       id: json['id'],
       restaurant: json['restaurant'],
       tableNumber: json['table_number'],

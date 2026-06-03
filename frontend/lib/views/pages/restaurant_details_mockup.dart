@@ -1,20 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/models/restaurant_full.dart';
 
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
+import 'package:prbd_2526_a04/models/restaurant.dart';
 
-import '../../models/restaurant.dart';
+import 'package:prbd_2526_a04/providers/restaurant_services_provider.dart';
 
-class RestaurantDetailsMockupScreen extends ConsumerWidget {
+import '../../providers/restaurant_details_provider.dart';
+
+class RestaurantDetailsMockupScreen extends ConsumerStatefulWidget {
   const RestaurantDetailsMockupScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RestaurantDetailsMockupScreen> createState() => _RestaurantDetailsMockupScreenState();
+}
+
+class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetailsMockupScreen> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final restaurantFull = ModalRoute.of(context)!.settings.arguments as RestaurantFull;
+
+    Future.microtask(() {
+      final notifier = ref.read(restaurantServicesProvider.notifier);
+      if (notifier.state.value == null || notifier.state.value!.isEmpty) {
+        notifier.loadServices(restaurantFull.restaurant.id);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final simulatedTimeState = ref.watch(systemTimeProvider);
 
-    final restaurant = ModalRoute.of(context)!.settings.arguments as Restaurant;
+    final initialRestaurant = ModalRoute.of(context)!.settings.arguments as RestaurantFull;
+    final detailsAsync = ref.watch(restaurantDetailsProvider);
+    final restaurantFull = detailsAsync.value ?? initialRestaurant;
+    final restaurant = restaurantFull.restaurant;
+    final servicesAsync = ref.watch(restaurantServicesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +55,10 @@ class RestaurantDetailsMockupScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Rafraîchir les données',
-            onPressed: () {},
+            onPressed: () {
+              ref.read(restaurantServicesProvider.notifier).loadServices(restaurant.id);
+              ref.read(restaurantDetailsProvider.notifier).loadRestaurant(restaurant.id);
+            },
           ),
         ],
         elevation: 2,
@@ -118,43 +148,81 @@ class RestaurantDetailsMockupScreen extends ConsumerWidget {
               const Divider(height: 32),
 
               const Text(
-                'Horaires des services',
+                'Horaires',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
 
-              // Note technique : Pour le moment, nous affichons une maquette pour les services. en attendant de faire "services_provider", on pourra boucler ici !
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4.0),
+              servicesAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Text('Erreur : $err', style: const TextStyle(color: Colors.red)),
+                data: (services) {
+                  if (services.isEmpty) {
+                    return const Text(
+                      "Aucun horaire défini pour ce restaurant.",
+                      style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                    );
+                  }
+
+                  // Grouper les services par jour
+                  final Map<int, List<dynamic>> groupeServices = {};
+                  for (var service in services) {
+                    groupeServices.putIfAbsent(service.dayOfWeek, () => []).add(service);
+                  }
+
+                  // Séparer en deux colonnes de lundi a jeudi a gauche et de vendredi a dimanche a droite
+                  final leftDays = groupeServices.keys.where((k) => k <= 4).toList()..sort();
+                  final rightDays = groupeServices.keys.where((k) => k >= 5).toList()..sort();
+
+
+                  Widget buildDayRow(int dayId) {
+                    final dayServices = groupeServices[dayId]!;
+                    final dayName = dayServices.first.dayName; // on prend que le nom di service de midi car tout les 2 sont le meme jour
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Lundi - Vendredi', style: TextStyle(fontWeight: FontWeight.w500)),
-                          Text('12:00 - 14:30, 19:00 - 22:30', style: TextStyle(fontFamily: 'monospace')),
+                          SizedBox(
+                            width: 80,
+                            child: Text(dayName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                          // Heures du jour empilées
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: dayServices.map((s) => Padding(
+                                padding: const EdgeInsets.only(bottom: 2.0),
+                                child: Text('${s.startTime} - ${s.endTime}'),
+                              )).toList(),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Samedi - Dimanche', style: TextStyle(fontWeight: FontWeight.w500)),
-                          Text('12:00 - 15:00, 19:00 - 23:00', style: TextStyle(fontFamily: 'monospace')),
-                        ],
+                    );
+                  }
+
+                  // Affichage sur deux colonnes
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: leftDays.map((d) => buildDayRow(d)).toList(),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: rightDays.map((d) => buildDayRow(d)).toList(),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
 
               const SizedBox(height: 32),
@@ -163,10 +231,14 @@ class RestaurantDetailsMockupScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // Naviguer vers le formulaire de réservation
+                    Navigator.pushNamed(
+                      context,
+                      '/add_edit_reservation',
+                      arguments: {'restaurant': restaurant},
+                    );
                   },
                   icon: const Icon(Icons.add),
-                  label: const Text('Réserver un table'),
+                  label: const Text('Réserver une table'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: theme.colorScheme.primary,
