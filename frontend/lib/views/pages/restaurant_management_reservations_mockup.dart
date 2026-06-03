@@ -131,7 +131,8 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
             Expanded(
               child: reservationState.when(
                 data: (reservations) {
-                   final filteredList = filterReservation(reservations);
+                   final reservationsFiltered = reservations.where( (r) => r.restaurant.id == widget.restaurantId).toList();
+                   final filteredList = filterReservation(reservationsFiltered);
                    return ListView.builder(
                     padding: const EdgeInsets.all(16.0),
                     itemCount: filteredList.length,
