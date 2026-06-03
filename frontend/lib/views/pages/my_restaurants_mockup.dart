@@ -18,7 +18,7 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
     final bool estConnecte = authState.value != null;
     final String? userName = ref.read(securityProvider.notifier).loggedName ?? "";
     final theme = Theme.of(context);
-    final restaurantsState = ref.watch(myRestaurantsProvider);
+    final restaurantsFullState = ref.watch(myRestaurantsProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text('Mes restaurants${estConnecte ? " ($userName)" : ""}'),
@@ -71,14 +71,14 @@ class MyRestaurantsMockupScreen extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: restaurantsState.when(
-          data: (restaurants) => ListView.builder(
+        child: restaurantsFullState.when(
+          data: (restaurantsFull) => ListView.builder(
             padding: const EdgeInsets.all(16.0),
-            itemCount: restaurants.length,
+            itemCount: restaurantsFull.length,
             itemBuilder: (context,index){
-              final restaurant = restaurants[index];
+              final restaurantFull = restaurantsFull[index];
               return RestaurantCard(
-                restaurant: restaurant,
+                restaurantFull: restaurantFull,
               );
             }
           ),

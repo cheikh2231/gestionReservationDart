@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prbd_2526_a04/models/restaurant_service.dart';
+import 'package:prbd_2526_a04/models/service.dart';
 
 final restaurantServicesProvider = AsyncNotifierProvider<RestaurantServicesNotifier, List<RestaurantService>>(
       () => RestaurantServicesNotifier(),

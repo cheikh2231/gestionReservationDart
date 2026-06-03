@@ -1,15 +1,5 @@
 set search_path to public;
 
-DROP TYPE IF EXISTS service_info CASCADE;
-
-CREATE TYPE service_info AS (
-    id int,
-    restaurant int,
-    day_of_week int,
-    start_time time,
-    end_time time
-);
-
 DROP FUNCTION IF EXISTS get_services(int);
 
 CREATE OR REPLACE FUNCTION get_services(restaurant_id int)
