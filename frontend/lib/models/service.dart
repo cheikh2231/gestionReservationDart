@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:prbd_2526_a04/core/services/api_client.dart';
 
-class RestaurantService {
+class Service {
   final int id;
   final int restaurantId;
   final int dayOfWeek;
   final String startTime;
   final String endTime;
 
-  RestaurantService({
+  Service({
     required this.id,
     required this.restaurantId,
     required this.dayOfWeek,
@@ -16,8 +16,8 @@ class RestaurantService {
     required this.endTime,
   });
 
-  factory RestaurantService.fromJson(Map<String, dynamic> json) {
-    return RestaurantService(
+  factory Service.fromJson(Map<String, dynamic> json) {
+    return Service(
       id: json['id'],
       restaurantId: json['restaurant'],
       dayOfWeek: json['day_of_week'],
@@ -26,7 +26,7 @@ class RestaurantService {
     );
   }
 
-  static Future<List<RestaurantService>> getServicesForRestaurant(int restaurantId) async {
+  static Future<List<Service>> getServicesForRestaurant(int restaurantId) async {
     final response = await ApiClient.post(
       'get_services',
       body: json.encode({
@@ -36,7 +36,7 @@ class RestaurantService {
 
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
-      return body.map((dynamic item) => RestaurantService.fromJson(item)).toList();
+      return body.map((dynamic item) => Service.fromJson(item)).toList();
     } else {
       throw Exception('Erreur lors du chargement des services');
     }

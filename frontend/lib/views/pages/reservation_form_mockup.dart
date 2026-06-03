@@ -37,7 +37,9 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
   DateTime? _selectedDate;
   Reservation? _reservation;
   bool? isClosed = false;
-
+  DateTime? _simulatedTime;
+  List<String> _slots = [];
+  String? _selectedSlot;
   final _specialRequestController = ValidatingTextEditingController(
     validator: Reservation.validateSpecialRequest,
     initialValue: '',
@@ -47,8 +49,8 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_initialized) return;
-    _initialized = true;
-
+    final systemTimeAsync = ref.read(systemTimeProvider);
+    _simulatedTime = systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     _reservation = args?['reservation'] as Reservation?;
 
@@ -57,23 +59,48 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
         _nameResto = _reservation!.restaurant.name;
         _selectedDate = _reservation!.datetime;
         _specialRequestController.text = _reservation!.specialRequests ?? '';
+        _loadSlots(_reservation!);
+        _selectedSlot = DateFormat('HH:mm').format(_reservation!.datetime);
     } else {
       _specialRequestController.text = '';
       _nbGuests = 2;
       _nameResto = 'brol';
+      _selectedDate = _simulatedTime;
     }
+
+    _initialized = true;
   }
+
   void refreshDateAndClosedRestaurantDays(Reservation? reservation , int days) async{
 
-    final datePlusOne = _selectedDate?.add(Duration(days: days));
-    if(datePlusOne == null) return;
-    setState(() {
-      _selectedDate = datePlusOne;
-    });
+    _loadSlots(reservation!);
+
+     DateTime? datePlusOrMinusOne;
+    if(days>0){
+      if(canAdd()){
+         datePlusOrMinusOne = _selectedDate?.add(Duration(days: days));
+        if(datePlusOrMinusOne == null) return;
+        setState(() {
+          _selectedDate = datePlusOrMinusOne;
+        });
+      }
+    }else{
+      if(canRemove()){
+        datePlusOrMinusOne = _selectedDate?.add(Duration(days: days));
+        if(datePlusOrMinusOne == null) return;
+        setState(() {
+          _selectedDate = datePlusOrMinusOne;
+        });
+      }
+    }
+
+
+    await _loadSlots(reservation);
+
     bool isResClosed = false;
     try{
       final listClosedDay = reservation != null ? await Restaurant.getClosedDays(reservation.restaurant.id) : await Restaurant.getClosedDays(5);
-    isResClosed = listClosedDay.contains(datePlusOne.weekday);
+    isResClosed = listClosedDay.contains(datePlusOrMinusOne!.weekday);
     }catch(e){
       print(e.toString());
       print('pas bonnnnnnnnnnnnnnnnnnnnnnn');
@@ -84,20 +111,44 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
     });
 
   }
+
+  Future<void> _loadSlots(Reservation reservation) async {
+    if (_selectedDate != null) {
+      print(_simulatedTime);
+      print(_selectedDate);
+      final slots = await reservation.restaurant.getSlots(_selectedDate!,_simulatedTime!);
+      setState(() {
+        _slots = slots;
+        if(_selectedSlot != null && !slots.contains(_selectedSlot)){
+          _selectedSlot = null;
+        }
+      });
+    }
+  }
+
+  bool canRemove(){
+    return _selectedDate!.add(Duration(days: -1)).compareTo(_simulatedTime!) >= 0;
+  }
+  bool canAdd(){
+    return _selectedDate!.add(Duration(days: 1)).compareTo(_simulatedTime!.add(Duration(days: 365))) <= 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final systemTimeAsync = ref.watch(systemTimeProvider);
-    final simulatedTime = systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
+    _simulatedTime = systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
     _specialRequestController.onAfterValidated = () => setState(() {});
     if (!_initialized) {
-      _selectedDate = _reservation?.datetime ?? simulatedTime;
+      _selectedDate = _reservation?.datetime ?? _simulatedTime;
       _initialized = true;
     }
+
 
     final theme = Theme.of(context);
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final reservation = args?['reservation'] as Reservation?;
     final isNew = reservation == null;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -129,7 +180,7 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                     'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
                 child: Text(
                   DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                      .format(simulatedTime),
+                      .format(_simulatedTime!),
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.grey[400],
@@ -167,7 +218,7 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                             final picked = await showDatePicker(
                               context: context,
                               initialDate: _selectedDate!,
-                              firstDate: simulatedTime,
+                              firstDate: _simulatedTime!,
                               lastDate: _selectedDate!.add(const Duration(days: 365)),
                               locale: const Locale('fr', 'FR'),
                             );
@@ -189,8 +240,8 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                                     children: [
                                       const Text('Date'),
                                       Text(
-                                        DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                                            .format(_selectedDate ?? simulatedTime),
+                                        DateFormat('EEEE dd/MM/yyyy', 'fr_FR')
+                                            .format(_selectedDate ?? _simulatedTime!),
                                         style: theme.textTheme.bodySmall,
                                       ),
                                     ],
@@ -206,13 +257,13 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                     const SizedBox(width: 8),
                     IconButton(
                       icon: const Icon(Icons.remove),
-                      onPressed: () {
+                      onPressed: !canRemove() ? null : () {
                         refreshDateAndClosedRestaurantDays(reservation,-1);
                        },
                     ),
                     IconButton(
                       icon: const Icon(Icons.add),
-                      onPressed: () async {
+                      onPressed: !canAdd() ? null : () async{
                         refreshDateAndClosedRestaurantDays(reservation,1);
                       },
                     ),
@@ -262,131 +313,35 @@ class _ReservationFormMockupScreen extends ConsumerState<ReservationFormMockupSc
                   spacing: 8.0,
                   runSpacing: 8.0,
                   children: [
-                    Container(
-                      width: 80,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
+                    for(final slot in _slots)
+                      InkWell(
+                        onTap: () {
+                          setState(() => _selectedSlot = slot);
+                        },
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: theme.colorScheme.outline,
-                          width: 1,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '12:00',
-                          style: TextStyle(
-                            color: theme.colorScheme.onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
+                        child: Container(
+                          width: 80,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _selectedSlot == slot
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: theme.colorScheme.outline),
+                          ),
+                          child: Center(
+                            child: Text(
+                              slot,
+                              style: TextStyle(
+                                color: _selectedSlot == slot
+                                    ? theme.colorScheme.onPrimary
+                                    : theme.colorScheme.onSurface,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Container(
-                      width: 80,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: theme.colorScheme.outline,
-                          width: 1,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '12:30',
-                          style: TextStyle(
-                            color: theme.colorScheme.onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 80,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: theme.colorScheme.primary,
-                          width: 1,
-                        ),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '19:00',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 80,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: theme.colorScheme.outline,
-                          width: 1,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '19:30',
-                          style: TextStyle(
-                            color: theme.colorScheme.onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 80,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: theme.colorScheme.outline,
-                          width: 1,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '20:00',
-                          style: TextStyle(
-                            color: theme.colorScheme.onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 if (isClosed == false)

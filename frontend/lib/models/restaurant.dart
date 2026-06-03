@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/restaurant_full.dart';
 
 import '../core/services/api_client.dart';
@@ -55,6 +56,20 @@ class Restaurant {
         print("Erreur: ${response.statusCode} - ${response.body}");
         throw Exception('Erreur lors du chargement des jours fermés');
       }
+    }
+    Future<List<String>> getSlots(DateTime date, DateTime simulatedTime) async {
+      final response = await ApiClient.post(
+        'get_slots',
+        body: jsonEncode({
+          'restaurant_id': id,
+          'simulated_time': DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(simulatedTime),
+          'target_date': DateFormat('yyyy-MM-dd').format(date),
+        }),
+      );
+      print(response.statusCode);
+      print(response.body);
+      final List<dynamic> list = jsonDecode(response.body);
+      return list.map((e) => (e['slot_time'] as String).substring(0, 5)).toList();
     }
 
 }

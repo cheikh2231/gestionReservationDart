@@ -1,9 +1,12 @@
+import 'dart:collection';
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/restaurant.dart';
 import 'package:prbd_2526_a04/models/table.dart';
 import 'package:prbd_2526_a04/models/user.dart';
 import '../core/services/api_client.dart';
+import 'service.dart';
 
 class Reservation {
   final int id;
@@ -86,4 +89,7 @@ class Reservation {
     // print( "${response.body} erreur dans le model et le param : ${id}  ");
     return Reservation.fromJson(jsonDecode(response.body));
   }
+
+
+
 }
