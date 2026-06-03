@@ -22,8 +22,6 @@ CREATE TYPE reservation_restaurant_info AS (
     slot_duration int
 );
 
-
-
 CREATE TYPE reservation_table_info AS (
     id              integer,
     restaurant      integer,
