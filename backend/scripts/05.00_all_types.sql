@@ -11,6 +11,7 @@ CREATE TYPE user_info AS (
     phone       text,
     role        role_type
 );
+
 CREATE TYPE restaurant_info AS (
     id            integer,
     name          varchar,
@@ -22,6 +23,7 @@ CREATE TYPE restaurant_info AS (
     price_range   int,
     slot_duration int
 );
+
 CREATE TYPE table_info AS (
     id           integer,
     restaurant   integer,
@@ -60,6 +62,6 @@ CREATE TYPE reservation_info AS (
 
 CREATE TYPE restaurant_full_info AS (
     restaurant           restaurant_info,
-    last_reservation     last_reservation_info,
+    last_reservation    last_reservation_info,
     nb_pending           integer
 );
