@@ -245,32 +245,27 @@ class _SignupMockupScreenState extends ConsumerState<SignupMockupScreen> {
           _phoneController.isValid == true;
 
   void _signup(BuildContext context) async {
-    await ref.read(securityProvider.notifier).signup(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-      fullName: _fullNameController.text.trim(),
-      phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-    );
+    try {
+      await ref.read(securityProvider.notifier).signup(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        fullName: _fullNameController.text.trim(),
+        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+      );
 
-    var securityState = ref.read(securityProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Inscription réussie !'), backgroundColor: Colors.green),
+      );
+      Navigator.pushReplacementNamed(context, '/home');
 
-    if (!context.mounted) return;
-
-    securityState.when(
-      data: (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Inscription réussie !'), backgroundColor: Colors.green),
-        );
-        // Navigator.pushReplacementNamed(context, '/client_home');
-      },
-      error: (error, _) {
-        DialogBox(
-          title: "Erreur d'inscription",
-          message: error.toString().replaceAll('Exception: ', ''),
-          actions: const ['OK'],
-        ).show(context);
-      },
-      loading: () {},
-    );
+    } catch (e) {
+      if (!context.mounted) return;
+      DialogBox(
+        title: "Erreur d'inscription",
+        message: "L'inscription a pu réussir, mais la connexion automatique a échoué.",
+        actions: const ['OK'],
+      ).show(context);
+    }
   }
 }
