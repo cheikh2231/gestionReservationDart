@@ -21,6 +21,10 @@ class TablesNotifier extends AsyncNotifier<List<Table>> {
   }
 }
 
+final restaurantTablesProvider = AsyncNotifierProvider<RestaurantTablesNotifier, List<Table>>(
+      () => RestaurantTablesNotifier(),
+);
+
 class RestaurantTablesNotifier extends AsyncNotifier<List<Table>> {
   int? _currentRestaurantId;
 

@@ -1,42 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-void main() async {
-  await initializeDateFormatting('fr_FR', null);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const RestaurantManagementTablesMockupScreen(),
-    ),
-  );
+import '../../models/restaurant.dart';
+import '../../providers/system_time_provider.dart';
+import '../../providers/tables_provider.dart';
+
+class RestaurantManagementTablesScreen extends ConsumerStatefulWidget {
+  final Restaurant restaurant;
+  const RestaurantManagementTablesScreen({super.key, required this.restaurant});
+
+  @override
+  ConsumerState<RestaurantManagementTablesScreen> createState() => _TablesScreenState();
 }
 
-class RestaurantManagementTablesMockupScreen extends StatelessWidget {
-  const RestaurantManagementTablesMockupScreen({super.key});
+class _TablesScreenState extends ConsumerState<RestaurantManagementTablesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => ref.read(restaurantTablesProvider.notifier).loadTables(widget.restaurant.id));
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
+    final simulatedTimeState = ref.watch(systemTimeProvider);
+    final tablesAsync = ref.watch(restaurantTablesProvider);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Le Gourmet'),
+        title: Text(widget.restaurant.name),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Rafraîchir les données',
-            onPressed: () {},
+            onPressed: () => ref.read(restaurantTablesProvider.notifier).loadTables(widget.restaurant.id),
           ),
         ],
         elevation: 2,
@@ -49,29 +53,51 @@ class RestaurantManagementTablesMockupScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 2.0),
               child: Tooltip(
-                message:
-                    'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                child: Text(
-                  DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                      .format(simulatedTime),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[400],
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                  message: 'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
+                  child: simulatedTimeState.when(
+                    data: (list){
+                      final date = list.first.simulated_time;
+                      return Text(
+                        DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(date!),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey[400],
+                          fontWeight: FontWeight.normal,
+                        ),
+                      );
+                    },
+                    loading: () => const Text("...", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                    error: (err, stack) => const Text("Erreur", style: TextStyle(fontSize: 10, color: Colors.red)),
+                  )
               ),
             ),
           ),
         ),
       ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            ListView(
+        child: tablesAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(child: Text("Erreur : $error")),
+          data: (tables) {
+            if (tables.isEmpty) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Text(
+                    "Aucune table n'est configurée.\nAppuyez sur le bouton + pour en ajouter une.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ),
+              );
+            }
+
+            return ListView.builder(
               padding: const EdgeInsets.all(16.0),
-              children: [
-                Card(
+              itemCount: tables.length,
+              itemBuilder: (context, index) {
+                final table = tables[index];
+                return Card(
                   margin: const EdgeInsets.only(bottom: 16),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -83,12 +109,9 @@ class RestaurantManagementTablesMockupScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Table 1',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Text(
+                                'Table ${table.tableNumber}',
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 4),
                               Row(
@@ -96,11 +119,8 @@ class RestaurantManagementTablesMockupScreen extends StatelessWidget {
                                   const Icon(Icons.people, size: 16),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '2 personnes',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
-                                    ),
+                                    '${table.capacity} personne${table.capacity > 1 ? 's' : ''}',
+                                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                                   ),
                                 ],
                               ),
@@ -109,118 +129,43 @@ class RestaurantManagementTablesMockupScreen extends StatelessWidget {
                         ),
                         IconButton(
                           icon: const Icon(Icons.edit),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/edit_table', arguments: {
+                              'restaurant': widget.restaurant,
+                              'table': table,
+                            });
+                          },
                         ),
                       ],
                     ),
                   ),
-                ),
-                Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.table_restaurant, size: 40),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Table 2',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  const Icon(Icons.people, size: 16),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '4 personnes',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  margin: EdgeInsets.zero,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.table_restaurant, size: 40),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Table 3',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  const Icon(Icons.people, size: 16),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '6 personnes',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              bottom: 16,
-              right: 16,
-              child: FloatingActionButton(
-                heroTag: 'tables_fab',
-                onPressed: () {},
-                child: const Icon(Icons.add),
-              ),
-            ),
-          ],
+                );
+              },
+            );
+          },
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'tables_fab',
+        onPressed: () {
+          Navigator.pushNamed(context, '/edit_table', arguments: {
+            'restaurant': widget.restaurant,
+          });
+        },
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: 2,
-        onTap: (_) {},
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pop(context);
+          }else if (index == 1) {
+            //service
+          }else if(index == 2){
+            return;
+          }
+        },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
