@@ -40,11 +40,11 @@ class _MockupCarouselScreenState extends State<MockupCarouselScreen> {
     (label: 'Mes restaurants', screen: const MyRestaurantsMockupScreen()),
     // (label: 'Gestion restaurant - Réservations', screen: const RestaurantManagementReservationsMockupScreen()),
     (label: 'Gestion restaurant - Services', screen: const RestaurantManagementServicesMockupScreen()),
-    (label: 'Gestion restaurant - Tables', screen: const RestaurantManagementTablesMockupScreen()),
+    //(label: 'Gestion restaurant - Tables', screen: const RestaurantManagementTablesMockupScreen()),
     // (label: 'Détails réservation (manager)', screen: const ReservationDetailsManagerMockupScreen()),
     // (label: 'Assigner des tables', screen: const AssignTablesMockupScreen()),
     (label: 'Modifier le service', screen: const EditServiceMockupScreen()),
-    (label: 'Modifier la table', screen: const EditTableMockupScreen()),
+    //(label: 'Modifier la table', screen: const EditTableMockupScreen()),
   ];
 
   @override

@@ -29,6 +29,7 @@
     <script-file value="$PROJECT_DIR$/backend/scripts/05.09_delete_reservation_tables.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.10_complete_reservation.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.11_tables.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.13_save_tables.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/XX_suppression_des_triggers.sql" />
     <script-mode>FILE</script-mode>
     <data-source id="6d275bb5-c69c-4f95-bc29-f6a29631655b" namespace="database/&quot;prbd-2526-a04&quot;" />
