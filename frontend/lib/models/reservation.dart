@@ -124,7 +124,7 @@ class Reservation {
       if (response.statusCode == 200 || response.statusCode == 204){
         return null;
       }else{
-        return jsonDecode(response.body)['message'];
+        return jsonDecode(response.body)['message'] ?? "Echec de la modification";
       }
     } catch (e) {
       print("Echec de la modification");
