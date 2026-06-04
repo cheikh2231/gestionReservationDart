@@ -45,9 +45,9 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
     });
   }
 
-  Future<bool> updateReservation(Reservation updated) async {
+  Future<String?> updateReservation(Reservation updated) async {
     final updateRes = await updated.updateReservation(updated);
-    if (updateRes) {
+    if (updateRes == null) {
       _updateState(updated);
       deleteReservationTables(updated.id);
     }
@@ -83,6 +83,7 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
       return null;
     }
   }
+
 
 
 

@@ -46,6 +46,8 @@ class _ReservationFormMockupScreen
   String? _selectedSlot;
   bool _noTableDispo = false;
   Timer? _debounceTimer;
+
+
   final _specialRequestController = ValidatingTextEditingController(
     validator: Reservation.validateSpecialRequest,
     initialValue: '',
@@ -161,14 +163,10 @@ class _ReservationFormMockupScreen
     });
   }
 
-  Future<bool> updateReservationInDatabase(Reservation updated) async {
-    try {
+  Future<String?> updateReservationInDatabase(Reservation updated) async {
       return await ref
           .read(reservationsProvider.notifier)
           .updateReservation(updated);
-    } catch (e) {
-      return false;
-    }
   }
 
   Future<void> _loadSlots(Reservation reservation) async {
@@ -212,8 +210,10 @@ class _ReservationFormMockupScreen
         0;
   }
 
+
   @override
   Widget build(BuildContext context) {
+    String? error;
     final systemTimeAsync = ref.watch(systemTimeProvider);
     _simulatedTime =
         systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
@@ -545,7 +545,7 @@ class _ReservationFormMockupScreen
                                 .copyWith(
                                   datetime: finalDateTime,
                                   numberOfGuests: _nbGuests,
-                                specialRequests: _specialRequestController.text.trim().isEmpty
+                                  specialRequests: _specialRequestController.text.trim().isEmpty
                                     ? null
                                     : _specialRequestController.text,
                                 );
@@ -561,10 +561,9 @@ class _ReservationFormMockupScreen
                                 status: 'pending',
                               );
                             }
-
-                            final success = await updateReservationInDatabase(
-                              updatedReservation,
-                            );
+                             error =  await updateReservationInDatabase(
+                              updatedReservation);
+                            final success = error == null;
 
                             if (context.mounted) {
                               if (success) {
@@ -578,8 +577,8 @@ class _ReservationFormMockupScreen
                                 Navigator.pop(context);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Échec de la modification.'),
+                                   SnackBar(
+                                    content: Text(error!),
                                   ),
                                 );
                               }

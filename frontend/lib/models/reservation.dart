@@ -47,7 +47,6 @@ class Reservation {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => Reservation.fromJson(item)).toList();
     } else {
-      // AJOUTEZ CES DEUX LIGNES POUR DÉBOGUER :
       print('ERREUR SERVEUR : ${response.statusCode}');
       print('MESSAGE SERVEUR : ${response.body}');
 
@@ -107,7 +106,7 @@ class Reservation {
     );
   }
 
-  Future<bool> updateReservation(Reservation reservation) async {
+  Future<String?> updateReservation(Reservation reservation) async {
     final String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(reservation.datetime);
     try {
       final response = await ApiClient.post(
@@ -122,11 +121,15 @@ class Reservation {
       );
       print(response.statusCode);
       print(response.body);
-      return response.statusCode == 200 || response.statusCode == 204;
+      if (response.statusCode == 200 || response.statusCode == 204){
+        return null;
+      }else{
+        return jsonDecode(response.body)['message'];
+      }
     } catch (e) {
-      print("Erreur lors de la mise à jour : $e");
-      return false;
+      print("Echec de la modification");
     }
+    return null;
   }
 
 }
