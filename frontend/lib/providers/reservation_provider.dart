@@ -41,6 +41,7 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
       state = AsyncData(
         list.map((r) => r.id == updated.id ? updated : r).toList(),
       );
+      refresh();
     });
   }
 

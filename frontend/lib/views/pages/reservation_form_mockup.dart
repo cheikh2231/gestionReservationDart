@@ -84,7 +84,10 @@ class _ReservationFormMockupScreen
         _selectedSlot == null ||
         _selectedDate == null ||
         _nbGuests < 1 ||
-        _specialRequestController.errorText != null);
+        _specialRequestController.errorText != null ||
+        DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day).
+        isBefore(DateTime(_simulatedTime!.year, _simulatedTime!.month, _simulatedTime!.day))
+    );
   }
 
   Future<void> haveTables() async {
@@ -304,7 +307,10 @@ class _ReservationFormMockupScreen
                               locale: const Locale('fr', 'FR'),
                             );
                             if (picked != null) {
-                              setState(() => _selectedDate = picked);
+                              setState(() {
+                                _selectedDate = picked;
+                                _loadSlots(reservation!);
+                              });
                             }
                           },
                           child: Padding(

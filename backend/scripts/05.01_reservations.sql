@@ -19,7 +19,8 @@ BEGIN
             )
         FROM reservations r
                  JOIN users c ON c.id = r.client
-                 JOIN restaurants res ON res.id = r.restaurant order by r.datetime desc , r.id ;
+                 JOIN restaurants res ON res.id = r.restaurant WHERE c.id = auth.id() order by r.datetime desc , r.id;
+
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
