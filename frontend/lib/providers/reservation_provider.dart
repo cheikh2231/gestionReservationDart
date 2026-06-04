@@ -46,7 +46,10 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
 
   Future<bool> updateReservation(Reservation updated) async {
     final updateRes = await updated.updateReservation(updated);
-    if (updateRes) _updateState(updated);
+    if (updateRes) {
+      _updateState(updated);
+      deleteReservationTables(updated.id);
+    }
     return updateRes;
   }
 

@@ -116,7 +116,6 @@ class _ReservationFormMockupScreen
     Reservation? reservation,
     int days,
   ) async {
-    _loadSlots(reservation!);
 
     DateTime? datePlusOrMinusOne;
     if (days > 0) {
@@ -139,8 +138,10 @@ class _ReservationFormMockupScreen
       }
     }
 
-    await _loadSlots(reservation);
-
+    await _loadSlots(reservation!);
+    if(_selectedSlot==null){
+      _noTableDispo = false;
+    }
     bool isResClosed = false;
     try {
       final listClosedDay = reservation != null
@@ -175,13 +176,14 @@ class _ReservationFormMockupScreen
         _selectedDate!,
         _simulatedTime!,
       );
-      setState(() {
+      setState(()  {
         _slots = slots;
         if (_selectedSlot != null && !slots.contains(_selectedSlot)) {
           _selectedSlot = null;
+          _noTableDispo = false;
         }
-        haveTables();
       });
+      await haveTables();
     }
   }
   bool canRemove() {
@@ -296,7 +298,7 @@ class _ReservationFormMockupScreen
                               context: context,
                               initialDate: _selectedDate!,
                               firstDate: _simulatedTime!,
-                              lastDate: _selectedDate!.add(
+                              lastDate: _simulatedTime!.add(
                                 const Duration(days: 365),
                               ),
                               locale: const Locale('fr', 'FR'),
@@ -537,8 +539,9 @@ class _ReservationFormMockupScreen
                                 .copyWith(
                                   datetime: finalDateTime,
                                   numberOfGuests: _nbGuests,
-                                  specialRequests:
-                                      _specialRequestController.text,
+                                specialRequests: _specialRequestController.text.trim().isEmpty
+                                    ? null
+                                    : _specialRequestController.text,
                                 );
 
                             if (needsConfirmationDialog(
@@ -548,9 +551,6 @@ class _ReservationFormMockupScreen
                               final confirmed =
                                   await showConfirmModificationDialog();
                               if (!confirmed) return;
-                              await ref
-                                  .read(reservationsProvider.notifier)
-                                  .deleteReservationTables(_reservation!.id);
                               updatedReservation = updatedReservation.copyWith(
                                 status: 'pending',
                               );
