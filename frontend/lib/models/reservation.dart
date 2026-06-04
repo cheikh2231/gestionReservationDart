@@ -41,7 +41,6 @@ class Reservation {
   );
 
   static Future<List<Reservation>> getReservations() async {
-    // Votre appel API actuel
     final response = await ApiClient.get('get_reservations');
 
     if (response.statusCode == 200) {

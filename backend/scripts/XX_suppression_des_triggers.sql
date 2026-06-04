@@ -17,3 +17,4 @@ set search_path to public;
 -- $$ LANGUAGE plpgsql SECURITY DEFINER;
 --
 -- select strip_all_triggers();
+
