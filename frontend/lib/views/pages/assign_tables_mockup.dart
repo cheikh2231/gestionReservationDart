@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Table;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/providers/reservation_tables.provider.dart';
 import 'package:prbd_2526_a04/providers/tables_provider.dart';
 import 'package:prbd_2526_a04/views/pages/reservation_details_manager_mockup.dart';
 
 import '../../core/widgets/table_card.dart';
+import '../../models/table.dart';
 import '../../providers/reservation_provider.dart';
 import '../../providers/tables_with_availabilityProvider.dart';
 
@@ -19,13 +21,25 @@ class AssignTablesMockupScreen extends ConsumerStatefulWidget {
 }
 
 class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
-
+  List<int> selectedTables = [];
+  int _nbPlaceTotal=0;
+  void _updateCapacity(Table table, bool isSelected) {
+    setState(() {
+      if (isSelected) {
+        _nbPlaceTotal += table.capacity;
+        selectedTables.add(table.id);
+      } else {
+        _nbPlaceTotal -= table.capacity;
+        selectedTables.remove(table.id);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final asyncReservations = ref.watch(reservationsProvider);
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
-    final nbPlaceTotal=0;
+
     return asyncReservations.when(
         loading: () =>
         const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -36,7 +50,7 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
           final asyncTables = ref.watch(
               tablesWithAvailabilityProvider((reservation.restaurant.id, widget.reservationId))
           );
-
+          bool placeSuffisante= _nbPlaceTotal >= reservation.numberOfGuests;
           return Scaffold(
             appBar: AppBar(
               leading: IconButton(
@@ -113,40 +127,50 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Card(
-                      color: Colors.green.shade50,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.green[700],
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Capacité totale: 6 places',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
+                  if(_nbPlaceTotal >0)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Card(
+                          color: placeSuffisante ?  Colors.green.shade50 : Colors.orange.shade50,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  placeSuffisante ? Icons.check_circle : Icons.warning,
+                                  color: placeSuffisante ? Colors.green[700] : Colors.orange[700],
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Capacité totale: $_nbPlaceTotal place${_nbPlaceTotal != 1 ? 's' : ''}',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        placeSuffisante
+                                            ? '✓ Capacité suffisante pour ${reservation.numberOfGuests} convive${reservation.numberOfGuests > 1 ? 's' : ''}'
+                                            : '⚠️ Capacité insuffisante: $_nbPlaceTotal place${_nbPlaceTotal > 1 ? 's' : ''} pour ${reservation.numberOfGuests} convive${reservation.numberOfGuests > 1 ? 's' : ''}',
+                                          style:
+                                          TextStyle (
+                                            color: placeSuffisante? Colors.green : Colors.orange,
+                                         ),
+                                      ),
+                                      const SizedBox(height: 4),
 
-                                ],
-                              ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
                     ),
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Align(
@@ -166,8 +190,12 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
                       padding: const EdgeInsets.all(16.0),
                       itemCount: tables.length,
                       itemBuilder: (context, index) {
+                        final table=tables[index];
                         return TableCard(
-                         table:tables[index],
+                         table:table,
+                          onSelected: (Table selectedTable, bool isSelected) {
+                            _updateCapacity(selectedTable, isSelected);
+                          },
                         );
                       },
                     ),
@@ -180,7 +208,15 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: selectedTables.isNotEmpty
+                        ? () async
+                        {
+                          final updateRTresult = await ref
+                              .read(reservationTablesProvider.notifier).updateReservationTables(
+                              reservation.id, selectedTables
+                          );
+                        }
+                        : null,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),

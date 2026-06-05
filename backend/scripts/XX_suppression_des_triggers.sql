@@ -1,4 +1,4 @@
-set search_path to public;
+-- set search_path to public;
 -- Suppression de tous les triggers
 -- CREATE OR REPLACE FUNCTION strip_all_triggers() RETURNS text AS $$ DECLARE
 --
