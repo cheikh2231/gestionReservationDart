@@ -208,15 +208,13 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: selectedTables.isNotEmpty
-                        ? () async
-                        {
+                        onPressed: selectedTables.isNotEmpty && placeSuffisante
+                            ? () async {
                           final updateRTresult = await ref
-                              .read(reservationTablesProvider.notifier).updateReservationTables(
-                              reservation.id, selectedTables
-                          );
+                              .read(reservationTablesProvider.notifier)
+                              .updateReservationTables(reservation.id, selectedTables);
                         }
-                        : null,
+                            : null,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
