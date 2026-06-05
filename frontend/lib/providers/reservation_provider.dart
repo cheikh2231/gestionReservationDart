@@ -30,7 +30,13 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
     state = await AsyncValue.guard(() => _chargeReservations());
   }
 
-  void updateReservation(Reservation updated) {
+  void removeReservation(int id) {
+    state.whenData((list) {
+      state = AsyncData(list.where((r) => r.id != id).toList());
+    });
+  }
+
+  void _updateState(Reservation updated) {
     state.whenData((list) {
       state = AsyncData(
         list.map((r) => r.id == updated.id ? updated : r).toList(),
@@ -38,45 +44,45 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
     });
   }
 
-  void removeReservation(int id) {
-    state.whenData((list) {
-      state = AsyncData(list.where((r) => r.id != id).toList());
-    });
+  Future<bool> updateReservation(Reservation updated) async {
+    final updateRes = await updated.updateReservation(updated);
+    if (updateRes) _updateState(updated);
+    return updateRes;
   }
 
   Future<Reservation?> cancelReservation(int id) async {
-    try{
-       final resUpdated = await Reservation.cancelReservation(id);
-       updateReservation(resUpdated);
-       return resUpdated;
-    }catch(e){
+    try {
+      final resUpdated = await Reservation.cancelReservation(id);
+      _updateState(resUpdated);
+      return resUpdated;
+    } catch (e) {
       return null;
     }
   }
 
   Future<Reservation?> deleteReservationTables(int id) async {
-    try{
+    try {
       final resUpdated = await Reservation.deleteReservationTables(id);
-      // print('Reservation reçue après suppression : ${resUpdated.tables}');
-      updateReservation(resUpdated);
+      _updateState(resUpdated);
       return resUpdated;
-    }catch(e){
-      // print("DEBUG: deleteReservationTables l'ID est : $id $e");
+    } catch (e) {
       return null;
     }
   }
 
   Future<Reservation?> completeReservation(int id) async {
-    try{
+    try {
       final resUpdated = await Reservation.completeReservation(id);
-      // print('Reservation reçue après suppression : ${resUpdated.tables}');
-      updateReservation(resUpdated);
+      _updateState(resUpdated);
       return resUpdated;
-    }catch(e){
-      // print("DEBUG: deleteReservationTables l'ID est : $id $e");
+    } catch (e) {
       return null;
     }
   }
+
+
+
+
 
 
 }

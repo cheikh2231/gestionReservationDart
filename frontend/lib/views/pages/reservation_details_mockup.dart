@@ -36,7 +36,8 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
     return res.status != "cancelled" && res.status != "completed";
   }
   bool canMod(Reservation res) {
-    return canTouch(res) && res.datetime.isAfter(simulatedTime);
+    // return canTouch(res) && res.datetime.isAfter(simulatedTime);
+    return true;
   }
 
   Future<void> _onCancelPressed() async {
