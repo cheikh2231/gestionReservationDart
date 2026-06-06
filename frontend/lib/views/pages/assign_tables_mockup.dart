@@ -2,11 +2,11 @@ import 'package:flutter/material.dart' hide Table;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/my_restaurants_provider.dart';
-import 'package:prbd_2526_a04/providers/reservation_tables.provider.dart';
-import 'package:prbd_2526_a04/providers/tables_provider.dart';
 import 'package:prbd_2526_a04/views/pages/reservation_details_manager_mockup.dart';
+import 'package:prbd_2526_a04/views/pages/restaurant_management_reservations_mockup.dart';
 
 import '../../core/widgets/table_card.dart';
+import '../../models/restaurant_full.dart';
 import '../../models/table.dart';
 import '../../providers/reservation_provider.dart';
 import '../../providers/tables_with_availabilityProvider.dart';
@@ -14,7 +14,7 @@ import '../../providers/tables_with_availabilityProvider.dart';
 class AssignTablesMockupScreen extends ConsumerStatefulWidget {
   const AssignTablesMockupScreen({super.key, required this.reservationId});
 
-  final reservationId;
+  final int reservationId;
 
   @override
   ConsumerState<AssignTablesMockupScreen> createState() =>
@@ -36,12 +36,17 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
       }
     });
   }
+
+  Future<RestaurantFull> nbPendingDecrement(int restaurantId) async{
+    final restaurantsfull = await RestaurantFull.getRestaurants();
+    return restaurantsfull.firstWhere((r) => r.restaurant.id == restaurantId);
+  }
   @override
   Widget build(BuildContext context) {
     final asyncReservations = ref.watch(reservationsProvider);
+    final asyncRestaurant = ref.read(myRestaurantsProvider.notifier);
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
-
     return asyncReservations.when(
         loading: () =>
         const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -164,7 +169,6 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
                                          ),
                                       ),
                                       const SizedBox(height: 4),
-
                                     ],
                                   ),
                                 ),
@@ -213,9 +217,34 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
                         onPressed: selectedTables.isNotEmpty && placeSuffisante
                             ? () async {
                           final updateRTresult = await ref
-                              .read(reservationTablesProvider.notifier)
-                              .updateReservationTables(reservation.id, selectedTables);
-                          await ref.read(reservationsProvider.notifier).updateReservation(reservation);
+                              .read(reservationsProvider.notifier)
+                              .confirmAndAssignTables(reservation.id, selectedTables);
+
+                          if(updateRTresult !=null) {
+                            var restaurantAModifier = await nbPendingDecrement(reservation.restaurant.id);
+                            final nbPendings = restaurantAModifier.nbPending;
+                            asyncRestaurant.updateState(restaurantAModifier.restaurant.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Réservation confirmée avec les tables assignées'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => RestaurantManagementReservationsMockupScreen(
+                                  restaurantId: reservation.restaurant.id, // On passe l'objet du restaurant pour l'utiliser dans la view et afficher le bon resto
+                                ),
+                              ),
+                            );
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Erreur lors de l'assignation des tables"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                             : null,
                         style: ElevatedButton.styleFrom(

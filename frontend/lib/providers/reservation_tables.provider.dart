@@ -17,15 +17,5 @@ class ReservationTablesNotifier extends AsyncNotifier<List<ReservationTable>> {
     return [];
   }
 
-  Future<void> updateReservationTables(int resid, List<int> tableIds) async {
-    state = const AsyncLoading();
-    try {
-      await ReservationTable.updateReservationTables(resid, tableIds);
-      state = const AsyncData([]);
-    } catch (e,st) {
-      print("${resid} errorTable ${e}");
-      print("${tableIds} errorTableST ${st}");
-      state = AsyncError("Impossible de mettre à jour les tables réservées.", StackTrace.current);
-    }
-  }
+
 }

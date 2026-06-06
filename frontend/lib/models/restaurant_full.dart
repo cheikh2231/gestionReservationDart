@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../core/services/api_client.dart';
 import 'reservation_last.dart';
 import 'restaurant.dart';
@@ -14,6 +16,20 @@ class RestaurantFull {
     this.lastReservation,
     required this.nbPending,
   });
+
+  RestaurantFull copyWith({
+     Restaurant? restaurant,
+     ReservationLast? lastReservation,
+     required int nbPending,
+  }) {
+    return RestaurantFull(
+      restaurant: restaurant ?? this.restaurant,
+      lastReservation: lastReservation ?? this.lastReservation,
+      nbPending: nbPending,
+    );
+  }
+
+
 
   factory RestaurantFull.fromJson(Map<String, dynamic> json) {
     return RestaurantFull(
@@ -49,6 +65,7 @@ class RestaurantFull {
       throw Exception('Erreur lors du chargement des restaurants');
     }
   }
+
   static Future<RestaurantFull> refreshRestaurantById(int id) async {
     final response = await ApiClient.get('get_restaurants');
 
@@ -65,4 +82,5 @@ class RestaurantFull {
       throw Exception("Erreur lors du rafraîchissement");
     }
   }
+
 }
