@@ -84,9 +84,27 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
     }
   }
 
-
-
-
+  Future<Reservation?> addReservation({
+    required int restaurantId,
+    required DateTime datetime,
+    required int nbGuests,
+    String? specialRequest,
+  }) async {
+    try {
+      final newReservation = await Reservation.addReservation(
+        restaurantId: restaurantId,
+        datetime: datetime,
+        nbGuests: nbGuests,
+        specialRequest: specialRequest,
+      );
+      state.whenData((list) {
+        state = AsyncData([newReservation, ...list]);
+      });
+      return newReservation;
+    } catch (e) {
+      return null;
+    }
+  }
 
 
 
