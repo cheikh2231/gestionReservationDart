@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Table;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/providers/my_restaurants_provider.dart';
 import 'package:prbd_2526_a04/providers/reservation_tables.provider.dart';
 import 'package:prbd_2526_a04/providers/tables_provider.dart';
 import 'package:prbd_2526_a04/views/pages/reservation_details_manager_mockup.dart';
@@ -28,6 +29,7 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
       if (isSelected) {
         _nbPlaceTotal += table.capacity;
         selectedTables.add(table.id);
+        print(table.id);
       } else {
         _nbPlaceTotal -= table.capacity;
         selectedTables.remove(table.id);
@@ -213,6 +215,7 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
                           final updateRTresult = await ref
                               .read(reservationTablesProvider.notifier)
                               .updateReservationTables(reservation.id, selectedTables);
+                          await ref.read(reservationsProvider.notifier).updateReservation(reservation);
                         }
                             : null,
                         style: ElevatedButton.styleFrom(

@@ -16,7 +16,7 @@ class _TableCardState extends State<TableCard>{
   bool isChecked = false;
   @override
   Widget build(BuildContext context) {
-    final capacityText = widget.table.reserved! ? "Occupée pour ce service" : 'Capacité: ${widget.table.capacity} personnes ' ;
+    final capacityText = widget.table.reserved! ? "Occupée pour ce service" : 'Capacité: ${widget.table.capacity} personnes' ;
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: CheckboxListTile(

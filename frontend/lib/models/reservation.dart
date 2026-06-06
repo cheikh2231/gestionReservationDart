@@ -40,6 +40,12 @@ class Reservation {
     tables: (json['tables'] as List).map((i) => Table.fromJson(i)).toList(),
   );
 
+  static Future<Reservation> getReservationById(int id) async {
+    final response = await ApiClient.get('reservations?id=eq.$id&limit=1');
+    final list = jsonDecode(response.body) as List;
+    return Reservation.fromJson(list.first);
+  }
+
   static Future<List<Reservation>> getReservations() async {
     final response = await ApiClient.get('get_reservations');
 

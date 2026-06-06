@@ -12,21 +12,27 @@ class ReservationTable {
 
   factory ReservationTable.fromJson(Map<String, dynamic> json) {
     return ReservationTable(
-      reservation:  json['reservation'],
-      table: json['table'],
+      reservation: json['reservation'] as int,
+      table: json['table'] as int,
     );
-  }
-
-  static Future<ReservationTable> updateReservationTables(int resid, List<int> tableIds) async{
+    }
+  static Future<ReservationTable> updateReservationTables(int resid, List<int> tableIds) async {
     final response = await ApiClient.post(
       'confirm_and_assign_tables',
       body: jsonEncode({
         'idres': resid,
-        'tables_ids':tableIds,
+        'tables_ids': tableIds,
       }),
     );
-    print( "${response.body} erreur dans le model et le param : ${resid}  ");
-    return ReservationTable.fromJson(jsonDecode(response.body));
+    print("${response.body} param : $resid");
+    if (response.statusCode != 200) {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Erreur inconnue');
+    }
+    return ReservationTable(
+      reservation: resid,
+      table: tableIds.first,
+    );
   }
 
 }
