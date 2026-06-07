@@ -50,6 +50,12 @@ class User {
     return null;
   }
 
+  static Future<String?> validateFullNameUnicity(String? value) async {
+    if (value == null || value.trim().isEmpty) return null;
+    var res = await Security.checkFullNameAvailable(fullName: value.trim());
+    return res ? null : 'Ce nom d\'utilisateur est déjà pris';
+  }
+
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) return 'Le mot de passe est requis';
     if (value.length < 8) return 'Doit contenir au moins 8 caractères';
