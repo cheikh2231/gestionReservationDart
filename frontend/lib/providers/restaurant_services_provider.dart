@@ -5,6 +5,7 @@ import 'package:prbd_2526_a04/models/service.dart';
 final restaurantServicesProvider = AsyncNotifierProvider<RestaurantServicesNotifier, List<Service>>(
       () => RestaurantServicesNotifier(),
 );
+
 class RestaurantServicesNotifier extends AsyncNotifier<List<Service>> {
   int? _currentRestaurantId;
 

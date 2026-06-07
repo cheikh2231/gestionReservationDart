@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/reservation.dart';
 import 'package:prbd_2526_a04/providers/reservation_provider.dart';
+import 'package:prbd_2526_a04/views/pages/restaurant_management_services_mockup.dart';
 
 import '../../core/widgets/restaurant_reservation_card.dart';
 import '../../providers/my_restaurants_provider.dart';
@@ -160,7 +161,13 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
           if (index == 0) {
             return;
           } else if (index == 1) {
-            // service ...
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => RestaurantManagementServicesMockupScreen(
+                  restaurantId: restaurant.id,
+                ),
+                ),
+              );
           } else if (index == 2) {
             Navigator.pushNamed(
               context,
