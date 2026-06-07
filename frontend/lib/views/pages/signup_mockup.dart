@@ -18,6 +18,7 @@ class SignupMockupScreen extends ConsumerStatefulWidget {
 class _SignupMockupScreenState extends ConsumerState<SignupMockupScreen> {
   final _fullNameController = ValidatingTextEditingController(
     validator: User.validateFullName,
+    asyncValidator: User.validateFullNameUnicity,
     initialValue: '',
   );
 

@@ -50,10 +50,11 @@ class RestaurantFull {
   }
 
   static Future<List<RestaurantFull>> search(String query, int limit) async {
+    final cleanQuery = query.trim();
     final response = await ApiClient.post(
       'get_search_restaurants',
       body: json.encode({
-        'search_filter': query.isEmpty ? null : query,
+        'search_filter': cleanQuery.isEmpty ? null : cleanQuery,
         'limit_count': limit,
       }),
     );
