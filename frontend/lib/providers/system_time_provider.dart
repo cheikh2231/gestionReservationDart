@@ -18,4 +18,15 @@ class SystemTimeNotifier extends AsyncNotifier<List<SystemTime>>{
       throw "Impossible de charger le temps.\nVeuillez réessayer plus tard.";
     }
   }
+
+  Future<void> updateTime(DateTime? newTime) async {
+    state = const AsyncLoading();
+    try {
+      await SystemTime.updateSimulatedTime(newTime);
+      state = AsyncData(await SystemTime.getSimulatedTime());
+    } catch (e, st) {
+      state = AsyncError("Erreur lors de la mise à jour du temps", st);
+    }
+  }
+
 }
