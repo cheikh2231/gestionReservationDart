@@ -25,10 +25,7 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
     final restaurantFull = ModalRoute.of(context)!.settings.arguments as RestaurantFull;
 
     Future.microtask(() {
-      final notifier = ref.read(restaurantServicesProvider.notifier);
-      if (notifier.state.value == null || notifier.state.value!.isEmpty) {
-        notifier.loadServices(restaurantFull.restaurant.id);
-      }
+      ref.read(restaurantServicesProvider.notifier).loadServices(restaurantFull.restaurant.id);
     });
   }
 
