@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
+
 import '../core/services/api_client.dart';
 
 class SystemTime{
@@ -22,4 +24,17 @@ class SystemTime{
       throw Exception('Failed to get word pairs');
     }
   }
+
+  static Future<void> updateSimulatedTime(DateTime? newTime) async {
+    final response = await ApiClient.post(
+      'update_simulated_time',
+      body: json.encode({
+        'new_time': newTime != null ? DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(newTime) : null,
+      }),
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Failed to update simulated time');
+    }
+  }
+
 }
