@@ -1,9 +1,12 @@
+import 'dart:collection';
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/restaurant.dart';
 import 'package:prbd_2526_a04/models/table.dart';
 import 'package:prbd_2526_a04/models/user.dart';
 import '../core/services/api_client.dart';
+import 'service.dart';
 
 class Reservation {
   final int id;
@@ -37,6 +40,23 @@ class Reservation {
     tables: (json['tables'] as List).map((i) => Table.fromJson(i)).toList(),
   );
 
+  Reservation copyWith({
+    DateTime? datetime,
+    int? numberOfGuests,
+    String? specialRequests,
+    String? status,
+  }) {
+    return Reservation(
+      id: id,
+      client: client,
+      restaurant: restaurant,
+      datetime: datetime ?? this.datetime,
+      numberOfGuests: numberOfGuests ?? this.numberOfGuests,
+      specialRequests: specialRequests ?? this.specialRequests,
+      status: status ?? this.status,
+      tables: tables,
+    );
+  }
   static Future<List<Reservation>> getReservations() async {
     final response = await ApiClient.get('get_reservations');
 
@@ -85,4 +105,46 @@ class Reservation {
     // print( "${response.body} erreur dans le model et le param : ${id}  ");
     return Reservation.fromJson(jsonDecode(response.body));
   }
+
+
+
+  Future<bool> updateReservation(Reservation reservation) async {
+    final String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(reservation.datetime);
+    try {
+      final response = await ApiClient.post(
+        'update_reservation',
+        body: jsonEncode({
+          'datetimeupdated': formattedDateTime,
+          'idres' : reservation.id,
+          'nog': reservation.numberOfGuests,
+          'request': reservation.specialRequests,
+          'statusupdated': reservation.status,
+        }),
+      );
+      print(response.statusCode);
+      print(response.body);
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (e) {
+      print("Erreur lors de la mise à jour : $e");
+      return false;
+    }
+  }
+
+  static Future<Reservation> confirmAndAssignTables(int resid, List<int> tableIds) async {
+    final response = await ApiClient.post(
+      'confirm_and_assign_tables',
+      body: jsonEncode({
+        'idres': resid,
+        'tables_ids': tableIds,
+      }),
+    );
+
+    print("${response.body} param : $resid");
+    if (response.statusCode != 200) {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Erreur inconnue');
+    }
+    return Reservation.fromJson(jsonDecode(response.body));
+  }
+
 }

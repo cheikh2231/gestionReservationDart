@@ -20,6 +20,7 @@ class RestaurantManagementReservationsMockupScreen extends ConsumerStatefulWidge
 }
 
 class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupScreen> {
+
   String selectedStatus = 'all';
   List<Reservation> filterReservation(List<Reservation> listReservation) {
     if(selectedStatus=='all') {
