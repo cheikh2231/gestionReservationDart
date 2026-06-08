@@ -18,7 +18,7 @@ BEGIN
     ELSE
         RAISE EXCEPTION 'Accès refusé.';
     END IF;
---     DELETE FROM reservation_tables WHERE reservation = id_res and exists(select 1 from reservations where reservations.client = auth.id() and reservations.id = id_res);
+
     SELECT * INTO result
     FROM get_reservations()
     WHERE id = id_res;
