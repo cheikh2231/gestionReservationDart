@@ -18,9 +18,7 @@ class SystemTime{
   }
 
   static Future<List<SystemTime>> getSimulatedTime() async {
-    final response = await ApiClient.get('get_simulated_time');
-    print(response.statusCode);
-    print(response.body);
+    final response = await ApiClient.get('get_simulated_time',anonymous: true);
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => SystemTime.fromJson(item)).toList();
@@ -34,7 +32,7 @@ class SystemTime{
       'update_simulated_time',
       body: json.encode({
         'new_time': newTime != null ? DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(newTime) : null,
-      }),
+      }),anonymous: true
     );
     if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Failed to update simulated time');

@@ -47,7 +47,6 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
     final asyncReservations = ref.watch(reservationsProvider);
     final asyncRestaurant = ref.read(myRestaurantsProvider.notifier);
     final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
     return asyncReservations.when(
         loading: () =>
         const Scaffold(body: Center(child: CircularProgressIndicator())),
