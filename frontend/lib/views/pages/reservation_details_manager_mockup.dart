@@ -97,7 +97,8 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.refresh),
                 tooltip: 'Rafraîchir les données',
-                onPressed: () {},
+                onPressed: () {
+                },
               ),
             ],
             elevation: 2,

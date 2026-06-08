@@ -67,13 +67,11 @@ class Restaurant {
         }),
       );
 
-      // Sécurité : On vérifie si la réponse est déjà une liste ou une chaîne brute
       final dynamic decoded = jsonDecode(response.body);
 
       if (decoded is List) {
         return decoded.map((e) => (e['slot_time'] as String).substring(0, 5)).toList();
       } else if (decoded is Map && decoded.containsKey('data')) {
-        // Si l'API enveloppe la liste dans un objet contenant une clé 'data'
         final List<dynamic> list = decoded['data'];
         return list.map((e) => (e['slot_time'] as String).substring(0, 5)).toList();
       } else {
@@ -81,14 +79,13 @@ class Restaurant {
       }
     }
 
-    Future<bool> noTableDispo(DateTime date, String slot, int nbGuests, int? excludedReservationId) async {
-      // On déclare les clés dans le STRICT ordre des arguments de la fonction SQL
+    Future<bool> noTableDispo(DateTime date, String slot, int nbGuests, int? idResIfInEdit) async {
       final Map<String, dynamic> bodyParams = {
         'date': DateFormat('yyyy-MM-dd').format(date),
         'nb_guests': nbGuests,
         'restaurant_id': id,
         'slot': slot,
-        'excluded_reservation_id': excludedReservationId, // Mis à la fin comme en SQL !
+        'id_reservation_if_in_edit': idResIfInEdit,
       };
 
       final response = await ApiClient.post(
@@ -96,11 +93,8 @@ class Restaurant {
         body: jsonEncode(bodyParams),
       );
 
-      final dynamic decoded = response.body is String
-          ? jsonDecode(response.body)
-          : response.body;
+      final dynamic decoded = jsonDecode(response.body);
 
-      // Sécurité pour intercepter la réponse booléenne de PostgREST
       if (decoded is List && decoded.isNotEmpty) {
         final firstElement = decoded.first;
         if (firstElement is Map) {
@@ -113,10 +107,9 @@ class Restaurant {
         if (decoded.containsKey('no_table_dispo')) {
           return decoded['no_table_dispo'] as bool;
         }
-        // Si PostgREST renvoie une erreur encapsulée
         if (decoded.containsKey('message')) {
           print("Erreur PostgREST: ${decoded['message']}");
-          return true; // Par sécurité, on bloque si l'API crash
+          return true;
         }
       }
 

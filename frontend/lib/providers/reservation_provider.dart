@@ -38,13 +38,15 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
 
   void _updateState(Reservation updated) {
     state.whenData((list) {
-      state = AsyncData(
-        list.map((r) => r.id == updated.id ? updated : r).toList(),
-      );
-      refresh();
+      final updatedList = list.map((r) => r.id == updated.id ? updated : r).toList();
+      updatedList.sort((a, b) {
+        final dateCompare = b.datetime.compareTo(a.datetime);
+        return dateCompare != 0 ? dateCompare :
+         b.id.compareTo(a.id);
+      });
+      state = AsyncData(updatedList);
     });
   }
-
   Future<String?> updateReservation(Reservation updated) async {
     final updateRes = await updated.updateReservation(updated);
     if (updateRes == null) {
@@ -100,8 +102,10 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
       state.whenData((list) {
         state = AsyncData([newReservation, ...list]);
       });
+      _updateState(newReservation);
       return newReservation;
     } catch (e) {
+
       return null;
     }
   }

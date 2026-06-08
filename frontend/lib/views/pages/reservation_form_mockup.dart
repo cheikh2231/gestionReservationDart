@@ -38,7 +38,7 @@ class ReservationFormMockupScreen extends ConsumerStatefulWidget {
 class _ReservationFormMockupScreen
     extends ConsumerState<ReservationFormMockupScreen> {
   bool _initialized = false;
-  late int _nbGuests;
+   int _nbGuests = 2;
   String _nameResto = '';
   DateTime? _selectedDate;
   Reservation? _reservation;
@@ -61,22 +61,25 @@ class _ReservationFormMockupScreen
     super.didChangeDependencies();
     if (_initialized) return;
     final systemTimeAsync = ref.read(systemTimeProvider);
+    if (systemTimeAsync.value == null) return;
     _simulatedTime =
         systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     _reservation = args?['reservation'] as Reservation?;
     _restaurant = args?['restaurant'] as Restaurant?;
+    if (_reservation == null && _restaurant == null) return;
     if (_reservation != null) {
       _nbGuests = _reservation!.numberOfGuests;
       _nameResto = _reservation!.restaurant.name;
       _selectedDate = _reservation!.datetime;
       _specialRequestController.text = _reservation!.specialRequests ?? '';
       _loadSlots(_reservation == null);
-      _selectedSlot = DateFormat('HH:mm').format(_reservation!.datetime);
+      setState(() {
+        _selectedSlot = DateFormat('HH:mm').format(_reservation!.datetime);
+      });
     } else {
       _specialRequestController.text = '';
-      _nbGuests = 2;
       _nameResto = _restaurant!.name;
       _selectedDate = _simulatedTime;
       _loadSlots(true,autoSelectFirst: true);
@@ -106,14 +109,13 @@ class _ReservationFormMockupScreen
       _selectedDate!,
       _selectedSlot!,
       _nbGuests,
-      _reservation?.id,
+      _reservation!.id
     ) : await _restaurant!.noTableDispo(
       _selectedDate!,
       _selectedSlot!,
       _nbGuests,
-      _reservation?.id,
+      null
     );
-    print(result);
     setState(() => _noTableDispo = result);
   }
 
@@ -125,24 +127,24 @@ class _ReservationFormMockupScreen
     });
   }
 
-  void refreshDateAndClosedRestaurantDays(
+  Future<void> refreshDateAndClosedRestaurantDays(
     bool isNew,
     int days,
   ) async {
 
-    DateTime? datePlusOrMinusOne;
-    if (days > 0) {
+    DateTime? datePlusOrMinusOne = _selectedDate;
+    if (days == 1) {
       if (canAdd()) {
-        datePlusOrMinusOne = _selectedDate?.add(Duration(days: days));
+        datePlusOrMinusOne = datePlusOrMinusOne?.add(Duration(days: days));
         if (datePlusOrMinusOne == null) return;
         setState(() {
           _selectedDate = datePlusOrMinusOne;
           haveTables(isNew);
         });
       }
-    } else {
+    } else if(days==-1) {
       if (canRemove()) {
-        datePlusOrMinusOne = _selectedDate?.add(Duration(days: days));
+        datePlusOrMinusOne = datePlusOrMinusOne?.add(Duration(days: days));
         if (datePlusOrMinusOne == null) return;
         setState(() {
           _selectedDate = datePlusOrMinusOne;
@@ -161,8 +163,6 @@ class _ReservationFormMockupScreen
           : await Restaurant.getClosedDays(_restaurant!.id);
       isResClosed = listClosedDay.contains(datePlusOrMinusOne!.weekday);
     } catch (e) {
-      print(e.toString());
-      print('pas bonnnnnnnnnnnnnnnnnnnnnnn');
       return;
     }
     setState(() {
@@ -178,8 +178,7 @@ class _ReservationFormMockupScreen
 
   Future<void> _loadSlots(bool isNew, {bool autoSelectFirst = false}) async {
     if (_selectedDate != null) {
-      print(_simulatedTime);
-      print(_selectedDate);
+
       final slots = !isNew ?
        await _reservation!.restaurant.getSlots(
         _selectedDate!,
@@ -187,7 +186,7 @@ class _ReservationFormMockupScreen
       ) : await _restaurant!.getSlots(
         _selectedDate!,
         _simulatedTime!,
-      ) ;
+      );
       setState(()  {
         _slots = slots;
         if (_selectedSlot != null && !slots.contains(_selectedSlot)) {
@@ -203,6 +202,7 @@ class _ReservationFormMockupScreen
     }
   }
   bool canRemove() {
+    if(_selectedDate == null || _simulatedTime == null) return false;
     final dateBefore = DateTime(
       _selectedDate!.year,
       _selectedDate!.month,
@@ -219,6 +219,7 @@ class _ReservationFormMockupScreen
   }
 
   bool canAdd() {
+    if(_selectedDate == null || _simulatedTime == null) return false;
     return _selectedDate!
             .add(Duration(days: 1))
             .compareTo(_simulatedTime!.add(Duration(days: 365))) <=
@@ -230,17 +231,28 @@ class _ReservationFormMockupScreen
   Widget build(BuildContext context) {
     String? error;
     final systemTimeAsync = ref.watch(systemTimeProvider);
-    _simulatedTime =
-        systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
+    _simulatedTime = systemTimeAsync.value?.first.simulated_time ?? _simulatedTime ?? DateTime.now();
 
     _specialRequestController.onAfterValidated = () => setState(() {});
-
+    print(_selectedDate);
+    print(_simulatedTime);
+    print(_selectedSlot);
     final theme = Theme.of(context);
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    _reservation = args?['reservation'] as Reservation?;
-    _restaurant = args?['restaurant'] as Restaurant?;
+
     final isNew = _reservation == null;
+
+    if (!_initialized && systemTimeAsync.value != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        didChangeDependencies();
+      });
+    }
+    if (!_initialized) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -322,8 +334,8 @@ class _ReservationFormMockupScreen
                             if (picked != null) {
                               setState(() {
                                 _selectedDate = picked;
-                                _loadSlots(isNew);
                               });
+                              await refreshDateAndClosedRestaurantDays(isNew, 0);
                             }
                           },
                           child: Padding(
@@ -363,8 +375,8 @@ class _ReservationFormMockupScreen
                       icon: const Icon(Icons.remove),
                       onPressed: !canRemove()
                           ? null
-                          : () {
-                              refreshDateAndClosedRestaurantDays(
+                          : () async {
+                              await refreshDateAndClosedRestaurantDays(
                                 isNew,
                                 -1,
                               );
@@ -375,7 +387,7 @@ class _ReservationFormMockupScreen
                       onPressed: !canAdd()
                           ? null
                           : () async {
-                              refreshDateAndClosedRestaurantDays(
+                              await refreshDateAndClosedRestaurantDays(
                                 isNew,
                                 1,
                               );
