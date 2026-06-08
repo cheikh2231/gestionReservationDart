@@ -155,4 +155,22 @@ class Reservation {
     );
     return Reservation.fromJson(jsonDecode(response.body));
   }
+
+  static Future<Reservation> confirmAndAssignTables(int resid, List<int> tableIds) async {
+    final response = await ApiClient.post(
+      'confirm_and_assign_tables',
+      body: jsonEncode({
+        'idres': resid,
+        'tables_ids': tableIds,
+      }),
+    );
+
+    print("${response.body} param : $resid");
+    if (response.statusCode != 200) {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Erreur inconnue');
+    }
+    return Reservation.fromJson(jsonDecode(response.body));
+  }
+
 }

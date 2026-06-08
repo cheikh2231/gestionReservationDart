@@ -111,5 +111,22 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
   }
 
 
+  Future<Reservation?> confirmAndAssignTables(int resid, List<int> tableIds) async {
+    try {
+      final result=await Reservation.confirmAndAssignTables(resid, tableIds);
+      _updateState(result);
+      // ref.watch(myRestaurantsProvider)._updateState()
+      return result;
+
+    } catch (e,st) {
+      print("${resid} errorTable ${e}");
+      print("${tableIds} errorTableST ${st}");
+      state = AsyncError("Impossible de mettre à jour les tables réservées.", StackTrace.current);
+    }
+    return null;
+  }
+
+
+
 
 }
