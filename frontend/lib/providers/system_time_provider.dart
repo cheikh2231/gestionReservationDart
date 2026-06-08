@@ -10,7 +10,6 @@ final systemTimeProvider = AsyncNotifierProvider<SystemTimeNotifier, List<System
 class SystemTimeNotifier extends AsyncNotifier<List<SystemTime>>{
   @override
   Future<List<SystemTime>> build() async {
-    ref.watch(securityProvider);
     state = const AsyncLoading();
     try {
       return await SystemTime.getSimulatedTime();

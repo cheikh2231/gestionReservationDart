@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prbd_2526_a04/models/service.dart';
 import 'package:prbd_2526_a04/providers/security_provider.dart';
+import '../models/restaurant.dart';
 import '../models/restaurant_full.dart';
 
 final myRestaurantsProvider = AsyncNotifierProvider<MyRestaurantReservationManagementNotifier, List<RestaurantFull>>(
@@ -30,4 +32,9 @@ class MyRestaurantReservationManagementNotifier extends AsyncNotifier<List<Resta
       );
     });
   }
+
+  // Future<Restaurant> getRestaurantById(int restaurantId) async{
+  //   return state.value!.firstWhere((r) => r.restaurant.id == restaurantId).restaurant;
+  // }
+
 }
