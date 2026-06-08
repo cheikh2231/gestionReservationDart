@@ -26,6 +26,14 @@ DECLARE
     new_id int;
     result table_info;
 BEGIN
+
+    IF auth.role() != 'manager' OR NOT EXISTS (SELECT 1
+                                               FROM restaurant_managers
+                                               WHERE restaurant = p_restaurant_id
+                                                 AND manager = auth.id()) THEN
+        RAISE EXCEPTION 'Accès refusé : vous ne gérez pas ce restaurant.';
+    END IF;
+
     IF p_table_id IS NULL THEN
         INSERT INTO tables (restaurant, table_number, capacity)
         VALUES (p_restaurant_id, p_table_number, p_capacity)

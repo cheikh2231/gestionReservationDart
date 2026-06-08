@@ -10,6 +10,10 @@ DECLARE
     result reservation_info;
     new_id int;
 BEGIN
+    IF auth.role() = 'manager' THEN
+            RAISE EXCEPTION 'Accès refusé : un manager ne peut pas créer de réservation.';
+    END IF;
+
     INSERT INTO reservations (client, restaurant, datetime, number_of_guests, status, special_requests)
     VALUES (auth.id(), restaurant_id, datetime_res, nb_guests, 'pending', NULLIF(request, ''))
     RETURNING id INTO new_id;

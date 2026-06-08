@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:js_interop';
 
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/models/restaurant.dart';
