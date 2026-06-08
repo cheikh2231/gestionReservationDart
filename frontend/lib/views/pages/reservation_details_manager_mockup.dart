@@ -6,6 +6,7 @@ import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 import 'package:prbd_2526_a04/views/pages/assign_tables_mockup.dart';
 import 'package:prbd_2526_a04/views/pages/restaurant_management_reservations_mockup.dart';
 import '../../core/widgets/simulated_time_display.dart';
+import '../../providers/my_restaurants_provider.dart';
 
 class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
   const ReservationDetailsManagerMockupScreen({
@@ -330,7 +331,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text("Annuler la réservation"),
+                              title: Text("Annuler la réservation ddd"),
                               content: Text("Êtes-vous sûr de vouloir annuler cette réservation ?"),
                               actions: [
                                 TextButton(
@@ -340,8 +341,17 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                                 ElevatedButton(
                                   onPressed: () async {
                                     final cancelResult = await ref.read(reservationsProvider.notifier).cancelReservation(reservation.id);
-                                    if(cancelResult!=null && reservation.tables.isNotEmpty)
-                                      await ref.read(reservationsProvider.notifier).deleteReservationTables(reservation.id);
+                                    if (cancelResult != null) {
+                                      final wasPending = reservation.status == 'pending';
+                                      //  On décrémente le nbrs de pending que si c'était une pending
+                                      if (wasPending) {
+                                        ref.read(myRestaurantsProvider.notifier).updateState(reservation.restaurant.id);
+                                      }
+                                      // on delete les tables que si elle en avait
+                                      if (reservation.tables.isNotEmpty) {
+                                        await ref.read(reservationsProvider.notifier).deleteReservationTables(reservation.id);
+                                      }
+                                    }
                                     Navigator.of(context).pop();
                                   },
                                   child: Text("Oui"),
