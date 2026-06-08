@@ -22,7 +22,6 @@ BEGIN
         RAISE EXCEPTION 'Accès refusé : vous n''avez pas le droit d''annuler cette réservation.';
     END IF;
 
---     UPDATE reservations SET status ='cancelled' WHERE id = id_res and exists(select 1 from reservations where reservations.client = auth.id() and reservations.id = id_res and reservations.status != 'cancelled');
     SELECT * INTO result
     FROM get_reservations()
     WHERE id = id_res;
