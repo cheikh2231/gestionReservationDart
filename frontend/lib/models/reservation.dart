@@ -47,7 +47,6 @@ class Reservation {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => Reservation.fromJson(item)).toList();
     } else {
-      // AJOUTEZ CES DEUX LIGNES POUR DÉBOGUER :
       print('ERREUR SERVEUR : ${response.statusCode}');
       print('MESSAGE SERVEUR : ${response.body}');
 
@@ -55,23 +54,24 @@ class Reservation {
     }
   }
 
-  static Future<Reservation> cancelReservation(int id) async{
-      final response = await ApiClient.post(
-        'cancel_reservation',
-        body: jsonEncode({'id_res': id}),
-      );
-      return Reservation.fromJson(jsonDecode(response.body));
+  static Future<Reservation> cancelReservation(int id) async {
+    final response = await ApiClient.post(
+      'cancel_reservation',
+      body: jsonEncode({'id_res': id}),
+    );
+    return Reservation.fromJson(jsonDecode(response.body));
   }
 
   static String? validateSpecialRequest(String? request) {
-      if(request==null) return null;
-      if(request.trim().isNotEmpty && request.trim().length<10){
-          return "Les demandes speciales doivent contenir au moins 10 caracteres";
-      }
-      return null;
+    if (request == null) return null;
+    if (request.trim().isNotEmpty &&
+        request.trim().replaceAll(RegExp(r'\s+'), '').length < 10) {
+      return "Les demandes speciales doivent contenir au moins 10 caracteres";
+    }
+    return null;
   }
 
-  static Future<Reservation> deleteReservationTables(int id) async{
+  static Future<Reservation> deleteReservationTables(int id) async {
     final response = await ApiClient.post(
       'delete_reservation_tables',
       body: jsonEncode({'id_res': id}),
@@ -80,7 +80,7 @@ class Reservation {
     return Reservation.fromJson(jsonDecode(response.body));
   }
 
-  static Future<Reservation> completeReservation(int id) async{
+  static Future<Reservation> completeReservation(int id) async {
     final response = await ApiClient.post(
       'complete_reservation',
       body: jsonEncode({'id_res': id}),
@@ -101,20 +101,22 @@ class Reservation {
       restaurant: restaurant,
       datetime: datetime ?? this.datetime,
       numberOfGuests: numberOfGuests ?? this.numberOfGuests,
-      specialRequests: specialRequests ?? this.specialRequests,
+      specialRequests: specialRequests,
       status: status ?? this.status,
       tables: tables,
     );
   }
 
-  Future<bool> updateReservation(Reservation reservation) async {
-    final String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(reservation.datetime);
+  Future<String?> updateReservation(Reservation reservation) async {
+    final String formattedDateTime = DateFormat(
+      'yyyy-MM-dd HH:mm:ss',
+    ).format(reservation.datetime);
     try {
       final response = await ApiClient.post(
         'update_reservation',
         body: jsonEncode({
           'datetimeupdated': formattedDateTime,
-          'idres' : reservation.id,
+          'idres': reservation.id,
           'nog': reservation.numberOfGuests,
           'request': reservation.specialRequests,
           'statusupdated': reservation.status,
@@ -122,11 +124,53 @@ class Reservation {
       );
       print(response.statusCode);
       print(response.body);
-      return response.statusCode == 200 || response.statusCode == 204;
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return null;
+      } else {
+        return jsonDecode(response.body)['message'] ??
+            "Echec de la modification";
+      }
     } catch (e) {
-      print("Erreur lors de la mise à jour : $e");
-      return false;
+      print("Echec de la modification");
     }
+    return null;
+  }
+
+  static Future<Reservation> addReservation({
+    required int restaurantId,
+    required DateTime datetime,
+    required int nbGuests,
+    String? specialRequest,
+  }) async {
+    final String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
+    final response = await ApiClient.post(
+      'add_reservation',
+      body: jsonEncode({
+        'restaurant_id': restaurantId,
+        'datetime_res': formattedDateTime,
+        'nb_guests': nbGuests,
+        'request': specialRequest ?? '',
+      }),
+    );
+
+    return Reservation.fromJson(jsonDecode(response.body));
+  }
+
+  static Future<Reservation> confirmAndAssignTables(int resid, List<int> tableIds) async {
+    final response = await ApiClient.post(
+      'confirm_and_assign_tables',
+      body: jsonEncode({
+        'idres': resid,
+        'tables_ids': tableIds,
+      }),
+    );
+
+    print("${response.body} param : $resid");
+    if (response.statusCode != 200) {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Erreur inconnue');
+    }
+    return Reservation.fromJson(jsonDecode(response.body));
   }
 
 }

@@ -5,6 +5,7 @@ import 'package:prbd_2526_a04/models/service.dart';
 final restaurantServicesProvider = AsyncNotifierProvider<RestaurantServicesNotifier, List<Service>>(
       () => RestaurantServicesNotifier(),
 );
+
 class RestaurantServicesNotifier extends AsyncNotifier<List<Service>> {
   int? _currentRestaurantId;
 
@@ -23,6 +24,22 @@ class RestaurantServicesNotifier extends AsyncNotifier<List<Service>> {
       state = AsyncData(services);
     } catch (e, st) {
       state = AsyncError("Erreur lors du chargement des services", st);
+    }
+  }
+  Future<void> deleteService(int serviceId) async {
+    try {
+      // 1. On appelle l'API (qui renvoie void)
+      await Service.deleteService(serviceId);
+
+      // 2. Si l'API réussit, on met à jour le state local de Riverpod
+      // On récupère la liste actuelle, on filtre pour enlever le service supprimé, et on remet le state
+      final currentServices = state.value ?? [];
+      state = AsyncData(
+        currentServices.where((service) => service.id != serviceId).toList(),
+      );
+
+    } catch (e,st) {
+      state = AsyncError("Erreur lors de la suppression du service", st);
     }
   }
 }

@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 import 'package:prbd_2526_a04/views/pages/assign_tables_mockup.dart';
 import 'package:prbd_2526_a04/views/pages/restaurant_management_reservations_mockup.dart';
+import '../../core/widgets/simulated_time_display.dart';
+import '../../providers/my_restaurants_provider.dart';
 
 class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
   const ReservationDetailsManagerMockupScreen({
@@ -97,49 +99,15 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.refresh),
                 tooltip: 'Rafraîchir les données',
-                onPressed: () {},
+                onPressed: () {
+                },
               ),
             ],
             elevation: 2,
             backgroundColor: theme.colorScheme.primary,
             foregroundColor: theme.colorScheme.onPrimary,
             surfaceTintColor: Colors.transparent,
-            flexibleSpace: Align(
-              alignment: Alignment.topCenter,
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 2.0),
-                  child: Tooltip(
-                    message:
-                        'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                    child: simulatedTimeState.when(
-                      data: (list) {
-                        final date = list.first.simulated_time;
-                        return Text(
-                          DateFormat(
-                            'EEEE dd/MM/yyyy HH:mm',
-                            'fr_FR',
-                          ).format(date!),
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[400],
-                            fontWeight: FontWeight.normal,
-                          ),
-                        );
-                      },
-                      loading: () => const Text(
-                        "...",
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
-                      ),
-                      error: (err, stack) => const Text(
-                        "Erreur",
-                        style: TextStyle(fontSize: 10, color: Colors.red),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            flexibleSpace: const SimulatedTimeDisplay(),
           ),
           body: SafeArea(
             child: SingleChildScrollView(
@@ -207,13 +175,13 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Row(
+                           Row(
                             children: [
                               Icon(Icons.restaurant, size: 20),
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Le Gourmet',
+                                  reservation.restaurant.name,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -363,7 +331,7 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text("Annuler la réservation"),
+                              title: Text("Annuler la réservation ddd"),
                               content: Text("Êtes-vous sûr de vouloir annuler cette réservation ?"),
                               actions: [
                                 TextButton(
@@ -373,8 +341,17 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                                 ElevatedButton(
                                   onPressed: () async {
                                     final cancelResult = await ref.read(reservationsProvider.notifier).cancelReservation(reservation.id);
-                                    if(cancelResult!=null && reservation.tables.isNotEmpty)
-                                      await ref.read(reservationsProvider.notifier).deleteReservationTables(reservation.id);
+                                    if (cancelResult != null) {
+                                      final wasPending = reservation.status == 'pending';
+                                      //  On décrémente le nbrs de pending que si c'était une pending
+                                      if (wasPending) {
+                                        ref.read(myRestaurantsProvider.notifier).updateState(reservation.restaurant.id);
+                                      }
+                                      // on delete les tables que si elle en avait
+                                      if (reservation.tables.isNotEmpty) {
+                                        await ref.read(reservationsProvider.notifier).deleteReservationTables(reservation.id);
+                                      }
+                                    }
                                     Navigator.of(context).pop();
                                   },
                                   child: Text("Oui"),

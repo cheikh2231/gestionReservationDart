@@ -13,7 +13,8 @@ BEGIN
      number_of_guests = nog,
      special_requests = request ,
      datetime = datetimeupdated
-    where id = idres;
+    where id = idres
+    and EXISTS(select 1 from reservations where id = idres and status not in ('cancelled','completed') and client = auth.id());
 
     RETURN FOUND;
 END;
