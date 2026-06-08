@@ -1,36 +1,82 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/core/widgets/service_card.dart';
+import 'package:prbd_2526_a04/providers/my_restaurants_provider.dart';
+import 'package:prbd_2526_a04/providers/restaurant_services_provider.dart';
+import 'package:prbd_2526_a04/views/pages/restaurant_management_reservations_mockup.dart';
 
-void main() async {
-  await initializeDateFormatting('fr_FR', null);
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const RestaurantManagementServicesMockupScreen(),
-    ),
-  );
+import '../../models/restaurant.dart';
+import '../../models/service.dart';
+
+
+class RestaurantManagementServicesMockupScreen extends ConsumerStatefulWidget {
+  final int restaurantId;
+
+  const RestaurantManagementServicesMockupScreen(
+      {super.key, required this.restaurantId});
+
+  @override
+  ConsumerState<RestaurantManagementServicesMockupScreen> createState() =>
+      _ScreenState();
 }
 
-class RestaurantManagementServicesMockupScreen extends StatelessWidget {
-  const RestaurantManagementServicesMockupScreen({super.key});
+class _ScreenState extends ConsumerState<RestaurantManagementServicesMockupScreen> {
+  Restaurant? restaurant;
+
+  // Future<void> loadRestaurant() async{
+  //   final r =  await ref.read(myRestaurantsProvider.notifier).getRestaurantById(widget.restaurantId);
+  //   setState(() {
+  //     restaurant=r;
+  //   });
+  // }
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   loadRestaurant();
+  // }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Future.microtask(() {
+      final notifier = ref.read(restaurantServicesProvider.notifier);
+      if (notifier.state.value == null || notifier.state.value!.isEmpty) {
+        notifier.loadServices(widget.restaurantId);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final restaurant = ref.watch(myRestaurantsProvider).value!.firstWhere((r) => r.restaurant.id == widget.restaurantId).restaurant;
+    final servicesAsync = ref.watch(restaurantServicesProvider);
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
-
+    final Map<int, String> joursDeLaSemaine = {
+      1: 'Lundi',
+      2: 'Mardi',
+      3: 'Mercredi',
+      4: 'Jeudi',
+      5: 'Vendredi',
+      6: 'Samedi',
+      7: 'Dimanche',
+    };
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => RestaurantManagementReservationsMockupScreen(
+                  restaurantId: widget.restaurantId,
+                ),
+              ),
+            );
+          },
         ),
-        title: const Text('Le Gourmet'),
+        title: Text(restaurant.name),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -68,180 +114,23 @@ class RestaurantManagementServicesMockupScreen extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  color: Colors.grey[100],
-                  child: ListTile(
-                    leading: const Icon(Icons.schedule, color: Colors.grey),
-                    title: Text(
-                      'Lundi',
-                      style: TextStyle(color: Colors.grey[600]),
+            servicesAsync.when(
+              data: (services) => ListView(
+                padding: const EdgeInsets.all(16.0),
+                children: joursDeLaSemaine.entries.map((entry) {
+                  final List<Service> filteredServices = services.where((s) => s.dayOfWeek == entry.key).toList();
+                  final nomJour = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ServiceCard(
+                      dayLabel: nomJour,
+                      filteredServices: filteredServices,
                     ),
-                    subtitle: const Text(
-                      'Aucun service',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: ListTile(
-                    leading: const Icon(Icons.schedule),
-                    title: const Text('Mardi'),
-                    subtitle: const Text('12:00 - 14:00, 19:00 - 22:00'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {},
-                          tooltip: 'Supprimer le service',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: ExpansionTile(
-                    leading: const Icon(Icons.schedule),
-                    title: const Text('Mercredi'),
-                    subtitle: const Text('12:00 - 14:00, 19:00 - 22:00'),
-                    children: [
-                      ListTile(
-                        title: const Text('12:00 - 14:00'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {},
-                              tooltip: 'Supprimer le service',
-                            ),
-                          ],
-                        ),
-                      ),
-                      ListTile(
-                        title: const Text('19:00 - 22:00'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.delete, color: Colors.grey[400]),
-                              onPressed: null,
-                              tooltip:
-                                  'Impossible de supprimer : des réservations non annulées utilisent ce service',
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: ListTile(
-                    leading: const Icon(Icons.schedule),
-                    title: const Text('Jeudi'),
-                    subtitle: const Text('12:00 - 14:00, 19:00 - 22:00'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {},
-                          tooltip: 'Supprimer le service',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: ListTile(
-                    leading: const Icon(Icons.schedule),
-                    title: const Text('Vendredi'),
-                    subtitle: const Text('12:00 - 14:00, 19:00 - 23:00'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {},
-                          tooltip: 'Supprimer le service',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: ListTile(
-                    leading: const Icon(Icons.schedule),
-                    title: const Text('Samedi'),
-                    subtitle: const Text('19:00 - 23:00'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {},
-                          tooltip: 'Supprimer le service',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: ListTile(
-                    leading: const Icon(Icons.schedule),
-                    title: const Text('Dimanche'),
-                    subtitle: const Text('12:00 - 14:00'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {},
-                          tooltip: 'Supprimer le service',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                  );
+                }).toList(),
+              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(child: Text(error.toString())),
             ),
             Positioned(
               bottom: 16,
@@ -258,7 +147,25 @@ class RestaurantManagementServicesMockupScreen extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: 1,
-        onTap: (_) {},
+        onTap: (index) {
+          if(index==0){
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => RestaurantManagementReservationsMockupScreen(
+                  restaurantId: widget.restaurantId,
+                ),
+              ),
+            );
+          } else if (index == 1) {
+            return;
+          } else if (index == 2) {
+            Navigator.pushNamed(
+              context,
+              '/restaurant_tables',
+              arguments: restaurant,
+            );
+          }
+        },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.book),

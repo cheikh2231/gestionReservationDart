@@ -13,7 +13,8 @@ BEGIN
      number_of_guests = nog,
      special_requests = request ,
      datetime = datetimeupdated
-    where id = idres;
+    where id = idres
+    and reservations.client = auth.id();
 
     RETURN FOUND;
 END;

@@ -41,14 +41,15 @@ GRANT EXECUTE ON FUNCTION get_available_tables(int, int) TO authenticated;
 CREATE OR REPLACE FUNCTION get_tables_with_and_whitout_availability(restaurant_id int,reservation_id int)
     RETURNS TABLE (
                       id int,
-                      restaurant int,
+                      restaurant restaurant_info,
                       capacity int,
                       table_number int,
                       reserved boolean
                   ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT t.id, t.restaurant, t.capacity, t.table_number,
+        SELECT t.id, (res.id, res.name, res.address, res.city, res.phone, res.description, res.rating, res.price_range, res.slot_duration)::restaurant_info,
+               t.capacity, t.table_number,
                EXISTS(
                    SELECT 1
                    FROM reservation_tables rt
@@ -71,6 +72,7 @@ BEGIN
                    )
                ) AS reserved
         FROM tables t
+        JOIN restaurants res ON res.id = t.restaurant
         WHERE t.restaurant = restaurant_id
         ORDER BY t.table_number;
 END;

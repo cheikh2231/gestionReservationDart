@@ -9,6 +9,7 @@ import 'package:prbd_2526_a04/models/restaurant.dart';
 import 'package:prbd_2526_a04/providers/restaurant_services_provider.dart';
 
 import '../../providers/restaurant_details_provider.dart';
+import '../../core/widgets/simulated_time_display.dart';
 
 class RestaurantDetailsMockupScreen extends ConsumerStatefulWidget {
   const RestaurantDetailsMockupScreen({super.key});
@@ -25,10 +26,7 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
     final restaurantFull = ModalRoute.of(context)!.settings.arguments as RestaurantFull;
 
     Future.microtask(() {
-      final notifier = ref.read(restaurantServicesProvider.notifier);
-      if (notifier.state.value == null || notifier.state.value!.isEmpty) {
-        notifier.loadServices(restaurantFull.restaurant.id);
-      }
+      ref.read(restaurantServicesProvider.notifier).loadServices(restaurantFull.restaurant.id);
     });
   }
 
@@ -65,32 +63,7 @@ class _RestaurantDetailsMockupScreenState extends ConsumerState<RestaurantDetail
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
         surfaceTintColor: Colors.transparent,
-        flexibleSpace: Align(
-          alignment: Alignment.topCenter,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2.0),
-              child: Tooltip(
-                  message: 'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                  child: simulatedTimeState.when(
-                    data: (list){
-                      final date = list.first.simulated_time;
-                      return Text(
-                        DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(date!),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[400],
-                          fontWeight: FontWeight.normal,
-                        ),
-                      );
-                    },
-                    loading: () => const Text("...", style: TextStyle(fontSize: 10, color: Colors.grey)),
-                    error: (err, stack) => const Text("Erreur", style: TextStyle(fontSize: 10, color: Colors.red)),
-                  )
-              ),
-            ),
-          ),
-        ),
+        flexibleSpace: const SimulatedTimeDisplay(),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

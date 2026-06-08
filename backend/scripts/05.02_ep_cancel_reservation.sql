@@ -6,8 +6,22 @@ CREATE OR REPLACE FUNCTION cancel_reservation(id_res int)
 $$
 DECLARE
     result reservation_info;
+    res_client int;
+    res_rest int;
 BEGIN
-    UPDATE reservations SET status ='cancelled' WHERE id = id_res;
+    SELECT client, restaurant INTO res_client, res_rest FROM reservations WHERE id = id_res;
+
+    IF (auth.role() = 'client' AND res_client = auth.id()) OR
+       (auth.role() = 'manager' AND EXISTS (SELECT 1
+                                            FROM restaurant_managers
+                                            WHERE restaurant = res_rest
+                                              AND manager = auth.id())) THEN
+
+        UPDATE reservations SET status ='cancelled' WHERE id = id_res AND status != 'cancelled';
+    ELSE
+        RAISE EXCEPTION 'Accès refusé : vous n''avez pas le droit d''annuler cette réservation.';
+    END IF;
+
     SELECT * INTO result
     FROM get_reservations()
     WHERE id = id_res;
