@@ -11,6 +11,7 @@ import 'package:prbd_2526_a04/core/widgets/dialog_box.dart';
 import '../../core/services/security.dart';
 import '../../providers/reservation_provider.dart';
 import '../../core/widgets/simulated_time_display.dart';
+import '../../providers/system_time_provider.dart';
 
 class LoginMockupScreen extends ConsumerStatefulWidget {
   const LoginMockupScreen({super.key});
@@ -224,7 +225,8 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
                           if (!context.mounted) return;
 
                           if (success) {
-                            ref.invalidate(reservationsProvider);
+
+                            ref.invalidate(systemTimeProvider);
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
