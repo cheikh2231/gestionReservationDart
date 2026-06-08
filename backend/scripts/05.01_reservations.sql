@@ -1,25 +1,47 @@
 DROP FUNCTION IF EXISTS get_reservations();
 CREATE OR REPLACE FUNCTION get_reservations()
     RETURNS SETOF reservation_info AS $$
+DECLARE
+    isnt_manager text := '';
+    is_manager text := '';
+    sql_query text;
 BEGIN
-    RETURN QUERY
+    IF auth.role() <> 'manager' THEN
+        isnt_manager := ' WHERE c.id = auth.id() ';
+    ELSE
+        is_manager := ' JOIN restaurant_managers rm ON rm.restaurant = res.id AND rm.manager = auth.id() ';
+    END IF;
+
+    sql_query := '
         SELECT
             r.id,
-            (c.id, c.full_name, c.email, c.phone , c.role)::user_info,
+            (c.id, c.full_name, c.email, c.phone, c.role)::user_info,
             (res.id, res.name, res.address, res.city, res.phone, res.description, res.rating, res.price_range, res.slot_duration)::restaurant_info,
             r.datetime,
             r.number_of_guests,
             r.status,
             r.special_requests,
             ARRAY(
-                    SELECT (t.id,  (res.id, res.name, res.address, res.city, res.phone, res.description, res.rating, res.price_range, res.slot_duration), t.table_number, t.capacity)::table_info
-                    FROM reservation_tables rt
-                             JOIN tables t ON t.id = rt.table
-                    WHERE rt.reservation = r.id
+                SELECT
+                    (
+                        t.id,
+                        (res.id, res.name, res.address, res.city, res.phone, res.description, res.rating, res.price_range, res.slot_duration)::restaurant_info,
+                        t.table_number,
+                        t.capacity
+                    )::table_info
+                FROM reservation_tables rt
+                JOIN tables t ON t.id = rt.table
+                WHERE rt.reservation = r.id
             )
         FROM reservations r
-                 JOIN users c ON c.id = r.client
-                 JOIN restaurants res ON res.id = r.restaurant order by r.datetime desc , r.id ;
+        JOIN users c ON c.id = r.client
+        JOIN restaurants res ON res.id = r.restaurant
+        ' || is_manager || '
+        ' || isnt_manager || '
+        ORDER BY r.datetime DESC, r.id DESC
+    ';
+
+    RETURN QUERY EXECUTE sql_query;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

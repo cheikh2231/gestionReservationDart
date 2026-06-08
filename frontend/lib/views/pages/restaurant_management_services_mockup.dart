@@ -7,6 +7,7 @@ import 'package:prbd_2526_a04/providers/restaurant_services_provider.dart';
 import 'package:prbd_2526_a04/views/pages/restaurant_management_reservations_mockup.dart';
 
 import '../../models/restaurant.dart';
+import '../../models/service.dart';
 
 
 class RestaurantManagementServicesMockupScreen extends ConsumerStatefulWidget {
@@ -52,7 +53,15 @@ class _ScreenState extends ConsumerState<RestaurantManagementServicesMockupScree
     final servicesAsync = ref.watch(restaurantServicesProvider);
     final theme = Theme.of(context);
     final simulatedTime = DateTime(2024, 12, 4, 16, 0);
-
+    final Map<int, String> joursDeLaSemaine = {
+      1: 'Lundi',
+      2: 'Mardi',
+      3: 'Mercredi',
+      4: 'Jeudi',
+      5: 'Vendredi',
+      6: 'Samedi',
+      7: 'Dimanche',
+    };
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -106,15 +115,19 @@ class _ScreenState extends ConsumerState<RestaurantManagementServicesMockupScree
         child: Stack(
           children: [
             servicesAsync.when(
-              data: (services) => ListView.builder(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: services.length,
-                  itemBuilder: (context,index){
-                    final service = services[index];
-                    return ServiceCard(
-                      service: service,
-                    );
-                  }
+              data: (services) => ListView(
+                padding: const EdgeInsets.all(16.0),
+                children: joursDeLaSemaine.entries.map((entry) {
+                  final List<Service> filteredServices = services.where((s) => s.dayOfWeek == entry.key).toList();
+                  final nomJour = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ServiceCard(
+                      dayLabel: nomJour,
+                      filteredServices: filteredServices,
+                    ),
+                  );
+                }).toList(),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(child: Text(error.toString())),
