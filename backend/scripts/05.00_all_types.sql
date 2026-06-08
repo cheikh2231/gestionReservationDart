@@ -42,7 +42,10 @@ CREATE TYPE service_info AS (
     restaurant int,
     day_of_week int,
     start_time time,
-    end_time time
+    end_time time,
+    used_by_reservation bool,
+    min_reservation_start_time  time, -- La réservation commencant la plus tôt
+    max_reservation_start_time  time -- La réservation commencant la plus tard
 );
 
 

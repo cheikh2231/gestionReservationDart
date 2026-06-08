@@ -7,6 +7,9 @@ class Service {
   final int dayOfWeek;
   final String startTime;
   final String endTime;
+  final bool? used_by_reservation;
+  final String? minReservationStartTime; // Format "HH:mm" ou null
+  final String? maxReservationStartTime;
 
   Service({
     required this.id,
@@ -14,6 +17,9 @@ class Service {
     required this.dayOfWeek,
     required this.startTime,
     required this.endTime,
+    this.used_by_reservation,
+    this.minReservationStartTime,
+    this.maxReservationStartTime,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
@@ -23,6 +29,9 @@ class Service {
       dayOfWeek: json['day_of_week'],
       startTime: json['start_time'].toString().substring(0, 5), // si 19:00:00 il coupe au 5 caractere ne le prend pas donc 19:00
       endTime: json['end_time'].toString().substring(0, 5),
+      used_by_reservation: json['used_by_reservation'],
+      minReservationStartTime: json['min_reservation_start_time']?.toString().substring(0, 5),
+      maxReservationStartTime: json['max_reservation_start_time']?.toString().substring(0, 5),
     );
   }
 
@@ -41,6 +50,8 @@ class Service {
       throw Exception('Erreur lors du chargement des services');
     }
   }
+
+
   //car de base j'ai des chiffres 1 a 7 mais pour avoir les noms je fait cette methode
   String get dayName {
     switch (dayOfWeek) {
@@ -52,6 +63,16 @@ class Service {
       case 6: return 'Samedi';
       case 7: return 'Dimanche';
       default: return 'Inconnu';
+    }
+  }
+
+  static Future<void> deleteService(int serviceId) async{
+    final response = await ApiClient.post(
+      'delete_restaurant_service',
+      body: jsonEncode({'id_service': serviceId}),
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Erreur lors de la suppression');
     }
   }
 }
