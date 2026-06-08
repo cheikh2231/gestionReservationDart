@@ -7,6 +7,7 @@ import '../../core/widgets/reservations_card.dart';
 import '../../models/reservation.dart';
 import '../../providers/reservation_provider.dart';
 import '../../providers/security_provider.dart';
+import '../../core/widgets/simulated_time_display.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);
@@ -80,26 +81,7 @@ class _HomeClientMockupScreenState
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
         surfaceTintColor: Colors.transparent,
-        flexibleSpace: Align(
-          alignment: Alignment.topCenter,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2.0),
-              child: Tooltip(
-                message:
-                    'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                child: Text(
-                  'mercredi 04/12/2024 16:00',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[400],
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+        flexibleSpace: const SimulatedTimeDisplay(),
       ),
       body: SafeArea(
         child: Column(

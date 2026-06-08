@@ -9,6 +9,7 @@ import '../../models/table.dart' as model;
 import '../../providers/reservation_provider.dart';
 import '../../providers/system_time_provider.dart';
 import '../../providers/tables_provider.dart';
+import '../../core/widgets/simulated_time_display.dart';
 
 class EditTableScreen extends ConsumerStatefulWidget {
   final Restaurant restaurant;
@@ -166,22 +167,7 @@ class _EditTableScreenState extends ConsumerState<EditTableScreen> {
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
         surfaceTintColor: Colors.transparent,
-        flexibleSpace: Align(
-          alignment: Alignment.topCenter,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2.0),
-              child: simulatedTimeState.when(
-                data: (list) => Text(
-                  DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(list.first.simulated_time!),
-                  style: TextStyle(fontSize: 10, color: Colors.grey[400]),
-                ),
-                loading: () => const Text("...", style: TextStyle(fontSize: 10, color: Colors.grey)),
-                error: (_, __) => const Text("Erreur", style: TextStyle(fontSize: 10, color: Colors.red)),
-              ),
-            ),
-          ),
-        ),
+        flexibleSpace: const SimulatedTimeDisplay(),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

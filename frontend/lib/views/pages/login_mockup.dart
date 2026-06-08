@@ -10,6 +10,7 @@ import 'package:prbd_2526_a04/core/widgets/dialog_box.dart';
 
 import '../../core/services/security.dart';
 import '../../providers/reservation_provider.dart';
+import '../../core/widgets/simulated_time_display.dart';
 
 class LoginMockupScreen extends ConsumerStatefulWidget {
   const LoginMockupScreen({super.key});
@@ -58,27 +59,7 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
         surfaceTintColor: Colors.transparent,
-        flexibleSpace: Align(
-          alignment: Alignment.topCenter,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2.0),
-              child: Tooltip(
-                message:
-                    'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                child: Text(
-                  DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                      .format(simulatedTime),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[400],
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+        flexibleSpace: const SimulatedTimeDisplay(),
       ),
       body: SafeArea(
         child: Column(
