@@ -6,6 +6,9 @@
 
 set search_path to public;
 
+
+ALTER SYSTEM SET log_statement = 'all';
+SELECT pg_reload_conf();
 /*
  Clear everything
  */

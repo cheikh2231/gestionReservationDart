@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:prbd_2526_a04/models/user.dart';
 import 'package:prbd_2526_a04/providers/reservation_provider.dart';
 
 import '../../core/tools/validating_text_editing_controller.dart';
 import '../../models/reservation.dart';
 import '../../models/restaurant.dart';
+import '../../providers/security_provider.dart';
 import '../../providers/system_time_provider.dart';
 import '../../core/widgets/simulated_time_display.dart';
 
@@ -37,7 +39,7 @@ class ReservationFormMockupScreen extends ConsumerStatefulWidget {
 class _ReservationFormMockupScreen
     extends ConsumerState<ReservationFormMockupScreen> {
   bool _initialized = false;
-  late int _nbGuests;
+   int _nbGuests = 2;
   String _nameResto = '';
   DateTime? _selectedDate;
   Reservation? _reservation;
@@ -47,6 +49,9 @@ class _ReservationFormMockupScreen
   String? _selectedSlot;
   bool _noTableDispo = false;
   Timer? _debounceTimer;
+  Restaurant? _restaurant;
+
+
   final _specialRequestController = ValidatingTextEditingController(
     validator: Reservation.validateSpecialRequest,
     initialValue: '',
@@ -57,24 +62,28 @@ class _ReservationFormMockupScreen
     super.didChangeDependencies();
     if (_initialized) return;
     final systemTimeAsync = ref.read(systemTimeProvider);
+    if (systemTimeAsync.value == null) return;
     _simulatedTime =
         systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     _reservation = args?['reservation'] as Reservation?;
-
+    _restaurant = args?['restaurant'] as Restaurant?;
+    if (_reservation == null && _restaurant == null) return;
     if (_reservation != null) {
       _nbGuests = _reservation!.numberOfGuests;
       _nameResto = _reservation!.restaurant.name;
       _selectedDate = _reservation!.datetime;
       _specialRequestController.text = _reservation!.specialRequests ?? '';
-      _loadSlots(_reservation!);
-      _selectedSlot = DateFormat('HH:mm').format(_reservation!.datetime);
+      _loadSlots(_reservation == null);
+      setState(() {
+        _selectedSlot = DateFormat('HH:mm').format(_reservation!.datetime);
+      });
     } else {
       _specialRequestController.text = '';
-      _nbGuests = 2;
-      _nameResto = 'brol';
+      _nameResto = _restaurant!.name;
       _selectedDate = _simulatedTime;
+      _loadSlots(true,autoSelectFirst: true);
     }
 
     _initialized = true;
@@ -85,72 +94,76 @@ class _ReservationFormMockupScreen
         _selectedSlot == null ||
         _selectedDate == null ||
         _nbGuests < 1 ||
-        _specialRequestController.errorText != null);
+        // _specialRequestController.errorText != null ||
+        DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day).
+        isBefore(DateTime(_simulatedTime!.year, _simulatedTime!.month, _simulatedTime!.day))
+    );
   }
 
-  Future<void> haveTables() async {
+  Future<void> haveTables(bool isNew) async {
     if (_selectedSlot == null ||
-        _selectedDate == null ||
-        _reservation == null) {
+        _selectedDate == null ) {
       setState(() => _noTableDispo = false);
       return;
     }
-    final result = await _reservation!.restaurant.noTableDispo(
+    final result = !isNew ? await _reservation!.restaurant.noTableDispo(
       _selectedDate!,
       _selectedSlot!,
       _nbGuests,
-      _reservation?.id,
+      _reservation!.id
+    ) : await _restaurant!.noTableDispo(
+      _selectedDate!,
+      _selectedSlot!,
+      _nbGuests,
+      null
     );
-    print(result);
     setState(() => _noTableDispo = result);
   }
 
-  void onGuestsChanged() {
+  void onGuestsChanged(bool isNew) {
     if (_selectedSlot == null) return;
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      haveTables();
+      haveTables(isNew);
     });
   }
 
-  void refreshDateAndClosedRestaurantDays(
-    Reservation? reservation,
+  Future<void> refreshDateAndClosedRestaurantDays(
+    bool isNew,
     int days,
   ) async {
-    _loadSlots(reservation!);
 
-    DateTime? datePlusOrMinusOne;
-    if (days > 0) {
+    DateTime? datePlusOrMinusOne = _selectedDate;
+    if (days == 1) {
       if (canAdd()) {
-        datePlusOrMinusOne = _selectedDate?.add(Duration(days: days));
+        datePlusOrMinusOne = datePlusOrMinusOne?.add(Duration(days: days));
         if (datePlusOrMinusOne == null) return;
         setState(() {
           _selectedDate = datePlusOrMinusOne;
-          haveTables();
+          haveTables(isNew);
         });
       }
-    } else {
+    } else if(days==-1) {
       if (canRemove()) {
-        datePlusOrMinusOne = _selectedDate?.add(Duration(days: days));
+        datePlusOrMinusOne = datePlusOrMinusOne?.add(Duration(days: days));
         if (datePlusOrMinusOne == null) return;
         setState(() {
           _selectedDate = datePlusOrMinusOne;
-          haveTables();
+          haveTables(isNew);
         });
       }
     }
 
-    await _loadSlots(reservation);
-
+    await _loadSlots(isNew);
+    if(_selectedSlot==null){
+      _noTableDispo = false;
+    }
     bool isResClosed = false;
     try {
-      final listClosedDay = reservation != null
-          ? await Restaurant.getClosedDays(reservation.restaurant.id)
-          : await Restaurant.getClosedDays(5);
+      final listClosedDay = !isNew ? await Restaurant.getClosedDays(_reservation!.restaurant.id)
+          : await Restaurant.getClosedDays(_restaurant!.id);
       isResClosed = listClosedDay.contains(datePlusOrMinusOne!.weekday);
     } catch (e) {
-      print(e.toString());
-      print('pas bonnnnnnnnnnnnnnnnnnnnnnn');
       return;
     }
     setState(() {
@@ -158,34 +171,39 @@ class _ReservationFormMockupScreen
     });
   }
 
-  Future<bool> updateReservationInDatabase(Reservation updated) async {
-    try {
+  Future<String?> updateReservationInDatabase(Reservation updated) async {
       return await ref
           .read(reservationsProvider.notifier)
           .updateReservation(updated);
-    } catch (e) {
-      return false;
-    }
   }
 
-  Future<void> _loadSlots(Reservation reservation) async {
+  Future<void> _loadSlots(bool isNew, {bool autoSelectFirst = false}) async {
     if (_selectedDate != null) {
-      print(_simulatedTime);
-      print(_selectedDate);
-      final slots = await reservation.restaurant.getSlots(
+
+      final slots = !isNew ?
+       await _reservation!.restaurant.getSlots(
+        _selectedDate!,
+        _simulatedTime!,
+      ) : await _restaurant!.getSlots(
         _selectedDate!,
         _simulatedTime!,
       );
-      setState(() {
+      setState(()  {
         _slots = slots;
         if (_selectedSlot != null && !slots.contains(_selectedSlot)) {
           _selectedSlot = null;
+          _noTableDispo = false;
         }
-        haveTables();
+
+        if (autoSelectFirst && _selectedSlot == null && slots.isNotEmpty) {
+          _selectedSlot = slots.first;
+        }
       });
+      await haveTables(isNew);
     }
   }
   bool canRemove() {
+    if(_selectedDate == null || _simulatedTime == null) return false;
     final dateBefore = DateTime(
       _selectedDate!.year,
       _selectedDate!.month,
@@ -202,28 +220,40 @@ class _ReservationFormMockupScreen
   }
 
   bool canAdd() {
+    if(_selectedDate == null || _simulatedTime == null) return false;
     return _selectedDate!
             .add(Duration(days: 1))
             .compareTo(_simulatedTime!.add(Duration(days: 365))) <=
         0;
   }
 
+
   @override
   Widget build(BuildContext context) {
+    String? error;
     final systemTimeAsync = ref.watch(systemTimeProvider);
-    _simulatedTime =
-        systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
-    _specialRequestController.onAfterValidated = () => setState(() {});
-    if (!_initialized) {
-      _selectedDate = _reservation?.datetime ?? _simulatedTime;
-      _initialized = true;
-    }
+    _simulatedTime = systemTimeAsync.value?.first.simulated_time ?? _simulatedTime ?? DateTime.now();
 
+    _specialRequestController.onAfterValidated = () => setState(() {});
+    print(_selectedDate);
+    print(_simulatedTime);
+    print(_selectedSlot);
     final theme = Theme.of(context);
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final reservation = args?['reservation'] as Reservation?;
-    final isNew = reservation == null;
+
+    final isNew = _reservation == null;
+
+    if (!_initialized && systemTimeAsync.value != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        didChangeDependencies();
+      });
+    }
+    if (!_initialized) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -275,13 +305,16 @@ class _ReservationFormMockupScreen
                               context: context,
                               initialDate: _selectedDate!,
                               firstDate: _simulatedTime!,
-                              lastDate: _selectedDate!.add(
+                              lastDate: _simulatedTime!.add(
                                 const Duration(days: 365),
                               ),
                               locale: const Locale('fr', 'FR'),
                             );
                             if (picked != null) {
-                              setState(() => _selectedDate = picked);
+                              setState(() {
+                                _selectedDate = picked;
+                              });
+                              await refreshDateAndClosedRestaurantDays(isNew, 0);
                             }
                           },
                           child: Padding(
@@ -321,9 +354,9 @@ class _ReservationFormMockupScreen
                       icon: const Icon(Icons.remove),
                       onPressed: !canRemove()
                           ? null
-                          : () {
-                              refreshDateAndClosedRestaurantDays(
-                                reservation,
+                          : () async {
+                              await refreshDateAndClosedRestaurantDays(
+                                isNew,
                                 -1,
                               );
                             },
@@ -333,8 +366,8 @@ class _ReservationFormMockupScreen
                       onPressed: !canAdd()
                           ? null
                           : () async {
-                              refreshDateAndClosedRestaurantDays(
-                                reservation,
+                              await refreshDateAndClosedRestaurantDays(
+                                isNew,
                                 1,
                               );
                             },
@@ -385,7 +418,7 @@ class _ReservationFormMockupScreen
                         InkWell(
                           onTap: () {
                             setState(() => _selectedSlot = slot);
-                            haveTables();
+                            haveTables(isNew);
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
@@ -434,16 +467,16 @@ class _ReservationFormMockupScreen
                                 setState(() {
                                   _nbGuests--;
                                 });
-                                onGuestsChanged();
+                                onGuestsChanged(isNew);
                               },
                       ),
                       IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () {
+                        onPressed: (_nbGuests+1 >10) ? null :() {
                           setState(() {
                             _nbGuests++;
                           });
-                          onGuestsChanged();
+                          onGuestsChanged(isNew);
                         },
                       ),
                     ],
@@ -504,6 +537,25 @@ class _ReservationFormMockupScreen
                       ? null
                       : () async {
                           if (isNew) {
+                            final String dateString = DateFormat(
+                              'yyyy-MM-dd',
+                            ).format(_selectedDate!);
+                            final DateTime finalDateTime = DateTime.parse(
+                              "$dateString $_selectedSlot:00",
+                            );
+                             final reservation = await ref.read(reservationsProvider.notifier).addReservation( restaurantId: _restaurant!.id, datetime: finalDateTime, nbGuests: _nbGuests,
+                                 specialRequest: _specialRequestController.errorText != null ? null : _specialRequestController.text.trim().isEmpty ? null
+                                 : _specialRequestController.text);
+                             if(reservation != null) {
+                               if (context.mounted) {
+                                 ScaffoldMessenger.of(context).showSnackBar(
+                                   const SnackBar(content: Text(
+                                       'Réservation ajoutée avec succès !')),
+                                 );
+                                 Navigator.pushReplacementNamed(context,
+                                     '/my_reservations');
+                               }
+                             }
                           } else {
                             final String dateString = DateFormat(
                               'yyyy-MM-dd',
@@ -516,8 +568,9 @@ class _ReservationFormMockupScreen
                                 .copyWith(
                                   datetime: finalDateTime,
                                   numberOfGuests: _nbGuests,
-                                  specialRequests:
-                                      _specialRequestController.text,
+                                  specialRequests: (_specialRequestController.errorText != null)
+                                    ? null
+                                    : _specialRequestController.text.isEmpty ? null : _specialRequestController.text,
                                 );
 
                             if (needsConfirmationDialog(
@@ -527,17 +580,13 @@ class _ReservationFormMockupScreen
                               final confirmed =
                                   await showConfirmModificationDialog();
                               if (!confirmed) return;
-                              await ref
-                                  .read(reservationsProvider.notifier)
-                                  .deleteReservationTables(_reservation!.id);
                               updatedReservation = updatedReservation.copyWith(
                                 status: 'pending',
                               );
                             }
-
-                            final success = await updateReservationInDatabase(
-                              updatedReservation,
-                            );
+                             error =  await updateReservationInDatabase(
+                              updatedReservation);
+                            final success = error == null;
 
                             if (context.mounted) {
                               if (success) {
@@ -551,8 +600,8 @@ class _ReservationFormMockupScreen
                                 Navigator.pop(context);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Échec de la modification.'),
+                                   SnackBar(
+                                    content: Text(error!),
                                   ),
                                 );
                               }

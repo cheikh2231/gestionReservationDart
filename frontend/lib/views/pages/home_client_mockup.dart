@@ -37,11 +37,10 @@ class _HomeClientMockupScreenState
 
 
   List<Reservation> _filteredReservations(List<Reservation> reservations) {
-    final int? userId = ref.read(securityProvider.notifier).loggedId;
     return _filterReservationString == "all"
-        ? reservations.where((r) => (r.client.id == userId )).toList()
+        ? reservations
         : reservations
-              .where((r) =>( r.status == _filterReservationString && r.client.id == userId ))
+              .where((r) =>( r.status == _filterReservationString ))
               .toList();
   }
 
@@ -72,7 +71,7 @@ class _HomeClientMockupScreenState
             tooltip: 'Déconnexion',
             onPressed: () {
               ref.read(securityProvider.notifier).logout();
-
+              ref.invalidate(reservationsProvider);
               Navigator.pushReplacementNamed(context, '/login');
             },
           ),

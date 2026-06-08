@@ -1,6 +1,6 @@
 /*(BR-13) Un client ne peut pas avoir deux réservations en attente, confirmées ou terminées pour une même date et un même service.*/
 
-DROP FUNCTION IF EXISTS reservation_prevent_double_booking();
+DROP FUNCTION IF EXISTS reservation_prevent_double_booking() cascade;
 
 CREATE OR REPLACE FUNCTION reservation_prevent_double_booking()
     RETURNS TRIGGER
@@ -14,6 +14,7 @@ SELECT COUNT(*) INTO client_reservations FROM reservations AS r
 JOIN restaurants ON restaurants.id = r.restaurant
 JOIN services AS s ON s.restaurant = restaurants.id
 WHERE r.client = NEW.client
+and r.restaurant = new.restaurant
 AND r.datetime::date = NEW.datetime::date
 AND status != 'cancelled'
 AND (

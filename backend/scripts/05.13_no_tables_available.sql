@@ -1,5 +1,5 @@
 
-DROP FUNCTION IF EXISTS no_table_dispo(date, int, int, text, int);
+DROP FUNCTION IF EXISTS no_table_dispo(date, int, int, text,int);
 
 
 CREATE OR REPLACE FUNCTION no_table_dispo(
@@ -7,31 +7,21 @@ CREATE OR REPLACE FUNCTION no_table_dispo(
     nb_guests int,
     restaurant_id int,
     slot text,
-    excluded_reservation_id int DEFAULT null
+    id_reservation_if_in_edit int default null
 )
     RETURNS boolean AS $$
 DECLARE
-    any_single_table_fits boolean;
+    sum_capacities integer;
+    sum_nb_guests integer;
 BEGIN
-    SELECT EXISTS (
-        SELECT 1
-        FROM tables t
-        WHERE t.restaurant = restaurant_id
-          AND t.capacity >= nb_guests
-          AND t.id NOT IN (
-            SELECT rt."table"
-            FROM reservation_tables rt
-                     JOIN reservations r ON r.id = rt.reservation
-            WHERE r.restaurant = restaurant_id
-              AND r.datetime::date = date
-              AND r.datetime::time = slot::time
-              AND r.status != 'cancelled'
-              AND (excluded_reservation_id IS NULL OR r.id != excluded_reservation_id)
-        )
-    ) INTO any_single_table_fits;
+    SELECT SUM(t.capacity) into sum_capacities from tables t
+    where t.restaurant = restaurant_id;
+    select SUM(number_of_guests) into sum_nb_guests from reservations r where r.restaurant = restaurant_id and r.datetime::date = date
+    and get_service(r.restaurant,r.datetime::time) = get_service(restaurant_id,slot::time)
+    and r.status != 'cancelled' and r.status != 'completed'
+    and (id_reservation_if_in_edit is null or r.id != id_reservation_if_in_edit);
 
-
-    RETURN NOT any_single_table_fits;
+    RETURN sum_nb_guests + nb_guests > sum_capacities;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-GRANT EXECUTE ON FUNCTION no_table_dispo(date, int, int, text, int) TO authenticated;
+GRANT EXECUTE ON FUNCTION no_table_dispo(date, int, int, text,int) TO authenticated;

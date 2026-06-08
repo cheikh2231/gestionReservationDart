@@ -286,6 +286,7 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
 
   void _login(BuildContext context, String mail, {String? password}) async {
     await ref.read(securityProvider.notifier).login(mail, password ?? mail);
+    ref.invalidate(reservationsProvider);
     var securityState = ref.read(securityProvider);
 
     if (!context.mounted) return;

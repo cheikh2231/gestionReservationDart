@@ -9,7 +9,7 @@ BEGIN
         SELECT id ,restaurant,day_of_week,start_time,end_time
         from services
         where restaurant = restaurant_id
-        ORDER BY day_of_week ASC, start_time ASC;
+        ORDER BY day_of_week ASC, start_time ASC ;
 
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
