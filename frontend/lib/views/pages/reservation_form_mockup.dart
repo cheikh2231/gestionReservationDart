@@ -64,7 +64,7 @@ class _ReservationFormMockupScreen
     final systemTimeAsync = ref.read(systemTimeProvider);
     if (systemTimeAsync.value == null) return;
     _simulatedTime =
-        systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
+        systemTimeAsync.value?.first.simulated_time;
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     _reservation = args?['reservation'] as Reservation?;
@@ -85,11 +85,17 @@ class _ReservationFormMockupScreen
       _selectedDate = _simulatedTime;
       _loadSlots(true,autoSelectFirst: true);
     }
-
     _initialized = true;
   }
 
   bool canTMod() {
+
+    if (_reservation != null) {
+      final reservationDateTime = _reservation!.datetime;
+      if (reservationDateTime.isBefore(_simulatedTime!)) {
+        return true;
+      }
+    }
     return (isClosed! ||
         _selectedSlot == null ||
         _selectedDate == null ||
@@ -155,7 +161,7 @@ class _ReservationFormMockupScreen
     }
 
     await _loadSlots(isNew);
-    if(_selectedSlot==null){
+    if(_selectedSlot==null) {
       _noTableDispo = false;
     }
     bool isResClosed = false;
@@ -232,15 +238,32 @@ class _ReservationFormMockupScreen
   Widget build(BuildContext context) {
     String? error;
     final systemTimeAsync = ref.watch(systemTimeProvider);
-    _simulatedTime = systemTimeAsync.value?.first.simulated_time ?? _simulatedTime ?? DateTime.now();
 
+    final newSimulatedTime = systemTimeAsync.value?.first.simulated_time;
+    if (newSimulatedTime != null && _initialized) {
+      if (newSimulatedTime != _simulatedTime) {
+        final wasOnToday = _selectedDate != null &&
+            _selectedDate!.year == _simulatedTime!.year &&
+            _selectedDate!.month == _simulatedTime!.month &&
+            _selectedDate!.day == _simulatedTime!.day;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          setState(() {
+            _simulatedTime = newSimulatedTime;
+            if (_reservation == null && wasOnToday) {
+              _selectedDate = newSimulatedTime;
+            }
+          });
+          _loadSlots(_reservation == null, autoSelectFirst: _reservation == null);
+        });
+      }
+    }
     _specialRequestController.onAfterValidated = () => setState(() {});
     print(_selectedDate);
     print(_simulatedTime);
     print(_selectedSlot);
     final theme = Theme.of(context);
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
 
     final isNew = _reservation == null;
 

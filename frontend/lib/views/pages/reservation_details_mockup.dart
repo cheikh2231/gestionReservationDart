@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/core/widgets/reservations_details_card.dart';
+import 'package:prbd_2526_a04/models/system_time.dart';
+import 'package:prbd_2526_a04/providers/system_time_provider.dart';
 import '../../core/widgets/dialog_box.dart';
 import '../../models/reservation.dart';
 import '../../providers/reservation_provider.dart';
@@ -31,14 +33,12 @@ class ReservationDetailsMockupScreen extends ConsumerStatefulWidget {
 }
 
 class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMockupScreen> {
-  final simulatedTime = DateTime(2024, 12, 4, 16, 0);
 
   bool canTouch(Reservation res) {
     return res.status != "cancelled" && res.status != "completed";
   }
-  bool canMod(Reservation res) {
-    // return canTouch(res) && res.datetime.isAfter(simulatedTime);
-    return true;
+  bool canMod(Reservation res, DateTime? simulatedTime) {
+    return canTouch(res) && res.datetime.isAfter(simulatedTime!);
   }
 
   Future<void> _onCancelPressed() async {
@@ -69,6 +69,7 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
 
   @override
   Widget build(BuildContext context) {
+    final _simulatedTime = ref.watch(systemTimeProvider).value?.first;
     final id = ModalRoute.of(context)!.settings.arguments as int;
     final reservationsAsync = ref.watch(reservationsProvider);
 
@@ -115,7 +116,7 @@ class _ReservationDetailsMockupState extends ConsumerState<ReservationDetailsMoc
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                    onPressed: !canMod(reservation) ? null :() {
+                    onPressed: !canMod(reservation,_simulatedTime?.simulated_time) ? null :() {
                       Navigator.pushNamed(
                       context,
                       '/add_edit_reservation', arguments: {'reservation': reservation},
