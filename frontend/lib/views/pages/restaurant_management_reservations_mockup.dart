@@ -7,6 +7,7 @@ import 'package:prbd_2526_a04/providers/reservation_provider.dart';
 import '../../core/widgets/restaurant_reservation_card.dart';
 import '../../providers/my_restaurants_provider.dart';
 import '../../providers/system_time_provider.dart';
+import '../../core/widgets/simulated_time_display.dart';
 
 class RestaurantManagementReservationsMockupScreen extends ConsumerStatefulWidget {
   const RestaurantManagementReservationsMockupScreen(
@@ -58,33 +59,7 @@ class _ScreenState extends ConsumerState<RestaurantManagementReservationsMockupS
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
         surfaceTintColor: Colors.transparent,
-        flexibleSpace: Align(
-          alignment: Alignment.topCenter,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2.0),
-              child: Tooltip(
-                  message:
-                  'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                  child: simulatedTimeState.when(
-                    data: (list){
-                      final date = list.first.simulated_time;
-                      return Text(
-                        DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(date!),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[400],
-                          fontWeight: FontWeight.normal,
-                        ),
-                      );
-                    },
-                    loading: () => const Text("...", style: TextStyle(fontSize: 10, color: Colors.grey)),
-                    error: (err, stack) => const Text("Erreur", style: TextStyle(fontSize: 10, color: Colors.red)),
-                  )
-              ),
-            ),
-          ),
-        ),
+        flexibleSpace: const SimulatedTimeDisplay(),
       ),
       body: SafeArea(
         child: Column(

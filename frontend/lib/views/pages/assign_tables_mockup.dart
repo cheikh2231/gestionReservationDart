@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/my_restaurants_provider.dart';
 import 'package:prbd_2526_a04/views/pages/reservation_details_manager_mockup.dart';
 import 'package:prbd_2526_a04/views/pages/restaurant_management_reservations_mockup.dart';
+import '../../core/widgets/simulated_time_display.dart';
 
 import '../../core/widgets/table_card.dart';
 import '../../models/restaurant_full.dart';
@@ -85,27 +86,7 @@ class _ScreenState extends ConsumerState<AssignTablesMockupScreen>{
               backgroundColor: theme.colorScheme.primary,
               foregroundColor: theme.colorScheme.onPrimary,
               surfaceTintColor: Colors.transparent,
-              flexibleSpace: Align(
-                alignment: Alignment.topCenter,
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 2.0),
-                    child: Tooltip(
-                      message:
-                      'Date/heure simulée utilisée pour les tests.\nCliquez pour modifier.',
-                      child: Text(
-                        DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR')
-                            .format(simulatedTime),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[400],
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              flexibleSpace: const SimulatedTimeDisplay(),
             ),
             body: SafeArea(
               child: Column(
