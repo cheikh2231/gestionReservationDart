@@ -16,8 +16,8 @@ BEGIN
                  WHERE r.id = resPending.restaurant
                  AND resPending.status = 'pending')
         FROM restaurants r
-        JOIN restaurant_managers rm on rm.restaurant = r.id
-        WHERE rm.manager = auth.id()
+        join public.restaurant_managers rm on r.id = rm.restaurant
+        where rm.manager = auth.id()
         ORDER BY (
                      SELECT resLast.datetime
                      FROM reservations resLast

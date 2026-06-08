@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/services/api_client.dart';
 import '../models/reservation.dart';
-import 'my_restaurants_provider.dart';
 
 final reservationsProvider = AsyncNotifierProvider<ReservationsNotifier, List<Reservation>>(
       () => ReservationsNotifier(),
@@ -37,15 +38,21 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
 
   void _updateState(Reservation updated) {
     state.whenData((list) {
-      state = AsyncData(
-        list.map((r) => r.id == updated.id ? updated : r).toList(),
-      );
+      final updatedList = list.map((r) => r.id == updated.id ? updated : r).toList();
+      updatedList.sort((a, b) {
+        final dateCompare = b.datetime.compareTo(a.datetime);
+        return dateCompare != 0 ? dateCompare :
+         b.id.compareTo(a.id);
+      });
+      state = AsyncData(updatedList);
     });
   }
-
-  Future<bool> updateReservation(Reservation updated) async {
+  Future<String?> updateReservation(Reservation updated) async {
     final updateRes = await updated.updateReservation(updated);
-    if (updateRes) _updateState(updated);
+    if (updateRes == null) {
+      _updateState(updated);
+      deleteReservationTables(updated.id);
+    }
     return updateRes;
   }
 
@@ -79,6 +86,31 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
     }
   }
 
+  Future<Reservation?> addReservation({
+    required int restaurantId,
+    required DateTime datetime,
+    required int nbGuests,
+    String? specialRequest,
+  }) async {
+    try {
+      final newReservation = await Reservation.addReservation(
+        restaurantId: restaurantId,
+        datetime: datetime,
+        nbGuests: nbGuests,
+        specialRequest: specialRequest,
+      );
+      state.whenData((list) {
+        state = AsyncData([newReservation, ...list]);
+      });
+      _updateState(newReservation);
+      return newReservation;
+    } catch (e) {
+
+      return null;
+    }
+  }
+
+
   Future<Reservation?> confirmAndAssignTables(int resid, List<int> tableIds) async {
     try {
       final result=await Reservation.confirmAndAssignTables(resid, tableIds);
@@ -93,6 +125,8 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
     }
     return null;
   }
+
+
 
 
 }
