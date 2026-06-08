@@ -42,7 +42,6 @@ class _LoginMockupScreenState extends ConsumerState<LoginMockupScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final simulatedTime = DateTime(2024, 12, 4, 16, 0);
 
     return Scaffold(
       appBar: AppBar(

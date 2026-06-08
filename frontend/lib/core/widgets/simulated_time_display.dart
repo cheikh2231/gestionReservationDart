@@ -18,17 +18,17 @@ class SimulatedTimeDisplay extends ConsumerWidget {
           padding: const EdgeInsets.only(top: 2.0),
           child: simulatedTimeState.when(
             data: (list) {
-              final date = list.isNotEmpty ? list.first.simulated_time : null;
-              final dateString = date != null
-                  ? DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(date)
-                  : 'Temps réel (null)';
+              final simulatedDate = list.isNotEmpty ? list.first.simulated_time : null;
+              final dateString = simulatedDate != null
+                  ? DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(simulatedDate)
+                  : DateFormat('EEEE dd/MM/yyyy HH:mm', 'fr_FR').format(DateTime.now());
 
               return Tooltip(
                 message: 'Date/heure simulée. Cliquez pour modifier.',
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () => _showTimeTravelDialog(context, ref, date),
+                    onTap: () => _showTimeTravelDialog(context, ref, simulatedDate),
                     borderRadius: BorderRadius.circular(4),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
@@ -102,7 +102,7 @@ class _TimeTravelDialogState extends State<_TimeTravelDialog> {
               final picked = await showDatePicker(
                 context: context,
                 initialDate: selectedDate,
-                firstDate: DateTime(2025),
+                firstDate: DateTime(2020),
                 lastDate: DateTime(2030),
                 locale: const Locale('fr', 'FR'),
               );
@@ -133,7 +133,7 @@ class _TimeTravelDialogState extends State<_TimeTravelDialog> {
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
         TextButton(
           onPressed: () => Navigator.pop(context, 'null'),
-          child: const Text('Temps réel'),
+          child: const Text('Effacer(null)'),
         ),
         ElevatedButton(
           onPressed: () {
