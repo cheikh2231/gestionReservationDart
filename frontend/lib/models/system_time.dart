@@ -11,12 +11,16 @@ class SystemTime{
 
   factory SystemTime.fromJson(Map<String, dynamic> json) {
     return SystemTime(
-        simulated_time: DateTime.parse(json['simulated_time'].toString()),
+      simulated_time: json['simulated_time'] != null
+          ? DateTime.parse(json['simulated_time'].toString())
+          : null,
     );
   }
 
   static Future<List<SystemTime>> getSimulatedTime() async {
     final response = await ApiClient.get('get_simulated_time');
+    print(response.statusCode);
+    print(response.body);
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => SystemTime.fromJson(item)).toList();
