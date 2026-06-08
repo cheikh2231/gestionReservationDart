@@ -51,7 +51,6 @@ class _ReservationFormMockupScreen
   Timer? _debounceTimer;
   Restaurant? _restaurant;
 
-
   final _specialRequestController = ValidatingTextEditingController(
     validator: Reservation.validateSpecialRequest,
     initialValue: '',
@@ -233,6 +232,13 @@ class _ReservationFormMockupScreen
         0;
   }
 
+  bool _selectedDateIsValid() {
+    if (_selectedDate == null || _simulatedTime == null) return false;
+    final selected = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day);
+    final today = DateTime(_simulatedTime!.year, _simulatedTime!.month, _simulatedTime!.day);
+    return !selected.isBefore(today);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -242,15 +248,11 @@ class _ReservationFormMockupScreen
     final newSimulatedTime = systemTimeAsync.value?.first.simulated_time;
     if (newSimulatedTime != null && _initialized) {
       if (newSimulatedTime != _simulatedTime) {
-        final wasOnToday = _selectedDate != null &&
-            _selectedDate!.year == _simulatedTime!.year &&
-            _selectedDate!.month == _simulatedTime!.month &&
-            _selectedDate!.day == _simulatedTime!.day;
-
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
           setState(() {
             _simulatedTime = newSimulatedTime;
-            if (_reservation == null && wasOnToday) {
+            if (_reservation == null) {
               _selectedDate = newSimulatedTime;
             }
           });
@@ -317,6 +319,30 @@ class _ReservationFormMockupScreen
                   ),
                 ),
                 const SizedBox(height: 24),
+
+                if (_reservation != null && _reservation!.datetime.isBefore(_simulatedTime!))
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.block, color: Colors.red),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'Cette réservation est passée et ne peut plus être modifiée.',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 24),
+
                 Row(
                   children: [
                     Expanded(
@@ -425,14 +451,15 @@ class _ReservationFormMockupScreen
                       ],
                     ),
                   ),
+
                 const SizedBox(height: 24),
                 if (isClosed == false)
-                  const Text(
-                    'Créneaux disponibles',
+                   Text(
+                     (_slots.isNotEmpty && _selectedDateIsValid() )? 'Créneaux disponibles' : 'Pas de créneaux disponibles',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 if (isClosed == false) const SizedBox(height: 12),
-                if (isClosed == false)
+                if (isClosed == false && _slots.isNotEmpty && _selectedDateIsValid())
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 8.0,
@@ -578,6 +605,14 @@ class _ReservationFormMockupScreen
                                  Navigator.pushReplacementNamed(context,
                                      '/my_reservations');
                                }
+                             }else{
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 const SnackBar(
+                                   content: Text(
+                                     'L\'ajout n\'a pas pu se faire. Vérifiez que vous n\'avez pas déjà une réservation pour ce service à cette date.',
+                                   ),
+                                 ),
+                               );
                              }
                           } else {
                             final String dateString = DateFormat(

@@ -7,7 +7,11 @@ $$
 DECLARE
     result reservation_info;
 BEGIN
-    UPDATE reservations SET status ='cancelled' WHERE id = id_res and exists(select 1 from reservations where reservations.client = auth.id() and reservations.id = id_res and reservations.status != 'cancelled');
+    UPDATE reservations SET status ='cancelled'
+                        WHERE id = id_res and
+                              exists(select 1 from reservations where reservations.client = auth.id()
+                                                                  and reservations.id = id_res
+                                                                  and reservations.status not in ('cancelled','completed'));
     SELECT * INTO result
     FROM get_reservations()
     WHERE id = id_res;

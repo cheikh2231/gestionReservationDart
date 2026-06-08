@@ -14,7 +14,7 @@ BEGIN
      special_requests = request ,
      datetime = datetimeupdated
     where id = idres
-    and reservations.client = auth.id();
+    and EXISTS(select 1 from reservations where id = idres and status not in ('cancelled','completed') and client = auth.id());
 
     RETURN FOUND;
 END;
