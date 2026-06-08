@@ -252,7 +252,7 @@ class _ReservationFormMockupScreen
           if (!mounted) return;
           setState(() {
             _simulatedTime = newSimulatedTime;
-            if (_reservation == null) {
+            if (_reservation == null && _selectedDate!.isBefore(newSimulatedTime)) {
               _selectedDate = newSimulatedTime;
             }
           });
