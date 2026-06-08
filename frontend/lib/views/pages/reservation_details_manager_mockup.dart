@@ -208,13 +208,13 @@ class ReservationDetailsManagerMockupScreen extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Row(
+                           Row(
                             children: [
                               Icon(Icons.restaurant, size: 20),
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Le Gourmet',
+                                  reservation.restaurant.name,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

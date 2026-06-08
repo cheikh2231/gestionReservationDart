@@ -18,7 +18,7 @@ begin
     end if;
     return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql security definer;
 
 DROP TRIGGER IF EXISTS cannot_associated_table_to_reservation_tables ON reservation_tables;
 

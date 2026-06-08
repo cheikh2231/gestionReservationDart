@@ -32,6 +32,19 @@ class Security {
     return body;
   }
 
+  static Future<bool> checkFullNameAvailable({String? fullName}) async {
+    final response = await ApiClient.post(
+      'is_full_name_available',
+      body: json.encode({'full_name': fullName}),
+      anonymous: true,
+    );
+    final dynamic body = json.decode(response.body);
+    if (response.statusCode != 200) {
+      throw Exception('Failed to validate full name\n\n${body['message']}');
+    }
+    return body;
+  }
+
   static Future<void> signup({
     required String email,
     required String password,
