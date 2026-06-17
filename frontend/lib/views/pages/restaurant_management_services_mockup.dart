@@ -125,6 +125,7 @@ class _ScreenState extends ConsumerState<RestaurantManagementServicesMockupScree
                     child: ServiceCard(
                       dayLabel: nomJour,
                       filteredServices: filteredServices,
+                      slotDuration: restaurant.slotDuration,
                     ),
                   );
                 }).toList(),

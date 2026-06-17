@@ -75,4 +75,59 @@ class Service {
       throw Exception('Erreur lors de la suppression');
     }
   }
+
+
+  static Future<Service> updateService({
+    required int serviceId,
+    required int dayOfWeek,
+    required String startTime,
+    required String endTime,
+  }) async {
+    final response = await ApiClient.post(
+      'update_service',
+      body: jsonEncode({
+        'p_service_id': serviceId,
+        'p_day_of_week': dayOfWeek,
+        'p_start_time': '$startTime:00',
+        'p_end_time': '$endTime:00',
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final body = jsonDecode(response.body);
+
+      if (body is List && body.isNotEmpty) {
+        return Service.fromJson(body.first);
+      } else {
+        return Service.fromJson(body);
+      }
+    } else {
+      throw Exception('Erreur lors de la modification du service');
+    }
+  }
+  static Future<int> checkRestaurantServiceReservations({
+    required int serviceId,
+    required int dayOfWeek,
+    required String startTime,
+    required String endTime,
+  }) async {
+    final response = await ApiClient.post(
+      'check_restaurant_service_reservations',
+      body: jsonEncode({
+        'p_service_id': serviceId,
+        'p_day_of_week': dayOfWeek,
+        'p_start_time': startTime,
+        'p_end_time': endTime,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Erreur lors de la vérification du service');
+    }
+
+    return jsonDecode(response.body);
+  }
+
 }
+
+
