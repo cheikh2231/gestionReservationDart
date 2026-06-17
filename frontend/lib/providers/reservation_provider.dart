@@ -105,7 +105,6 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
       _updateState(newReservation);
       return newReservation;
     } catch (e) {
-
       return null;
     }
   }

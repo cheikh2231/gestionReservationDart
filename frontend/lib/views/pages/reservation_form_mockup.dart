@@ -51,7 +51,6 @@ class _ReservationFormMockupScreen
   Timer? _debounceTimer;
   Restaurant? _restaurant;
 
-
   final _specialRequestController = ValidatingTextEditingController(
     validator: Reservation.validateSpecialRequest,
     initialValue: '',
@@ -64,7 +63,7 @@ class _ReservationFormMockupScreen
     final systemTimeAsync = ref.read(systemTimeProvider);
     if (systemTimeAsync.value == null) return;
     _simulatedTime =
-        systemTimeAsync.value?.first.simulated_time ?? DateTime.now();
+        systemTimeAsync.value?.first.simulated_time;
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     _reservation = args?['reservation'] as Reservation?;
@@ -85,11 +84,17 @@ class _ReservationFormMockupScreen
       _selectedDate = _simulatedTime;
       _loadSlots(true,autoSelectFirst: true);
     }
-
     _initialized = true;
   }
 
   bool canTMod() {
+
+    if (_reservation != null) {
+      final reservationDateTime = _reservation!.datetime;
+      if (reservationDateTime.isBefore(_simulatedTime!)) {
+        return true;
+      }
+    }
     return (isClosed! ||
         _selectedSlot == null ||
         _selectedDate == null ||
@@ -155,7 +160,7 @@ class _ReservationFormMockupScreen
     }
 
     await _loadSlots(isNew);
-    if(_selectedSlot==null){
+    if(_selectedSlot==null) {
       _noTableDispo = false;
     }
     bool isResClosed = false;
@@ -227,20 +232,40 @@ class _ReservationFormMockupScreen
         0;
   }
 
+  bool _selectedDateIsValid() {
+    if (_selectedDate == null || _simulatedTime == null) return false;
+    final selected = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day);
+    final today = DateTime(_simulatedTime!.year, _simulatedTime!.month, _simulatedTime!.day);
+    return !selected.isBefore(today);
+  }
+
 
   @override
   Widget build(BuildContext context) {
     String? error;
     final systemTimeAsync = ref.watch(systemTimeProvider);
-    _simulatedTime = systemTimeAsync.value?.first.simulated_time ?? _simulatedTime ?? DateTime.now();
 
+    final newSimulatedTime = systemTimeAsync.value?.first.simulated_time;
+    if (newSimulatedTime != null && _initialized) {
+      if (newSimulatedTime != _simulatedTime) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          setState(() {
+            _simulatedTime = newSimulatedTime;
+            if (_reservation == null && _selectedDate!.isBefore(newSimulatedTime)) {
+              _selectedDate = newSimulatedTime;
+            }
+          });
+          _loadSlots(_reservation == null, autoSelectFirst: _reservation == null);
+        });
+      }
+    }
     _specialRequestController.onAfterValidated = () => setState(() {});
     print(_selectedDate);
     print(_simulatedTime);
     print(_selectedSlot);
     final theme = Theme.of(context);
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
 
     final isNew = _reservation == null;
 
@@ -294,6 +319,30 @@ class _ReservationFormMockupScreen
                   ),
                 ),
                 const SizedBox(height: 24),
+
+                if (_reservation != null && _reservation!.datetime.isBefore(_simulatedTime!))
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.block, color: Colors.red),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'Cette réservation est passée et ne peut plus être modifiée.',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 24),
+
                 Row(
                   children: [
                     Expanded(
@@ -402,14 +451,15 @@ class _ReservationFormMockupScreen
                       ],
                     ),
                   ),
+
                 const SizedBox(height: 24),
                 if (isClosed == false)
-                  const Text(
-                    'Créneaux disponibles',
+                   Text(
+                     (_slots.isNotEmpty && _selectedDateIsValid() )? 'Créneaux disponibles' : 'Pas de créneaux disponibles',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 if (isClosed == false) const SizedBox(height: 12),
-                if (isClosed == false)
+                if (isClosed == false && _slots.isNotEmpty && _selectedDateIsValid())
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 8.0,
@@ -555,6 +605,14 @@ class _ReservationFormMockupScreen
                                  Navigator.pushReplacementNamed(context,
                                      '/my_reservations');
                                }
+                             }else{
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 const SnackBar(
+                                   content: Text(
+                                     'L\'ajout n\'a pas pu se faire. Vérifiez que vous n\'avez pas déjà une réservation pour ce service à cette date.',
+                                   ),
+                                 ),
+                               );
                              }
                           } else {
                             final String dateString = DateFormat(
