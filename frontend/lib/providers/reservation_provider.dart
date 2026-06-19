@@ -47,6 +47,7 @@ class ReservationsNotifier extends AsyncNotifier<List<Reservation>> {
       state = AsyncData(updatedList);
     });
   }
+
   Future<String?> updateReservation(Reservation updated) async {
     final updateRes = await updated.updateReservation(updated);
     if (updateRes == null) {

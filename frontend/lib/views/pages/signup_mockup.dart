@@ -37,7 +37,7 @@ class _SignupMockupScreenState extends ConsumerState<SignupMockupScreen> {
   late final ValidatingTextEditingController _confirmPasswordController;
 
   final _phoneController = ValidatingTextEditingController(
-    validator: User.validatePhone, // --- On utilise ta nouvelle méthode ici ! ---
+    validator: User.validatePhone,
     initialValue: '',
   );
 
@@ -193,6 +193,7 @@ class _SignupMockupScreenState extends ConsumerState<SignupMockupScreen> {
       ),
     );
   }
+
   @override
   void dispose() {
     _fullNameController.dispose();

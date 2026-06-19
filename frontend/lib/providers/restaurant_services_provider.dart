@@ -26,6 +26,17 @@ class RestaurantServicesNotifier extends AsyncNotifier<List<Service>> {
       state = AsyncError("Erreur lors du chargement des services", st);
     }
   }
+  void replaceService(Service updatedService) {
+    final current = state.value;
+    if (current == null) return;
+
+    state = AsyncData(
+      current
+          .map((service) =>
+      service.id == updatedService.id ? updatedService : service)
+          .toList(),
+    );
+  }
   Future<void> deleteService(int serviceId) async {
     try {
       // 1. On appelle l'API (qui renvoie void)
@@ -42,4 +53,27 @@ class RestaurantServicesNotifier extends AsyncNotifier<List<Service>> {
       state = AsyncError("Erreur lors de la suppression du service", st);
     }
   }
+
+
+
+  Future<Service> updateService(int serviceId, int dayOfWeek, String startTime, String endTime) async {
+    final updatedService = await Service.updateService(
+      serviceId: serviceId,
+      dayOfWeek: dayOfWeek,
+      startTime: startTime,
+      endTime: endTime,
+    );
+
+    final currentServices = state.value ?? [];
+
+    final updatedList = currentServices.map((service) {
+      return service.id == serviceId ? updatedService : service;
+    }).toList();
+
+    state = AsyncData(updatedList);
+
+    return updatedService;
+  }
+
+
 }
