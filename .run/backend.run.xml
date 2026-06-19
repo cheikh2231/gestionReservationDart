@@ -39,6 +39,8 @@
     <script-file value="$PROJECT_DIR$/backend/scripts/05.18_confirm_and_assign_tables.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/05.19_delete_restaurant_service.sql" />
     <script-file value="$PROJECT_DIR$/backend/scripts/XX_suppression_des_triggers.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.20_update_restaurant_service.sql" />
+    <script-file value="$PROJECT_DIR$/backend/scripts/05.21_check_restaurant_service_reservations.sql" />
     <script-mode>FILE</script-mode>
     <data-source id="6d275bb5-c69c-4f95-bc29-f6a29631655b" namespace="database/&quot;prbd-2526-a04&quot;" />
     <method v="2" />

@@ -3,14 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:prbd_2526_a04/providers/restaurant_services_provider.dart';
 import '../../models/service.dart';
+import 'package:prbd_2526_a04/views/pages/edit_service_mockup.dart';
 
 class ServiceCard extends ConsumerStatefulWidget {
   final String dayLabel;
   final List<Service> filteredServices;
+  final int slotDuration;
   const ServiceCard({
     super.key,
     required this.dayLabel,
     required this.filteredServices,
+    required this.slotDuration,
   });
   @override
   ConsumerState<ServiceCard> createState() => _ServiceCardState();
@@ -40,11 +43,25 @@ class _ServiceCardState extends ConsumerState<ServiceCard>{
                 children: [
                   IconButton(
                     icon: const Icon(Icons.edit),
-                    onPressed: () {},
+                    onPressed: () async {
+                      final result = await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditServiceMockupScreen(
+                            restaurantID: service.restaurantId,
+                            slotDuration: widget.slotDuration,
+                            service: service,
+                          ),
+                        ),
+                      );
+
+                      if (result is Service) {
+                        ref.read(restaurantServicesProvider.notifier).replaceService(result);
+                      }
+                    },
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete, color: service.used_by_reservation! ? Colors.grey:Colors.red),
-                    onPressed: service.used_by_reservation!
+                    icon: Icon(Icons.delete, color: (service.used_by_reservation ?? false) ? Colors.grey : Colors.red),
+                    onPressed: (service.used_by_reservation ?? false)
                         ? null
                         : () {
                       showDialog(
@@ -73,8 +90,9 @@ class _ServiceCardState extends ConsumerState<ServiceCard>{
                         },
                       );
                     },
-                    tooltip: service.used_by_reservation! ? 'Impossible de supprimer : des réservations non annulées utilisent ce service' : 'Supprimer le service',
-                  ),
+                    tooltip: (service.used_by_reservation ?? false)
+                        ? 'Impossible de supprimer : des réservations non annulées utilisent ce service'
+                        : 'Supprimer le service',),
                 ],
               ),
             ),
