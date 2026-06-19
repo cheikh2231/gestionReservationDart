@@ -89,6 +89,7 @@ class Reservation {
     return Reservation.fromJson(jsonDecode(response.body));
   }
 
+  // Methode qui permet de garder en memoire tout les donnees et de modifier qu'une seule colonne  sans devoir tout recopier
   Reservation copyWith({
     DateTime? datetime,
     int? numberOfGuests,
