@@ -53,7 +53,7 @@ Annulation de la reservation =>
   <img width="1000"  alt="liste" src="https://github.com/user-attachments/assets/6069637c-c81c-4942-989d-f1faa2674e23" />
 
 	
-=============================================================================================================================
+=====================================================================================
 ** Espace Manager :**
 Mes restaurants =>
 *Tableau de bord avec les restaurants dont le user est manager.*
@@ -84,7 +84,7 @@ Service =>
 <img width="1258" height="920" alt="image" src="https://github.com/user-attachments/assets/d58c5a63-e1a0-4aa4-891a-07ee73087d30" />
 
 Service =>
-S'il existe déjà des réservations dans ce service mais qu'ont essaie de supprimé ou d'éditer en dehors du service d'une réservation*
+*S'il existe déjà des réservations dans ce service mais qu'on essaie de supprimé ou d'éditer en dehors du service d'une réservation*
 <img width="1263" alt="error service" src="https://github.com/user-attachments/assets/9f14f199-9830-4d45-b9b5-0953daf13190" />
 
 Table =>
