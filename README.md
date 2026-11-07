@@ -51,9 +51,45 @@ Annulation de la reservation =>
 *Aprés annulation le statut change directement dans les details mais aussi dans la liste principale *   
   <img width="1000" alt="details" src="https://github.com/user-attachments/assets/f53cdee0-157d-4fee-892d-b9f4b0704cca" />
   <img width="1000"  alt="liste" src="https://github.com/user-attachments/assets/6069637c-c81c-4942-989d-f1faa2674e23" />
+
+	
 =============================================================================================================================
 ** Espace Manager :**
+Mes restaurants =>
+*Tableau de bord avec les restaurants dont le user est manager.*
+<img width="800" alt="restaurants manager" src="https://github.com/user-attachments/assets/2abe124b-eb24-4962-a81c-bdee721fd545" />
 
+Réservations Restaurant =>
+*Affichage des réservations après clic  du restaurant séléctionné.*
+<img width="800" alt="réservations restaurant" src="https://github.com/user-attachments/assets/9f781cfa-a84a-431e-aac5-ff21112a9e20" />
+
+Confirmation et Annulation Réservation =>
+*Details réservation et bouton de confirmation et d'annulation.*
+<img width="800" alt="détails réservation" src="https://github.com/user-attachments/assets/2235132b-f446-493b-a6af-8ae84fd2a075" />
+
+Confirmation =>
+*Assignation Table de capacité inférieur aux nombres de convives choisi par l'user.*
+<img width="800"  alt="error capacité" src="https://github.com/user-attachments/assets/edc1cb40-48be-4aee-8a11-8cbf3471ab47" />
+
+Confirmation =>
+*Après assignation d'une table de capacité >= aux nombres de convives la réservation est confirmée et les détails sont à jour.*
+<img width="800" alt="assignation" src="https://github.com/user-attachments/assets/6c46abdb-9b72-4ceb-8f18-c67a19e54d72" />
+
+Confirmation =>
+*Si la table est déjà occupé pour le même service*
+<img width="800" alt="table occupé" src="https://github.com/user-attachments/assets/72aa093c-261e-4a6c-9bd9-8e90e2965f94" />
+
+Service =>
+*Edit et Ajout d'un service pour le restaurant*
+<img width="1258" height="920" alt="image" src="https://github.com/user-attachments/assets/d58c5a63-e1a0-4aa4-891a-07ee73087d30" />
+
+Service =>
+S'il existe déjà des réservations dans ce service mais qu'ont essaie de supprimé ou d'éditer en dehors du service d'une réservation*
+<img width="1263" alt="error service" src="https://github.com/user-attachments/assets/9f14f199-9830-4d45-b9b5-0953daf13190" />
+
+Table =>
+*Edit et Ajout Table pour le restaurant*
+<img width="800" alt="edit et ajout" src="https://github.com/user-attachments/assets/cdd9f5cd-86f2-4213-b8b5-8a156c4507e0" />
 
 ## ⚙️ Installation locale
 1. Cloner le dépôt : `git clone https://github.com/cheikh2231/gestionReservationDart.git`
