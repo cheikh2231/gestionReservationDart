@@ -21,9 +21,11 @@ Application  développée pour simplifier la prise de réservations et la gestio
 
 ## 📸 Aperçu
 ** Espace Client :**
-Mes réservations =>
-*Tableau de bord avec filtres dynamiques (En attente, Confirmées, Terminées, Annulées).*
+Mes réservations(En attente, Confirmées, Terminées, Annulées). =>
+*Tableau de bord avec filtres dynamiques *
+  En attentes
   <img width="800" alt=" les reservations en attentes " src="https://github.com/user-attachments/assets/dc6ecfe6-8769-4b64-b32c-298e0620007e" />
+  Confirmées  
   <img width="800" alt=" les reservations confirmées" src="https://github.com/user-attachments/assets/c5ca5194-b7d0-4233-9de6-449b1112a636" />
 
  Nouvelle réservation =>
