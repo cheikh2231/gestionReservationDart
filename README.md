@@ -1,22 +1,30 @@
-# Projet PRBD 2526 - Groupe a04 - ReserVite
+#  Application de Gestion de Restaurant (PRBD)
 
-## Notes de version
+Application  développée pour simplifier la prise de réservations et la gestion quotidienne d'un établissement. Ce projet intègre une architecture multi-rôles sécurisée séparant l'expérience client des outils d'administration.
 
-### Liste des bugs connus
+##  Fonctionnalités principales
 
-* Rechercher un restaurant : la recherche bistrot est ok mais bistrot précédé d'un espace n'est pas ok
-* Détails du restaurant : Doute sur l'affichage des horaires ils ne semblent pas bons.
-* Nouvelle réservation : Date non clickable, + et - ne fonctionne pas, les créneaux ne sont pas clickable, créer la réservation ne fonctionne pas.
-* Manager mes restaurant : button refresh ne fonctionne pas
-* Manager details de la réservation : button refresh ne fonctionne pas
-* Manager confirm & assign table : affichage vert capacité totale n'est pas dynamique, la selection des tables ne fonctionne pas, confirmer la réservation ne fonctionne pas.
+** Espace Client :**
+* Recherche et consultation des restaurants disponibles.
+* Système de prise de réservation.
+* Système d'édition d'une réservation en respectant les créneaux et service pour un restaurant.
 
-General : system time n'est pas pris en compte , certaines page n'affichent pas dynamiquement system time.
+** Espace Manager :**
+* Tableau de bord de gestion de l'établissement.
+* Modifier les services de son restaurant.
+* Gérer l'association des tables pour les restaurants.
 
-### Liste des fonctionnalités supplémentaires
+##  Stack Technique
+* **Framework :** Flutter
+* **Langage :** Dart
+* **Architecture :** Multiplateforme (Mobile/Web)
 
-...
+## 📸 Aperçu
+** Espace Client :**
+<img width="1268" height="985" alt="image" src="https://github.com/user-attachments/assets/dc6ecfe6-8769-4b64-b32c-298e0620007e" />
 
-### Divers
 
-...
+## ⚙️ Installation locale
+1. Cloner le dépôt : `git clone https://github.com/cheikh2231/gestionReservationDart.git`
+2. Installer les dépendances : `flutter pub get`
+3. Lancer l'application : `flutter run`
