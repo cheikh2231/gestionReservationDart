@@ -28,7 +28,8 @@ Mes réservations =>
 
  Nouvelle réservation =>
 *Recherche de restaurants par nom ou description et affichage des details restaurant selectionné*
-  <img width="1000" height="865" alt="recherche de restaurants par nom, description pour une nouvelle réservation" src="https://github.com/user-attachments/assets/ba9c4619-    166b-4424-a4df-1615b32c404c" />
+  <img width="1000" height="712" alt="recherche par nom,description" src="https://github.com/user-attachments/assets/3e6c88b4-6b6d-4ca3-994c-ce2e9c58cda8" />
+
   <img width="1000" height="865" alt="détails restaurant et réservation d'une table" src="https://github.com/user-attachments/assets/82d8f9b9-a1a1-4c93-a71c-d60b9dcab7f3" />
 
 
