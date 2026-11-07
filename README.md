@@ -26,7 +26,7 @@ Mes réservations
   <img width="1000" height="865" alt=" les reservations en attentes " src="https://github.com/user-attachments/assets/dc6ecfe6-8769-4b64-b32c-298e0620007e" />
   <img width="1000" height="865" alt=" les reservations confirmées" src="https://github.com/user-attachments/assets/c5ca5194-b7d0-4233-9de6-449b1112a636" />
 
-Etape nouvelle reservation
+ Nouvelle reservation
 *Recherche de restaurants par nom ou description et affichage des details restaurant selectionné*
   <img width="1000" height="865" alt="recherche de restaurants par nom, description pour une nouvelle réservation" src="https://github.com/user-attachments/assets/ba9c4619-    166b-4424-a4df-1615b32c404c" />
   <img width="1000" height="865" alt="détails restaurant et réservation d'une table" src="https://github.com/user-attachments/assets/82d8f9b9-a1a1-4c93-a71c-d60b9dcab7f3" />
