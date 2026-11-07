@@ -1,4 +1,4 @@
-#  Application de Gestion de Restaurant (PRBD)
+#  Application de Gestion de Restaurant (Dart | Flutter)
 
 Application  développée pour simplifier la prise de réservations et la gestion quotidienne d'un établissement. Ce projet intègre une architecture multi-rôles sécurisée séparant l'expérience client des outils d'administration.
 
@@ -51,7 +51,8 @@ Annulation de la reservation =>
 *Aprés annulation le statut change directement dans les details mais aussi dans la liste principale *   
   <img width="1000" alt="details" src="https://github.com/user-attachments/assets/f53cdee0-157d-4fee-892d-b9f4b0704cca" />
   <img width="1000"  alt="liste" src="https://github.com/user-attachments/assets/6069637c-c81c-4942-989d-f1faa2674e23" />
-
+=============================================================================================================================
+** Espace Manager :**
 
 
 ## ⚙️ Installation locale
