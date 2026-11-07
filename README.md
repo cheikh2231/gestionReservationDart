@@ -35,8 +35,8 @@ Mes réservations =>
 
 Nouvelle réservation =>
 *Formulaire avec sélection de créneau et validation des demandes spéciales.*
-  <img width="1000" height="865" alt="création de la réservation par rapport au creneau" src="https://github.com/user-attachments/assets/
-      05680c04-5260-49e7-9076- 35d2ee0f12c8" />
+  <img width="1252" height="667" alt="image" src="https://github.com/user-attachments/assets/91350c18-760a-4104-b2a0-151323d986ab" />
+
 
 Après création =>
 *La liste des reservations en attentes de l'utilisateur se met automatiquement à jour après ajout*   
