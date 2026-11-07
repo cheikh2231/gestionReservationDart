@@ -35,7 +35,7 @@ Mes réservations =>
 
 Nouvelle réservation =>
 *Formulaire avec sélection de créneau et validation des demandes spéciales.*
-  <img width="1252" height="667" alt="image" src="https://github.com/user-attachments/assets/91350c18-760a-4104-b2a0-151323d986ab" />
+ <img width="1271" height="636" alt="image" src="https://github.com/user-attachments/assets/33ff2998-139e-480a-a79f-77e90c999b19" />
 
 
 Après création =>
