@@ -21,7 +21,7 @@ Application  développée pour simplifier la prise de réservations et la gestio
 
 ## 📸 Aperçu
 ** Espace Client :**
-<img width="1268" height="985" alt="image" src="https://github.com/user-attachments/assets/dc6ecfe6-8769-4b64-b32c-298e0620007e" />
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/dc6ecfe6-8769-4b64-b32c-298e0620007e" />
 
 
 ## ⚙️ Installation locale
