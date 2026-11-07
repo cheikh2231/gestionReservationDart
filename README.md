@@ -53,7 +53,7 @@ Annulation de la reservation =>
   <img width="1000"  alt="liste" src="https://github.com/user-attachments/assets/6069637c-c81c-4942-989d-f1faa2674e23" />
 
 	
-=========================================================================================
+===========================================================================================
 ** Espace Manager :**
 Mes restaurants =>
 *Tableau de bord avec les restaurants dont le user est manager.*
