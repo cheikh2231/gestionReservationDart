@@ -14,7 +14,7 @@ Application développée pour simplifier la prise de réservations et la gestion
 - Modification des services du restaurant.
 - Gestion et assignation des tables.
 
-## 🛠️ Stack Technique
+## Stack Technique
 - **Framework :** Flutter
 - **Langage :** Dart
 - **Architecture :** Multiplateforme (Mobile/Web)
@@ -72,12 +72,8 @@ Application développée pour simplifier la prise de réservations et la gestion
 | :---: |
 | <img width="400" alt="Édition table" src="https://github.com/user-attachments/assets/cdd9f5cd-86f2-4213-b8b5-8a156c4507e0" /> |
 
-## ⚙️ Installation locale
-1. Cloner le dépôt : 
-```bash
-git clone [https://github.com/cheikh2231/gestionReservationDart.git](https://github.com/cheikh2231/gestionReservationDart.git)
 
-## ⚙️ Installation locale
+## Installation locale
 1. Cloner le dépôt : `git clone https://github.com/cheikh2231/gestionReservationDart.git`
 2. Installer les dépendances : `flutter pub get`
 3. Lancer l'application : `flutter run`
