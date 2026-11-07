@@ -1,15 +1,15 @@
-# 🍽️ Application de Gestion de Restaurant (Dart | Flutter)
+# Application de Gestion de Restaurant (Dart | Flutter)
 
 Application développée pour simplifier la prise de réservations et la gestion quotidienne d'un établissement. Ce projet intègre une architecture multi-rôles sécurisée séparant l'expérience client des outils d'administration.
 
-## 🚀 Fonctionnalités principales
+## Fonctionnalités principales
 
-**👤 Espace Client :**
+** Espace Client :**
 - Recherche et consultation des restaurants disponibles.
 - Système de prise de réservation.
 - Système d'édition d'une réservation en respectant les créneaux et services du restaurant.
 
-**👨‍💼 Espace Manager :**
+** Espace Manager :**
 - Tableau de bord de gestion de l'établissement.
 - Modification des services du restaurant.
 - Gestion et assignation des tables.
@@ -19,7 +19,7 @@ Application développée pour simplifier la prise de réservations et la gestion
 - **Langage :** Dart
 - **Architecture :** Multiplateforme (Mobile/Web)
 
-## 📸 Aperçu
+##  Aperçu
 
 ### Espace Client
 
